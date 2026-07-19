@@ -8,6 +8,6 @@ namespace OrderService.Infrastructure.Entities.Admin
         public Guid Id { get; set; } = Guid.CreateVersion7();
         public long TgId { get; set; }
         public AdminProfile? Profile { get; set; }
-        public List<Product> Products { get; } = new List<Product>();
+        public List<CatalogItem> Products { get; } = new List<CatalogItem>();
     }
 }

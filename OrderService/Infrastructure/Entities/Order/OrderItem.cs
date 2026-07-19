@@ -12,7 +12,7 @@ namespace OrderService.Infrastructure.Entities.Order
         public decimal TotalPrice { get; set; }
         // price at purchase.
         public decimal SPrice { get; set; }
-        public OrderModel Order { get; set; } = null!;
+        public Order Order { get; set; } = null!;
         // No details here, only happy path for now.
     }
 }

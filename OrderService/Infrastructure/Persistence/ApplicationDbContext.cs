@@ -1,6 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OrderService.Infrastructure.Entities.Admin;
+using OrderService.Infrastructure.Entities.Auth;
+using OrderService.Infrastructure.Entities.Catalog;
 using OrderService.Infrastructure.Entities.Customer;
+using OrderService.Infrastructure.Entities.Draft;
+using OrderService.Infrastructure.Entities.Order;
 using OrderService.Infrastructure.Entities.Worker;
 
 namespace OrderService.Infrastructure.Persistence;
@@ -10,11 +14,31 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     // users entities / models
     DbSet<Customer> Customers => Set<Customer>();
-    DbSet<CustomerProfile> CustomerProfile => Set<CustomerProfile>();
+    DbSet<CustomerProfile> CustomerProfiles => Set<CustomerProfile>();
     DbSet<Worker> Workers => Set<Worker>();
     DbSet<WorkerProfile> WorkerProfiles => Set<WorkerProfile>();
-    DbSet<Admin> Admin => Set<Admin>();
-    DbSet<AdminProfile> AdminProfile => Set<AdminProfile>();
+    DbSet<Admin> Admins => Set<Admin>();
+    DbSet<AdminProfile> AdminProfiles => Set<AdminProfile>();
+    // Auth
+
+    DbSet<Token> Tokens => Set<Token>();
+
+    // Draft
+
+    DbSet<Draft> Drafts => Set<Draft>();
+    DbSet<DraftItemModel> DraftItems => Set<DraftItemModel>();
+
+    // Catalog
+    DbSet<CatalogItem> Products => Set<CatalogItem>();
+    // Orders
+    DbSet<Order> Orders => Set<Order>();
+    DbSet<OrderItem> OrderItems => Set<OrderItem>();
 
 
+    public override void OnModelCreating( ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+    }
 }

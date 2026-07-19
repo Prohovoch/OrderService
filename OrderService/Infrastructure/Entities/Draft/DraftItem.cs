@@ -13,6 +13,6 @@ public class DraftItemModel
     public Guid ProductId { get; set; }
     public int Quantity { get; set; }
     public Draft Draft { get; set; } = null!;
-    public Product Product { get; set; } = null!;
+    public CatalogItem Product { get; set; } = null!;
 
 }

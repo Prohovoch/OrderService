@@ -7,7 +7,7 @@
         Pizza, Burger, Salad, Sushi, Drinks
     }
     // our main model.
-    public class Product
+    public class CatalogItem
     {
         public Guid Id { get; set; } = Guid.CreateVersion7();
         public Guid? AdminId { get; set;  }

@@ -12,7 +12,7 @@ namespace OrderService.Infrastructure.Entities.Order
         Cancelled // worker or user cancelled order //???
     }
 
-    public class OrderModel
+    public class Order
     {
         public Guid Id { get; set; } = Guid.CreateVersion7();
         public Guid? CustomerId { get; set; }

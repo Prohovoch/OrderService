@@ -9,7 +9,7 @@ public class Customer
     public long TgId { get; set; }
     public CustomerProfile? Profile { get; set; }
     public Draft.Draft? Draft { get; set; }
-    public List<OrderModel> Orders { get; } = new List<OrderModel>();
+    public List<Order.Order> Orders { get; } = new List<Order.Order>();
 
 
 }
