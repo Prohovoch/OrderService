@@ -3,7 +3,7 @@ namespace OrderService.Infrastructure.Entities.Order
 {
     // One customer can create many orders, but one order can only belong to one customer.
     // One worker can handle many orders, but one order can only be handled by one worker. 
-    // One order can have many products from catalog, but one product can only belong to one order.
+    // One order can have many products from catalog.
     public enum OrderStatus
     {
         Created, // user created order, but not yet picked up by worker

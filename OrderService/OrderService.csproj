@@ -19,7 +19,6 @@
     <Folder Include="Customers\DTO\" />
     <Folder Include="Customers\Feature\" />
     <Folder Include="Draft\" />
-    <Folder Include="Infrastructure\Configuration\" />
     <Folder Include="Auth\" />
   </ItemGroup>
 

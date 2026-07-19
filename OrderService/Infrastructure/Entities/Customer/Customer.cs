@@ -11,5 +11,9 @@ public class Customer
     public Draft.Draft? Draft { get; set; }
     public List<Order.Order> Orders { get; } = new List<Order.Order>();
 
+    public bool IsDeleted { get; set; } = false;
 
+
+    // an another idea for mb future projects, just an example.
+    // public DateTime DeletedAt { get; set; } = DateTime.Utc.Now;
 }

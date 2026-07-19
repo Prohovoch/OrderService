@@ -8,5 +8,5 @@ public class Draft
     public Guid Id { get; set; } = Guid.CreateVersion7();
     public Guid CustomerId { get; set; }
     public Customer.Customer Customer { get; set; } = null!;
-    public List<DraftItemModel> Items { get; } = new List<DraftItemModel>();
+    public List<DraftItem> Items { get; } = new List<DraftItem>();
 }
