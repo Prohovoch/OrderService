@@ -1,5 +1,7 @@
-﻿using OrderService.Models;
-namespace OrderService.Models.Draft;
+﻿using OrderService.Infrastructure.Models.Customer;
+
+
+namespace OrderService.Infrastructure.Entities.Draft;
 
 public class DraftModel
 {

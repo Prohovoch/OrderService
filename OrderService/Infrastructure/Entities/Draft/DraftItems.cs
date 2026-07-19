@@ -1,7 +1,4 @@
-﻿
-using OrderService.Models.Draft;
-
-namespace OrderService.Models.Draft;
+﻿namespace OrderService.Infrastructure.Entities.Draft;
 
 public class DraftItemModel
 {

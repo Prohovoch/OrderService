@@ -1,4 +1,4 @@
-﻿namespace OrderService.Models
+﻿namespace OrderService.Infrastructure.Entities.Catalog
 {
     // Instead of TPH or TPT, i choose my own great combo.
     // easy to make more, no diff left joins, es to maintain, prob.... x.x

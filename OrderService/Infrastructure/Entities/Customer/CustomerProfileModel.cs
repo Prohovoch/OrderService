@@ -1,6 +1,4 @@
-﻿using OrderService.Models;
-
-namespace OrderService.Models.Customer;
+﻿namespace OrderService.Infrastructure.Models.Customer;
 
 public class CustomerProfileModel
 {
