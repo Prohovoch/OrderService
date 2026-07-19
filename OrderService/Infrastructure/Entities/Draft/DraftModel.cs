@@ -1,4 +1,4 @@
-﻿using OrderService.Infrastructure.Models.Customer;
+﻿using OrderService.Infrastructure.Entities.Customer;
 
 
 namespace OrderService.Infrastructure.Entities.Draft;

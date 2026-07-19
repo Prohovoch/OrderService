@@ -1,6 +1,7 @@
 ﻿using OrderService.Infrastructure.Entities.Draft;
+using OrderService.Infrastructure.Entities.Order;
 
-namespace OrderService.Infrastructure.Models.Customer;
+namespace OrderService.Infrastructure.Entities.Customer;
 
 public class CustomerModel
 {
@@ -8,5 +9,7 @@ public class CustomerModel
     public long TgId { get; set; }
     public CustomerProfileModel? Profile { get; set; }
     public DraftModel? Draft { get; set; }
-    
+    public List<OrderModel> Orders { get; } = new List<OrderModel>();
+
+
 }

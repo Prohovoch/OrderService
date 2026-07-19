@@ -12,7 +12,10 @@
         public Guid Id { get; set; } = Guid.CreateVersion7();
         public decimal Price { get; set; }
         public ProductType Type { get; set; }
+        public int Quantity { get; set; }
         public string Description { get; set; } = string.Empty;
+        public bool IsAvailable { get; set; } = true; // some kind of soft delete, but not really, just for the admin to hide some products.
+
 
         public ProductDetails Details { get; set; } = new();
     }

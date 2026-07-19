@@ -21,11 +21,7 @@
     <Folder Include="Draft\" />
     <Folder Include="Infrastructure\Configuration\" />
     <Folder Include="Auth\" />
-    <Folder Include="Infrastructure\Entities\Order\" />
-    <Folder Include="Infrastructure\Entities\Worker\" />
     <Folder Include="Infrastructure\Persistence\" />
-    <Folder Include="Orders\" />
-    <Folder Include="Workers\" />
   </ItemGroup>
 
 </Project>
