@@ -3,11 +3,11 @@ using OrderService.Infrastructure.Entities.Catalog;
 
 namespace OrderService.Infrastructure.Entities.Admin
 {
-    public class AdminModel
+    public class Admin
     {
         public Guid Id { get; set; } = Guid.CreateVersion7();
         public long TgId { get; set; }
-        public AdminProfileModel? Profile { get; set; }
-        public List<ProductModel> Products { get; } = new List<ProductModel>();
+        public AdminProfile? Profile { get; set; }
+        public List<Product> Products { get; } = new List<Product>();
     }
 }

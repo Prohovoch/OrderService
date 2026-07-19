@@ -12,7 +12,7 @@ public class DraftItemModel
     public Guid DraftId { get; set; }
     public Guid ProductId { get; set; }
     public int Quantity { get; set; }
-    public DraftModel Draft { get; set; } = null!;
-    public ProductModel Product { get; set; } = null!;
+    public Draft Draft { get; set; } = null!;
+    public Product Product { get; set; } = null!;
 
 }

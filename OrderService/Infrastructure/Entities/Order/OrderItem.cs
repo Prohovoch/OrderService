@@ -1,7 +1,7 @@
 ﻿
 namespace OrderService.Infrastructure.Entities.Order
 {
-    public class OrderItemModel
+    public class OrderItem
     {
         public Guid Id { get; set; } = Guid.CreateVersion7();
         public Guid ProductId { get; set; } // snapshot.

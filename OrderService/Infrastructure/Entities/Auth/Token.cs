@@ -6,7 +6,7 @@ namespace OrderService.Infrastructure.Entities.Auth
     {
        Admin, Worker
     }
-    public class TokenModel
+    public class Token
     {
         public Guid Id { get; set; } = Guid.CreateVersion7();
         public string TokenHash { get; set; } = string.Empty;

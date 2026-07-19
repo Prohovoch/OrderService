@@ -1,7 +1,7 @@
 ﻿
 namespace OrderService.Infrastructure.Entities.Admin
 {
-    public class AdminProfileModel
+    public class AdminProfile
     {
         public Guid Id { get; set; } = Guid.CreateVersion7();
         public Guid AdminId { get; set; }
@@ -9,6 +9,6 @@ namespace OrderService.Infrastructure.Entities.Admin
         public string Name { get; set; } = null!;
         public string Surname { get; set; } = null!;
         public string Gender { get; set; } = string.Empty; // We dont know exactly what is it gonna be... 
-        public AdminModel Worker { get; set; } = null!;
+        public Admin Worker { get; set; } = null!;
     }
 }
