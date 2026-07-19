@@ -16,8 +16,8 @@ namespace OrderService.Infrastructure.Entities.Order
     public class OrderModel
     {
         public Guid Id { get; set; } = Guid.CreateVersion7();
-        public Guid CustomerId { get; set; }
-        public Guid WorkerId { get; set; }
+        public Guid? CustomerId { get; set; }
+        public Guid? WorkerId { get; set; }
         public CustomerModel? Customer { get; set; } = null!;
         public WorkerModel? Worker { get; set; } = null!;
         public List<OrderItemModel> Items { get; } = new List<OrderItemModel>();

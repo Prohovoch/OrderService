@@ -6,6 +6,8 @@ namespace OrderService.Infrastructure.Entities.Order
         public Guid Id { get; set; } = Guid.CreateVersion7();
         public Guid ProductId { get; set; } // snapshot.
         public Guid OrderId { get; set; }
+
+        public string ProductName { get; set; } = string.Empty;
         public int Quantity { get; set; }
         public decimal TotalPrice { get; set; }
         // price at purchase.
