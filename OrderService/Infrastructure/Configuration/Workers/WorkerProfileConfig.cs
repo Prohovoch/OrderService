@@ -10,6 +10,9 @@ namespace OrderService.Infrastructure.Configuration.Workers
             builder.ToTable("worker_profiles");
             builder.HasKey(wp => wp.Id);
 
+            builder.Property(wp => wp.Id).HasColumnName("id").ValueGeneratedOnAdd();
+            builder.Property(wp => wp.WorkerId).HasColumnName("worker_id").IsRequired();
+
             builder.Property(wp => wp.Name).HasMaxLength(50).HasColumnName("name").IsRequired();
             builder.Property(wp => wp.Surname).HasMaxLength(50).HasColumnName("surname").IsRequired();
             builder.Property(wp => wp.Age).HasMaxLength(3).HasColumnName("age").IsRequired(false);

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using OrderService.Infrastructure.Entities.Customer;
 using OrderService.Infrastructure.Entities.Draft;
-using OrderService.Infrastructure.Entities.Order;
+
 namespace OrderService.Infrastructure.Configuration.Customers
 {
     public class CustomerConfig : IEntityTypeConfiguration<Customer>
@@ -27,12 +27,13 @@ namespace OrderService.Infrastructure.Configuration.Customers
                 .OnDelete(DeleteBehavior.SetNull)
                 .IsRequired(false);
 
-            builder.HasIndex(c => c.TgId).IsUnique();
-            
-            builder.Property(c => c.TgId).HasColumnName("tgId");
 
-            
-            
+            builder.HasIndex(c => c.TgId).IsUnique();
+
+            builder.Property(c => c.Id).HasColumnName("id").ValueGeneratedOnAdd();
+
+
+
 
 
 

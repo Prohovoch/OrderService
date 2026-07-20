@@ -10,6 +10,9 @@ namespace OrderService.Infrastructure.Configuration.Customers
             builder.ToTable("customer_profiles");
             builder.HasKey(cp => cp.Id);
 
+            builder.Property(cp => cp.Id).HasColumnName("id").ValueGeneratedOnAdd();
+            builder.Property(cp => cp.CustomerId).HasColumnName("customer_id").IsRequired();
+
             builder.Property(cp => cp.Name).HasMaxLength(50).HasColumnName("name").IsRequired();
             builder.Property(cp => cp.Surname).HasMaxLength(50).HasColumnName("surname").IsRequired();
             builder.Property(cp => cp.Age).HasMaxLength(3).HasColumnName("age").IsRequired(false);

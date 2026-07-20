@@ -21,10 +21,12 @@ namespace OrderService.Infrastructure.Configuration.Workers
                    .HasForeignKey(o => o.WorkerId)
                    .OnDelete(DeleteBehavior.SetNull)
                    .IsRequired(false);
-           
-            builder.HasIndex(c => c.TgId).IsUnique();
+            
+            builder.Property(w => w.Id).HasColumnName("id").ValueGeneratedOnAdd();
 
-            builder.Property(c => c.TgId).HasColumnName("tgId");
+            builder.HasIndex(w => w.TgId).IsUnique();
+
+            builder.Property(w => w.TgId).HasColumnName("tgId");
         }
     }
 }

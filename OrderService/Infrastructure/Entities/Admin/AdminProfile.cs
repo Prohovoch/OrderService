@@ -9,6 +9,6 @@ namespace OrderService.Infrastructure.Entities.Admin
         public string Name { get; set; } = null!;
         public string Surname { get; set; } = null!;
         public string Gender { get; set; } = string.Empty; // We dont know exactly what is it gonna be... 
-        public Admin Worker { get; set; } = null!;
+        public Admin Admin { get; set; } = null!;
     }
 }

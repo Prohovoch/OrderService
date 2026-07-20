@@ -1,4 +1,5 @@
-﻿namespace OrderService.Infrastructure.Entities.Catalog
+﻿using OrderService.Infrastructure.Entities.Admin;
+namespace OrderService.Infrastructure.Entities.Catalog
 {
     // Instead of TPH or TPT, i choose my own great combo.
     // easy to make more, no diff left joins, es to maintain, prob.... x.x
@@ -11,6 +12,7 @@
     {
         public Guid Id { get; set; } = Guid.CreateVersion7();
         public Guid? AdminId { get; set;  }
+        public Admin.Admin? Admin { get; set; }  
         public decimal Price { get; set; }
         public ProductType Type { get; set; }
         public int Quantity { get; set; }
