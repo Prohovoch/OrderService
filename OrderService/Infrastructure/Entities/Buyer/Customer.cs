@@ -9,7 +9,7 @@ public class Customer
     public long TgId { get; set; }
     public CustomerProfile? Profile { get; set; }
     public Bucket? Draft { get; set; }
-    public List<Order> Orders { get; } = new List<Order>();
+    public List<Order> Orders { get; } = [];
 
 
 

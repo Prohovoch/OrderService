@@ -1,5 +1,5 @@
 ﻿
-namespace OrderService.Infrastructure.Entities.Admin
+namespace OrderService.Infrastructure.Entities.Administrator
 {
     public class AdminProfile
     {

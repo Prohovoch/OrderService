@@ -21,7 +21,7 @@ namespace OrderService.Infrastructure.Entities.Deal
         public Guid? WorkerId { get; set; }
         public Customer? Customer { get; set; }
         public Worker? Worker { get; set; }
-        public List<OrderItem> Items { get; } = new List<OrderItem>();
+        public List<OrderItem> Items { get; } = [];
 
         public OrderStatus Status { get; set; }
         

@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OrderService.Infrastructure.Entities.Admin;
+using OrderService.Infrastructure.Entities.Administrator;
 using OrderService.Infrastructure.Entities.Auth;
 using OrderService.Infrastructure.Entities.Catalog;
 using OrderService.Infrastructure.Entities.Buyer;
