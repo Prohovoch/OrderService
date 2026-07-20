@@ -2,10 +2,11 @@
 using OrderService.Infrastructure.Entities.Admin;
 using OrderService.Infrastructure.Entities.Auth;
 using OrderService.Infrastructure.Entities.Catalog;
-using OrderService.Infrastructure.Entities.Customer;
+using OrderService.Infrastructure.Entities.Buyer;
+using OrderService.Infrastructure.Entities.Deal;
 using OrderService.Infrastructure.Entities.Draft;
-using OrderService.Infrastructure.Entities.Order;
-using OrderService.Infrastructure.Entities.Worker;
+
+using OrderService.Infrastructure.Entities.Employee;
 
 namespace OrderService.Infrastructure.Persistence;
 
@@ -25,8 +26,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     // Draft
 
-    DbSet<Draft> Drafts => Set<Draft>();
-    DbSet<DraftItemModel> DraftItems => Set<DraftItemModel>();
+    DbSet<Bucket> Drafts => Set<Bucket>();
+    DbSet<BucketItem> DraftItems => Set<BucketItem>();
 
     // Catalog
     DbSet<CatalogItem> Products => Set<CatalogItem>();
@@ -35,7 +36,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     DbSet<OrderItem> OrderItems => Set<OrderItem>();
 
 
-    public override void OnModelCreating( ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 

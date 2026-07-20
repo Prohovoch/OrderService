@@ -1,5 +1,5 @@
 ﻿
-namespace OrderService.Infrastructure.Entities.Order
+namespace OrderService.Infrastructure.Entities.Deal
 {
     public class OrderItem
     {

@@ -1,15 +1,15 @@
 ﻿using OrderService.Infrastructure.Entities.Draft;
-using OrderService.Infrastructure.Entities.Order;
+using OrderService.Infrastructure.Entities.Deal;
 
-namespace OrderService.Infrastructure.Entities.Customer;
+namespace OrderService.Infrastructure.Entities.Buyer;
 
 public class Customer
 {
     public Guid Id { get; set; } = Guid.CreateVersion7();
     public long TgId { get; set; }
     public CustomerProfile? Profile { get; set; }
-    public Draft.Draft? Draft { get; set; }
-    public List<Order.Order> Orders { get; } = new List<Order.Order>();
+    public Bucket? Draft { get; set; }
+    public List<Order> Orders { get; } = new List<Order>();
 
 
 

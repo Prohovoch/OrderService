@@ -18,7 +18,7 @@ namespace OrderService.Infrastructure.Configuration.Customers
                 .IsRequired();
             builder.HasOne(c => c.Draft)
                 .WithOne(d => d.Customer)
-                .HasForeignKey<Draft>(d => d.CustomerId)
+                .HasForeignKey<Bucket>(b => b.CustomerId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
             builder.HasMany(c => c.Orders)

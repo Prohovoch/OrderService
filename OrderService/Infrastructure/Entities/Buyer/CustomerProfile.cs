@@ -1,6 +1,6 @@
-﻿using OrderService.Infrastructure.Entities.Order;
+﻿
 
-namespace OrderService.Infrastructure.Entities.Customer;
+namespace OrderService.Infrastructure.Entities.Buyer;
 
 public class CustomerProfile
 {

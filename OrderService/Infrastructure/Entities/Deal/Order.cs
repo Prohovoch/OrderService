@@ -1,5 +1,7 @@
-﻿
-namespace OrderService.Infrastructure.Entities.Order
+﻿using OrderService.Infrastructure.Entities.Employee;
+using OrderService.Infrastructure.Entities.Buyer; 
+;
+namespace OrderService.Infrastructure.Entities.Deal
 {
     // One customer can create many orders, but one order can only belong to one customer.
     // One worker can handle many orders, but one order can only be handled by one worker. 
@@ -17,8 +19,8 @@ namespace OrderService.Infrastructure.Entities.Order
         public Guid Id { get; set; } = Guid.CreateVersion7();
         public Guid? CustomerId { get; set; }
         public Guid? WorkerId { get; set; }
-        public Customer.Customer? Customer { get; set; }
-        public Worker.Worker? Worker { get; set; }
+        public Customer? Customer { get; set; }
+        public Worker? Worker { get; set; }
         public List<OrderItem> Items { get; } = new List<OrderItem>();
 
         public OrderStatus Status { get; set; }
