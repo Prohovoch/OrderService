@@ -16,9 +16,9 @@
         public int Quantity { get; set; }
         public string Description { get; set; } = string.Empty;
         public bool IsAvailable { get; set; } = true; // some kind of soft delete, but not really, just for the admin to hide some products.
-        
 
-        public ProductDetails Details { get; set; } = new();
+
+        public ProductDetails Details { get; set; } = new ProductDetails();
     }
     // JSONB column, idk what to add lol.
     public class ProductDetails

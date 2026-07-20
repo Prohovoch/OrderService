@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using OrderService.Infrastructure.Entities.Customer;
-
+using OrderService.Infrastructure.Entities.Draft;
+using OrderService.Infrastructure.Entities.Order;
 namespace OrderService.Infrastructure.Configuration.Customers
 {
     public class CustomerConfig : IEntityTypeConfiguration<Customer>
@@ -13,7 +14,25 @@ namespace OrderService.Infrastructure.Configuration.Customers
             builder.HasOne(c => c.Profile)
                 .WithOne(p => p.Customer)
                 .HasForeignKey<CustomerProfile>(p => p.CustomerId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
+            builder.HasOne(c => c.Draft)
+                .WithOne(d => d.Customer)
+                .HasForeignKey<Draft>(d => d.CustomerId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
+            builder.HasMany(c => c.Orders)
+                .WithOne(o => o.Customer)
+                .HasForeignKey(o => o.CustomerId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .IsRequired(false);
+
+            builder.HasIndex(c => c.TgId).IsUnique();
+            
+            builder.Property(c => c.TgId).HasColumnName("tgId");
+
+            
+            
 
 
 
