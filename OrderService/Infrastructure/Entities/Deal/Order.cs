@@ -11,7 +11,7 @@ namespace OrderService.Infrastructure.Entities.Deal
         Created, // user created order, but not yet picked up by worker
         Processing, // worker picked up order and is processing it
         Completed, // worker completed order
-        Cancelled // worker or user cancelled order //???
+        Stopped 
     }
 
     public class Order

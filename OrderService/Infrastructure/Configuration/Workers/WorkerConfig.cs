@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using OrderService.Infrastructure.Entities.Worker;
+using OrderService.Infrastructure.Entities.Employee;
 
 
 namespace OrderService.Infrastructure.Configuration.Workers

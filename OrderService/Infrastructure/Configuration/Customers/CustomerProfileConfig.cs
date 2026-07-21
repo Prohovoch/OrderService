@@ -15,7 +15,7 @@ namespace OrderService.Infrastructure.Configuration.Customers
 
             builder.Property(cp => cp.Name).HasMaxLength(50).HasColumnName("name").IsRequired();
             builder.Property(cp => cp.Surname).HasMaxLength(50).HasColumnName("surname").IsRequired();
-            builder.Property(cp => cp.Age).HasMaxLength(3).HasColumnName("age").IsRequired(false);
+            builder.Property(cp => cp.Age).HasColumnName("age").IsRequired(false);
             builder.Property(cp => cp.Gender).HasMaxLength(10).HasColumnName("gender").IsRequired(false);
         }
     
