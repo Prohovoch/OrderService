@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using OrderService.Infrastructure.Entities.Customer;
+using OrderService.Infrastructure.Entities.Buyer;
 namespace OrderService.Infrastructure.Configuration.Customers
 {
     public class CustomerProfileConfig : IEntityTypeConfiguration<CustomerProfile>

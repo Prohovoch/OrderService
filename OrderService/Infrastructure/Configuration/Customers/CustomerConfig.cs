@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using OrderService.Infrastructure.Entities.Customer;
+using OrderService.Infrastructure.Entities.Buyer;
 using OrderService.Infrastructure.Entities.Draft;
 
 namespace OrderService.Infrastructure.Configuration.Customers

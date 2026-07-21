@@ -6,7 +6,12 @@ namespace OrderService.Infrastructure.Entities.Catalog
     // easy to make more, no diff left joins, es to maintain, prob.... x.x
     public enum ProductType
     {
-        Pizza, Burger, Salad, Sushi, Drinks
+        Pizza, Burger, Soup, Salad, Sushi, Drinks
+    }
+
+    public enum ProductAvailabilityStatus
+    {
+        Available, OutOfStock, Discounted // for mvp is ok.
     }
     // our main model.
     public class CatalogItem
@@ -16,11 +21,9 @@ namespace OrderService.Infrastructure.Entities.Catalog
         public Admin? Admin { get; set; }  
         public decimal Price { get; set; }
         public ProductType Type { get; set; }
-        public int Quantity { get; set; }
+        public ProductAvailabilityStatus AvailabilityStatus { get; set; }
+        public int Quantity { get; set; } // not for dishes
         public string Description { get; set; } = string.Empty;
-
-        public bool IsAvailable { get; set; } = true; // some kind of soft delete, but not really, just for the admin to hide some products.
-
         public List<BucketItem> BucketItems { get; } = [];
         public ProductDetails Details { get; set; } = new ();
     }

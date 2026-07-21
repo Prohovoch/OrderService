@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using OrderService.Infrastructure.Entities.Admin;
+using OrderService.Infrastructure.Entities.Administrator;
 namespace OrderService.Infrastructure.Configuration.Admins
 {
     public class AdminProfileConfig : IEntityTypeConfiguration<AdminProfile>
