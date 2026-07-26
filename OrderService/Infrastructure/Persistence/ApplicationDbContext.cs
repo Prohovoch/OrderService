@@ -19,10 +19,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     DbSet<WorkerProfile> WorkerProfiles => Set<WorkerProfile>();
     DbSet<Admin> Admins => Set<Admin>();
     DbSet<AdminProfile> AdminProfiles => Set<AdminProfile>();
-    // Auth
-
-    
-
     // Draft
 
     DbSet<Bucket> Drafts => Set<Bucket>();

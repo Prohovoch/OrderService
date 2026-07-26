@@ -16,11 +16,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Catalog\" />
-    <Folder Include="Customers\DTO\" />
-    <Folder Include="Customers\Feature\" />
-    <Folder Include="Draft\" />
-    <Folder Include="Auth\" />
+    <Folder Include="src\Catalog\" />
+    <Folder Include="src\Customer\Feature\Delete\" />
+    <Folder Include="src\Customer\Feature\Read\" />
+    <Folder Include="src\Customer\Feature\Update\" />
+    <Folder Include="src\Draft\" />
+    <Folder Include="src\Auth\" />
+    <Folder Include="src\Admin\" />
+    <Folder Include="src\Worker\" />
+    <Folder Include="src\Order\" />
   </ItemGroup>
 
 </Project>

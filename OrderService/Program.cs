@@ -8,7 +8,6 @@ namespace OrderService
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
 
             var app = builder.Build();
 
@@ -16,8 +15,7 @@ namespace OrderService
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
-
+            // middleware;
 
             app.MapControllers();
 
