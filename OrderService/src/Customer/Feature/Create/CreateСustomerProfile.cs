@@ -1,19 +1,25 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
-using OrderService.src.Customer.Endpoints;
+using OrderService.src.Customer.DTO;
+using OrderService.Infrastructure.Persistence;
+
 
 namespace OrderService.src.Customer.Feature.Create
 {
-  
-    public class CreateCustomerProfile
+
+    public class CreateCustomerProfile(ApplicationDbContext db)
     {
         // This class can contain methods or properties related to creating a customer profile.
-        private readonly 
+        private readonly ApplicationDbContext _db = db;
 
+        public async Task CreateCustomerProfileAsync(CreateCustomerProfileRequest request)
+        {
+            // Validate the request
+            
+    
+        }
 
-    }
-
-    public record CreateCustomerProfileRequest(string Name, string Surname, int Age, string? Gender);
+    
 
 
 
