@@ -17,7 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="src\Admin\Feature\Profile\" />
     <Folder Include="src\Catalog\" />
     <Folder Include="src\Customer\Feature\Delete\" />
     <Folder Include="src\Customer\Feature\Read\" />
