@@ -1,6 +1,10 @@
 ﻿
 namespace OrderService.Infrastructure.Entities.Administrator
 {
+    public enum Gender
+    {
+        Male, Female
+    }
     public class AdminProfile
     {
         public Guid Id { get; set; } = Guid.CreateVersion7();
@@ -8,7 +12,7 @@ namespace OrderService.Infrastructure.Entities.Administrator
         public int Age { get; set; }
         public string Name { get; set; } = null!;
         public string Surname { get; set; } = null!;
-        public string Gender { get; set; } = string.Empty; // We dont know exactly what is it gonna be... 
+        public Gender? Gender { get; set; } // We dont know exactly what is it gonna be... 
         public Admin Admin { get; set; } = null!;
     }
 }

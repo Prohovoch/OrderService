@@ -16,7 +16,7 @@ namespace OrderService.Infrastructure.Configuration.Admins
             builder.Property(ap => ap.Name).HasMaxLength(50).HasColumnName("name").IsRequired();
             builder.Property(ap => ap.Surname).HasMaxLength(50).HasColumnName("surname").IsRequired();
             builder.Property(ap => ap.Age).HasColumnName("age").IsRequired(false);
-            builder.Property(ap => ap.Gender).HasMaxLength(10).HasColumnName("gender").IsRequired(false);
+            builder.Property(ap => ap.Gender).HasConversion<string>().HasColumnName("gender").IsRequired(false);
         }
 
     }

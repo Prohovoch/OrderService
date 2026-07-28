@@ -16,7 +16,7 @@ namespace OrderService.Infrastructure.Configuration.Workers
             builder.Property(wp => wp.Name).HasMaxLength(50).HasColumnName("name").IsRequired();
             builder.Property(wp => wp.Surname).HasMaxLength(50).HasColumnName("surname").IsRequired();
             builder.Property(wp => wp.Age).HasColumnName("age").IsRequired(false);
-            builder.Property(wp => wp.Gender).HasMaxLength(10).HasColumnName("gender").IsRequired(false);
+            builder.Property(wp => wp.Gender).HasConversion<string>().HasColumnName("gender").IsRequired(false);
         }
 
     }
