@@ -1,9 +1,9 @@
 ﻿using FastEndpoints;
 using OrderService.Infrastructure.Entities.Employee;
-namespace OrderService.src.Worker.Feature.Profile.Create
+namespace OrderService.src.Worker.Profile.Create
 {
     // alias
-    using WorkerGender = OrderService.Infrastructure.Entities.Employee.Gender;
+    using WorkerGender = Infrastructure.Entities.Employee.Gender;
 
     public class ProfileMapper : RequestMapper<CreateProfileRequest, WorkerProfile>
     {

@@ -13,22 +13,22 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 {
 
     // users entities / models
-    DbSet<Customer> Customers => Set<Customer>();
-    DbSet<CustomerProfile> CustomerProfiles => Set<CustomerProfile>();
-    DbSet<Worker> Workers => Set<Worker>();
-    DbSet<WorkerProfile> WorkerProfiles => Set<WorkerProfile>();
-    DbSet<Admin> Admins => Set<Admin>();
-    DbSet<AdminProfile> AdminProfiles => Set<AdminProfile>();
+    public DbSet<Customer> Customers => Set<Customer>();
+    public DbSet<CustomerProfile> CustomerProfiles => Set<CustomerProfile>();
+    public DbSet<Worker> Workers => Set<Worker>();
+    public DbSet<WorkerProfile> WorkerProfiles => Set<WorkerProfile>();
+    public DbSet<Admin> Admins => Set<Admin>();
+    public DbSet<AdminProfile> AdminProfiles => Set<AdminProfile>();
     // Draft
 
-    DbSet<Bucket> Drafts => Set<Bucket>();
-    DbSet<BucketItem> DraftItems => Set<BucketItem>();
+    public DbSet<Bucket> Drafts => Set<Bucket>();
+    public DbSet<BucketItem> DraftItems => Set<BucketItem>();
 
     // Catalog
-    DbSet<CatalogItem> Products => Set<CatalogItem>();
+    public DbSet<CatalogItem> Products => Set<CatalogItem>();
     // Orders
-    DbSet<Order> Orders => Set<Order>();
-    DbSet<OrderItem> OrderItems => Set<OrderItem>();
+    public DbSet<Order> Orders => Set<Order>();
+    public DbSet<OrderItem> OrderItems => Set<OrderItem>();
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -1,12 +1,11 @@
 ﻿using FastEndpoints;
 using FluentValidation;
 
-namespace OrderService.src.Worker.Feature.Profile.Create
+namespace OrderService.src.Admin.Profile.Create
 {
-    public class ValidatorClass : Validator<CreateProfileRequest>
+    public class CreateProfileValidator : Validator<CreateProfileRequest>
     {
-        public ValidatorClass()
-        {
+        public CreateProfileValidator() { 
             RuleFor(x => x.Name).MinimumLength(3).WithMessage("Name must be at least 3 characters long.")
                 .NotEmpty().WithMessage("Name is required.");
             RuleFor(x => x.Surname).MinimumLength(3).WithMessage("Surname must be at least 3 characters long.")

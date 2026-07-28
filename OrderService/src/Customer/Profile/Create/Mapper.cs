@@ -1,9 +1,9 @@
 using FastEndpoints;
 using OrderService.Infrastructure.Entities.Buyer;
-namespace OrderService.src.Customer.Feature.Profile.Create
+namespace OrderService.src.Customer.Profile.Create
 {
     // alias
-    using BuyerGender = OrderService.Infrastructure.Entities.Buyer.Gender;
+    using BuyerGender = Infrastructure.Entities.Buyer.Gender;
 
     public class ProfileMapper : RequestMapper<CreateProfileRequest, CustomerProfile>
     {

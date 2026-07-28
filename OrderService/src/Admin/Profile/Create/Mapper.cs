@@ -1,9 +1,9 @@
 using FastEndpoints;
 using OrderService.Infrastructure.Entities.Administrator;
-namespace OrderService.src.Admin.Feature.Profile.Create
+namespace OrderService.src.Admin.Profile.Create
 {
     // alias
-    using AdminGender = OrderService.Infrastructure.Entities.Administrator.Gender;
+    using AdminGender = Infrastructure.Entities.Administrator.Gender;
 
     public class ProfileMapper : RequestMapper<CreateProfileRequest, AdminProfile>
     {

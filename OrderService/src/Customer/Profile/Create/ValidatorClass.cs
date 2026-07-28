@@ -1,7 +1,7 @@
 ﻿using FastEndpoints;
 using FluentValidation;
 
-namespace OrderService.src.Admin.Feature.Profile.Create
+namespace OrderService.src.Customer.Profile.Create
 {
     public class ValidatorClass : Validator<CreateProfileRequest>
     {
@@ -11,6 +11,7 @@ namespace OrderService.src.Admin.Feature.Profile.Create
             RuleFor(x => x.Surname).MinimumLength(3).WithMessage("Surname must be at least 3 characters long.")
                 .NotEmpty().WithMessage("Surname is required.");
             RuleFor(x => x.Age).InclusiveBetween(18, 120).WithMessage("Age must be between 18 and 120.");
+            RuleFor(x => x.Gender).IsInEnum();
         }
     }
 }

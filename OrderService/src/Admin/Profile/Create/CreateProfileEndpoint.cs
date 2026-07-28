@@ -1,7 +1,8 @@
 ﻿using FastEndpoints;
 using OrderService.Infrastructure.Persistence;
-using OrderService.Infrastructure.Entities.Buyer;
-namespace OrderService.src.Customer.Feature.Profile.Create
+using OrderService.Infrastructure.Entities.Administrator;
+
+namespace OrderService.src.Admin.Profile.Create
 {
     // REPR endpoint
     public class CreateProfileEndpoint(ApplicationDbContext dbContext) : EndpointWithMapper<CreateProfileRequest, ProfileMapper>
@@ -11,16 +12,16 @@ namespace OrderService.src.Customer.Feature.Profile.Create
 
         public override void Configure()
         {
-            Post("api/customer/profile");
-            Roles("customer");
-            Validator<ValidatorClass>();
+            Post("api/admin/profile");
+            Roles("admin");
+            Validator<CreateProfileValidator>();
             
         }
 
 
         public override async Task HandleAsync(CreateProfileRequest req, CancellationToken ct)
         {
-            CustomerProfile entity = Map.ToEntity(req);
+            AdminProfile entity = Map.ToEntity(req);
 
             _dbContext.Add(entity);
             await _dbContext.SaveChangesAsync();

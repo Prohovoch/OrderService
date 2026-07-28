@@ -1,7 +1,8 @@
 ﻿using FastEndpoints;
 using OrderService.Infrastructure.Persistence;
 using OrderService.Infrastructure.Entities.Employee;
-namespace OrderService.src.Worker.Feature.Profile.Create
+
+namespace OrderService.src.Worker.Profile.Create
 {
     // REPR endpoint
     public class CreateProfileEndpoint(ApplicationDbContext dbContext) : EndpointWithMapper<CreateProfileRequest, ProfileMapper>
@@ -13,7 +14,7 @@ namespace OrderService.src.Worker.Feature.Profile.Create
         {
             Post("api/employee/profile");
             Roles("worker");
-            Validator<ValidatorClass>();
+            Validator<CreateProfileValidator>();
 
         }
 
