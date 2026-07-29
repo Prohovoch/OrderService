@@ -1,11 +1,17 @@
 ﻿using FastEndpoints;
-using OrderService.Infrastructure.Persistence;
-using OrderService.Infrastructure.Entities.Administrator;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using OrderService.Infrastructure.Entities.Administrator;
+using OrderService.Infrastructure.Persistence;
+
+using AdminGender = OrderService.Infrastructure.Entities.Administrator.Gender;
+
 namespace OrderService.src.Admin.Profile.Read
+
+
 {
     // REPR endpoint
-    public class ReadProfileEndpoint(ApplicationDbContext dbContext) : Endpoint<ReadProfileRequest, ReadProfileResponse, ProfileMapper>
+    public class ReadProfileEndpoint(ApplicationDbContext dbContext) : Endpoint<ReadProfileRequest, ReadProfileResponse, Mapper>
     {
 
         public readonly ApplicationDbContext _dbContext = dbContext;
@@ -17,8 +23,6 @@ namespace OrderService.src.Admin.Profile.Read
             Validator<ReadProfileValidator>();
 
         }
-
-
         public override async Task HandleAsync(ReadProfileRequest req, CancellationToken ct)
         {
             var adminProfileEntity = await _dbContext.AdminProfiles.AsNoTracking()
@@ -35,3 +39,40 @@ namespace OrderService.src.Admin.Profile.Read
         }
     }
 }
+    public class Mapper : ResponseMapper<ReadProfileResponse, AdminProfile>
+    {
+    
+    public override ReadProfileResponse FromEntity(AdminProfile e) => new()
+    {
+        
+        Name = e.Name,
+        Surname = e.Surname,
+        Age = e.Age,
+        Gender = e.Gender switch
+        {
+            AdminGender.Male => Gender.Male,
+            AdminGender.Female => Gender.Female,
+            _ => null
+        }
+    };
+}
+    public class ReadProfileValidator : Validator<ReadProfileRequest>
+    {
+    public ReadProfileValidator()
+    {
+        RuleFor(x => x.UserId).NotNull().WithMessage("UserId is required.");
+    }
+}
+    public sealed record ReadProfileRequest
+    {
+         [FromClaim]
+         public Guid UserId { get; init; }
+    }
+    public enum Gender { Male, Female }
+    public sealed record ReadProfileResponse
+    {
+         public string Name { get; init; } = null!;
+         public string Surname { get; init; } = null!;
+         public int Age { get; init; }
+         public Gender? Gender { get; init; }
+    }

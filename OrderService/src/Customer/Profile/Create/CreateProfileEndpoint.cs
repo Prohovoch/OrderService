@@ -1,7 +1,9 @@
 ﻿using FastEndpoints;
+using FluentValidation;
 using OrderService.Infrastructure.Persistence;
 using OrderService.Infrastructure.Entities.Buyer;
 
+using BuyerGender = OrderService.Infrastructure.Entities.Buyer.Gender;
 namespace OrderService.src.Customer.Profile.Create
 {
     // REPR endpoint
@@ -28,4 +30,46 @@ namespace OrderService.src.Customer.Profile.Create
             await Send.OkAsync();
         }
     }
+    public class ValidatorClass : Validator<CreateProfileRequest>
+    {
+        public ValidatorClass()
+        {
+            RuleFor(x => x.Name).MinimumLength(3).WithMessage("Name must be at least 3 characters long.")
+                .NotEmpty().WithMessage("Name is required.");
+            RuleFor(x => x.Surname).MinimumLength(3).WithMessage("Surname must be at least 3 characters long.")
+                .NotEmpty().WithMessage("Surname is required.");
+            RuleFor(x => x.Age).InclusiveBetween(18, 120).WithMessage("Age must be between 18 and 120.");
+            RuleFor(x => x.Gender).IsInEnum();
+        }
+    }
+
+
+    public class ProfileMapper : RequestMapper<CreateProfileRequest, CustomerProfile>
+    {
+        public override CustomerProfile ToEntity(CreateProfileRequest r) => new()
+        {
+            CustomerId = r.UserId,
+            Name = r.Name,
+            Surname = r.Surname,
+            Age = r.Age,
+            Gender = r.Gender switch
+            {
+                Gender.Male => BuyerGender.Male,
+                Gender.Female => BuyerGender.Female,
+                _ => null
+            }
+        };
+    }
+
+    public enum Gender { Male, Female }
+    public class CreateProfileRequest
+    {
+        [FromClaim]
+        public Guid UserId { get; set; }
+        public string Name { get; set; } = null!;
+        public string Surname { get; set; } = null!;
+        public int Age { get; set; }
+        public Gender? Gender { get; set; }
+    }
+
 }

@@ -1,6 +1,9 @@
 ﻿using FastEndpoints;
-using OrderService.Infrastructure.Persistence;
+using FluentValidation;
 using OrderService.Infrastructure.Entities.Employee;
+using OrderService.Infrastructure.Persistence;
+
+using WorkerGender = OrderService.Infrastructure.Entities.Employee.Gender;
 
 namespace OrderService.src.Worker.Profile.Create
 {
@@ -27,5 +30,46 @@ namespace OrderService.src.Worker.Profile.Create
             await _dbContext.SaveChangesAsync();
             await Send.OkAsync();
         }
+    }
+    public class CreateProfileValidator : Validator<CreateProfileRequest>
+    {
+        public CreateProfileValidator()
+        {
+            RuleFor(x => x.Name).MinimumLength(3).WithMessage("Name must be at least 3 characters long.")
+                .NotEmpty().WithMessage("Name is required.");
+            RuleFor(x => x.Surname).MinimumLength(3).WithMessage("Surname must be at least 3 characters long.")
+                .NotEmpty().WithMessage("Surname is required.");
+            RuleFor(x => x.Age).InclusiveBetween(18, 120).WithMessage("Age must be between 18 and 120.");
+            RuleFor(x => x.Gender).IsInEnum();
+        }
+    }
+    public class ProfileMapper : RequestMapper<CreateProfileRequest, WorkerProfile>
+    {
+        public override WorkerProfile ToEntity(CreateProfileRequest r) => new()
+        {
+            WorkerId = r.UserId,
+            Name = r.Name,
+            Surname = r.Surname,
+            Age = r.Age,
+            Gender = r.Gender switch
+            {
+                Gender.Male => WorkerGender.Male,
+                Gender.Female => WorkerGender.Female,
+                _ => null
+            }
+        };
+    }
+
+
+    public enum Gender { Male, Female }
+    public sealed record CreateProfileRequest
+    {
+
+        [FromClaim]
+        public Guid UserId { get; init; }
+        public string Name { get; init; } = null!;
+        public string Surname { get; init; } = null!;
+        public int Age { get; init; }
+        public Gender? Gender { get; init; }
     }
 }
