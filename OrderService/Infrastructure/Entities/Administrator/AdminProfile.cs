@@ -1,7 +1,7 @@
 ﻿
 namespace OrderService.Infrastructure.Entities.Administrator
 {
-    public enum Gender
+    public enum AdminGender
     {
         Male, Female
     }
@@ -12,7 +12,7 @@ namespace OrderService.Infrastructure.Entities.Administrator
         public int Age { get; set; }
         public string Name { get; set; } = null!;
         public string Surname { get; set; } = null!;
-        public Gender? Gender { get; set; } // We dont know exactly what is it gonna be... 
+        public AdminGender? Gender { get; set; } // We dont know exactly what is it gonna be... 
         public Admin Admin { get; set; } = null!;
     }
 }

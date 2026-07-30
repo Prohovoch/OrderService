@@ -2,7 +2,7 @@
 
 namespace OrderService.Infrastructure.Entities.Employee;
 
-public enum Gender
+public enum WorkerGender
 {
     Male,
     Female
@@ -14,6 +14,6 @@ public class WorkerProfile
     public int Age { get; set; }
     public string Name { get; set; } = null!;
     public string Surname { get; set; } = null!;
-    public Gender? Gender { get; set; } // We dont know exactly what is it gonna be... 
+    public WorkerGender? Gender { get; set; } // We dont know exactly what is it gonna be... 
     public Worker Worker { get; set; } = null!;
 }

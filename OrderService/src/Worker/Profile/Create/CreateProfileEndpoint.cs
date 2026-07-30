@@ -3,7 +3,6 @@ using FluentValidation;
 using OrderService.Infrastructure.Entities.Employee;
 using OrderService.Infrastructure.Persistence;
 
-using WorkerGender = OrderService.Infrastructure.Entities.Employee.Gender;
 
 namespace OrderService.src.Worker.Profile.Create
 {

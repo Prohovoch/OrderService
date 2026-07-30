@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using OrderService.Infrastructure.Entities.Administrator;
 using OrderService.Infrastructure.Persistence;
 
-using AdminGender = OrderService.Infrastructure.Entities.Administrator.Gender;
 
 namespace OrderService.src.Admin.Profile.Read
 

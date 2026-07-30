@@ -3,7 +3,7 @@
 namespace OrderService.Infrastructure.Entities.Buyer;
 
 
-public enum Gender
+public enum BuyerGender
 {
     Male,
     Female
@@ -17,7 +17,7 @@ public class CustomerProfile
     public int Age { get; set; }
     public string Name { get; set; } = null!;
     public string Surname { get; set; } = null!;
-    public Gender? Gender { get; set; } // We dont know exactly what is it gonna be... 
+    public BuyerGender? Gender { get; set; } // We dont know exactly what is it gonna be... 
     public Customer Customer { get; set; } = null!;
 
 }

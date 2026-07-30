@@ -3,7 +3,7 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using OrderService.Infrastructure.Entities.Buyer;
 using OrderService.Infrastructure.Persistence;
-using BuyerGender = OrderService.Infrastructure.Entities.Buyer.Gender;
+
 
 namespace OrderService.src.Customer.Profile.Read
 {

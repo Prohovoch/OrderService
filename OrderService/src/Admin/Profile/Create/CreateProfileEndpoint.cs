@@ -3,7 +3,7 @@ using FluentValidation;
 using OrderService.Infrastructure.Persistence;
 using OrderService.Infrastructure.Entities.Administrator;
 
-using AdminGender = OrderService.Infrastructure.Entities.Administrator.Gender;
+
 
 namespace OrderService.src.Admin.Profile.Create
 {

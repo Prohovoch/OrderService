@@ -3,7 +3,6 @@ using FluentValidation;
 using OrderService.Infrastructure.Persistence;
 using OrderService.Infrastructure.Entities.Buyer;
 
-using BuyerGender = OrderService.Infrastructure.Entities.Buyer.Gender;
 namespace OrderService.src.Customer.Profile.Create
 {
     // REPR endpoint
