@@ -37,7 +37,7 @@ namespace OrderService.src.Admin.Profile.Read
             await Send.OkAsync(resp);
         }
     }
-}
+
     public class Mapper : ResponseMapper<ReadProfileResponse, AdminProfile>
     {
     
@@ -75,3 +75,4 @@ namespace OrderService.src.Admin.Profile.Read
          public int Age { get; init; }
          public Gender? Gender { get; init; }
     }
+}
