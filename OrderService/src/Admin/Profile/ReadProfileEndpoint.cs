@@ -5,12 +5,12 @@ using OrderService.Infrastructure.Entities.Administrator;
 using OrderService.Infrastructure.Persistence;
 
 
-namespace OrderService.src.Admin.Profile.Read
+namespace OrderService.src.Admin.Profile
 
 
 {
     // REPR endpoint
-    public class ReadProfileEndpoint(ApplicationDbContext dbContext) : Endpoint<ReadProfileRequest, ReadProfileResponse, Mapper>
+    public class ReadProfileEndpoint(ApplicationDbContext dbContext) : Endpoint<ReadProfileRequest, ReadProfileResponse, ReadProfileMapper>
     {
 
         public readonly ApplicationDbContext _dbContext = dbContext;
@@ -38,7 +38,7 @@ namespace OrderService.src.Admin.Profile.Read
         }
     }
 
-    public class Mapper : ResponseMapper<ReadProfileResponse, AdminProfile>
+    public class ReadProfileMapper : ResponseMapper<ReadProfileResponse, AdminProfile>
     {
     
     public override ReadProfileResponse FromEntity(AdminProfile e) => new()
@@ -49,8 +49,8 @@ namespace OrderService.src.Admin.Profile.Read
         Age = e.Age,
         Gender = e.Gender switch
         {
-            AdminGender.Male => Gender.Male,
-            AdminGender.Female => Gender.Female,
+            AdminGender.Male => ReadReqGender.Male,
+            AdminGender.Female => ReadReqGender.Female,
             _ => null
         }
     };
@@ -67,12 +67,12 @@ namespace OrderService.src.Admin.Profile.Read
          [FromClaim]
          public Guid UserId { get; init; }
     }
-    public enum Gender { Male, Female }
+    public enum ReadReqGender { Male, Female }
     public sealed record ReadProfileResponse
     {
          public string Name { get; init; } = null!;
          public string Surname { get; init; } = null!;
          public int Age { get; init; }
-         public Gender? Gender { get; init; }
+         public ReadReqGender? Gender { get; init; }
     }
 }

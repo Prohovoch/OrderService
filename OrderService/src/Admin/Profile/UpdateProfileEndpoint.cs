@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using OrderService.Infrastructure.Entities.Administrator;
 using OrderService.Infrastructure.Persistence;
 
-namespace OrderService.src.Admin.Profile.Update
+namespace OrderService.src.Admin.Profile
 {
-    public class UpdateProfileEndpoint(ApplicationDbContext dbContext) : EndpointWithMapper<UpdateProfileRequest, AdminProfileMapper>
+    public class UpdateProfileEndpoint(ApplicationDbContext dbContext) : EndpointWithMapper<UpdateProfileRequest, UpdateProfileMapper>
     {
         private readonly ApplicationDbContext _dbContext = dbContext;
 
@@ -47,7 +47,7 @@ public class UpdateProfileValidator : Validator<UpdateProfileRequest>
         RuleFor(x => x.Gender).IsInEnum();
     }
 }
-public class AdminProfileMapper : RequestMapper<UpdateProfileRequest, AdminProfile>
+public class UpdateProfileMapper : RequestMapper<UpdateProfileRequest, AdminProfile>
 {
     public override AdminProfile ToEntity(UpdateProfileRequest r) => new()
     {
@@ -57,14 +57,14 @@ public class AdminProfileMapper : RequestMapper<UpdateProfileRequest, AdminProfi
         Age = r.Age,
         Gender = r.Gender switch
         {
-            Gender.Male => AdminGender.Male,
-            Gender.Female => AdminGender.Female,
+            UpdateGender.Male => AdminGender.Male,
+            UpdateGender.Female => AdminGender.Female,
             _ => null
         }
     };
 
 }
-public enum Gender { Male, Female }
+public enum UpdateGender { Male, Female }
 public sealed record UpdateProfileRequest
 {
     [FromClaim]
@@ -72,7 +72,7 @@ public sealed record UpdateProfileRequest
     public string Name { get; init; } = null!;
     public string Surname { get; init; } = null!;
     public int Age { get; init; }
-    public Gender? Gender { get; init; }
+    public UpdateGender? Gender { get; init; }
 }
 
 }

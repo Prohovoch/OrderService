@@ -5,10 +5,10 @@ using OrderService.Infrastructure.Entities.Administrator;
 
 
 
-namespace OrderService.src.Admin.Profile.Create
+namespace OrderService.src.Admin.Profile
 {
     // REPR endpoint
-    public class CreateProfileEndpoint(ApplicationDbContext dbContext) : EndpointWithMapper<CreateProfileRequest, ProfileMapper>
+    public class CreateProfileEndpoint(ApplicationDbContext dbContext) : EndpointWithMapper<CreateProfileRequest, CreateRequestProfileMapper>
     {
 
         public readonly ApplicationDbContext _dbContext = dbContext;
@@ -32,7 +32,7 @@ namespace OrderService.src.Admin.Profile.Create
         }
     }
 
-    public class ProfileMapper : RequestMapper<CreateProfileRequest, AdminProfile>
+    public class CreateRequestProfileMapper : RequestMapper<CreateProfileRequest, AdminProfile>
     {
     public override AdminProfile ToEntity(CreateProfileRequest r) => new()
     {
@@ -42,8 +42,8 @@ namespace OrderService.src.Admin.Profile.Create
         Age = r.Age,
         Gender = r.Gender switch
         {
-            Gender.Male => AdminGender.Male,
-            Gender.Female => AdminGender.Female,
+            CreateReqGender.Male => AdminGender.Male,
+            CreateReqGender.Female => AdminGender.Female,
             _ => null
         }
     };
@@ -63,7 +63,7 @@ namespace OrderService.src.Admin.Profile.Create
 }
 
 
-    public enum Gender { Male, Female }
+    public enum CreateReqGender { Male, Female }
     public sealed record CreateProfileRequest
     {
          [FromClaim]
@@ -71,7 +71,7 @@ namespace OrderService.src.Admin.Profile.Create
          public string Name { get; init; } = null!;
          public string Surname { get; init; } = null!;
          public int Age { get; init; }
-         public Gender? Gender { get; init; }
+         public CreateReqGender? Gender { get; init; }
     }
 
 }
