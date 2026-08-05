@@ -6,12 +6,12 @@ using OrderService.Infrastructure.Persistence;
 
 
 
-namespace OrderService.src.Worker.Profile.Read
+namespace OrderService.src.Worker.Profile
 
 
 {
     // REPR endpoint
-    public class ReadProfileEndpoint(ApplicationDbContext dbContext) : Endpoint<ReadProfileRequest, ReadProfileResponse, Mapper>
+    public class ReadProfileEndpoint(ApplicationDbContext dbContext) : Endpoint<ReadProfileRequest, ReadProfileResponse, ReadMapper>
     {
 
         public readonly ApplicationDbContext _dbContext = dbContext;
@@ -39,7 +39,7 @@ namespace OrderService.src.Worker.Profile.Read
         }
     }
 
-public class Mapper : ResponseMapper<ReadProfileResponse, WorkerProfile>
+public class ReadMapper : ResponseMapper<ReadProfileResponse, WorkerProfile>
 {
 
     public override ReadProfileResponse FromEntity(WorkerProfile e) => new()
@@ -50,8 +50,8 @@ public class Mapper : ResponseMapper<ReadProfileResponse, WorkerProfile>
         Age = e.Age,
         Gender = e.Gender switch
         {
-            WorkerGender.Male => Gender.Male,
-            WorkerGender.Female => Gender.Female,
+            WorkerGender.Male => ReadRequestGender.Male,
+            WorkerGender.Female => ReadRequestGender.Female,
             _ => null
         }
     };
@@ -68,12 +68,12 @@ public sealed record ReadProfileRequest
     [FromClaim]
     public Guid UserId { get; init; }
 }
-public enum Gender { Male, Female }
+public enum ReadRequestGender { Male, Female }
 public sealed record ReadProfileResponse
 {
     public string Name { get; init; } = null!;
     public string Surname { get; init; } = null!;
     public int Age { get; init; }
-    public Gender? Gender { get; init; }
+    public ReadRequestGender? Gender { get; init; }
 }
 }

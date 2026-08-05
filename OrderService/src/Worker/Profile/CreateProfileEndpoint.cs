@@ -4,10 +4,10 @@ using OrderService.Infrastructure.Entities.Employee;
 using OrderService.Infrastructure.Persistence;
 
 
-namespace OrderService.src.Worker.Profile.Create
+namespace OrderService.src.Worker.Profile
 {
     // REPR endpoint
-    public class CreateProfileEndpoint(ApplicationDbContext dbContext) : EndpointWithMapper<CreateProfileRequest, ProfileMapper>
+    public class CreateProfileEndpoint(ApplicationDbContext dbContext) : EndpointWithMapper<CreateProfileRequest, CreateRequestProfileMapper>
     {
 
         public readonly ApplicationDbContext _dbContext = dbContext;
@@ -42,7 +42,7 @@ namespace OrderService.src.Worker.Profile.Create
             RuleFor(x => x.Gender).IsInEnum();
         }
     }
-    public class ProfileMapper : RequestMapper<CreateProfileRequest, WorkerProfile>
+    public class CreateRequestProfileMapper : RequestMapper<CreateProfileRequest, WorkerProfile>
     {
         public override WorkerProfile ToEntity(CreateProfileRequest r) => new()
         {
@@ -52,15 +52,15 @@ namespace OrderService.src.Worker.Profile.Create
             Age = r.Age,
             Gender = r.Gender switch
             {
-                Gender.Male => WorkerGender.Male,
-                Gender.Female => WorkerGender.Female,
+                CreateReqGender.Male => WorkerGender.Male,
+                CreateReqGender.Female => WorkerGender.Female,
                 _ => null
             }
         };
     }
 
 
-    public enum Gender { Male, Female }
+    public enum CreateReqGender { Male, Female }
     public sealed record CreateProfileRequest
     {
 
@@ -69,6 +69,6 @@ namespace OrderService.src.Worker.Profile.Create
         public string Name { get; init; } = null!;
         public string Surname { get; init; } = null!;
         public int Age { get; init; }
-        public Gender? Gender { get; init; }
+        public CreateReqGender? Gender { get; init; }
     }
 }
