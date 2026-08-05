@@ -1,7 +1,7 @@
 ﻿using OrderService.Infrastructure.Entities.Buyer;
 
 
-namespace OrderService.Infrastructure.Entities.Draft;
+namespace OrderService.Infrastructure.Entities.Cart;
 
 public class Bucket
 {

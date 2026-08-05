@@ -2,52 +2,53 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using OrderService.Infrastructure.Entities.Buyer;
+using OrderService.Infrastructure.Entities.Cart;
 using OrderService.Infrastructure.Persistence;
 
 
-namespace OrderService.src.Customer.Profile.Read
+namespace OrderService.src.Cart.Customer.Get
 {
     // REPR endpoint
-    public class ReadProfileEndpoint(ApplicationDbContext dbContext) : Endpoint<ReadProfileRequest, ReadProfileResponse, ProfileMapper>
+    public class GetCartEndpoint(ApplicationDbContext dbContext) : Endpoint<GetCartRequest, GetCartResponse, CartMapper>
     {
 
         public readonly ApplicationDbContext _dbContext = dbContext;
 
         public override void Configure()
         {
-            Get("api/customer/profile");
+            Get("api/customer/cart");
             Roles("customer");
-            Validator<ReadProfileValidator>();
-            
+            Validator<GetCartValidator>();
+
         }
 
 
-        public override async Task HandleAsync(ReadProfileRequest req, CancellationToken ct)
+        public override async Task HandleAsync(GetCartRequest req, CancellationToken ct)
         {
-            var customerProfileEntity = await _dbContext.CustomerProfiles.AsNoTracking()
+            var CartEntity = await _dbContext.CustomerProfiles.AsNoTracking()
                 .FirstOrDefaultAsync(r => r.CustomerId == req.UserId, ct);
 
-            if (customerProfileEntity is null)
+            if (CartEntity is null)
             {
                 await Send.NotFoundAsync();
                 return;
             }
 
-            var resp = Map.FromEntity(customerProfileEntity);
+            var resp = Map.FromEntity(CartEntity);
             await Send.OkAsync(resp);
         }
     }
 
-    public class ReadProfileValidator : Validator<ReadProfileRequest>
+    public class GetCartValidator : Validator<GetCartRequest>
     {
-        public ReadProfileValidator()
+        public GetCartValidator()
         {
             RuleFor(x => x.UserId).NotNull().WithMessage("UserId is required.");
         }
     }
-    public class ProfileMapper : ResponseMapper<ReadProfileResponse, CustomerProfile>
+    public class CartMapper : ResponseMapper<GetCartResponse, CustomerProfile>
     {
-        public override ReadProfileResponse FromEntity(CustomerProfile e) => new()
+        public override GetCartResponse FromEntity(CustomerProfile e) => new()
         {
             Name = e.Name,
             Surname = e.Surname,
@@ -62,14 +63,14 @@ namespace OrderService.src.Customer.Profile.Read
 
     }
 
-    public sealed record ReadProfileRequest
+    public sealed record GetCartRequest
     {
         [FromClaim]
         public Guid UserId { get; init; }
     }
 
     public enum Gender { Male, Female }
-    public sealed record ReadProfileResponse
+    public sealed record GetCartResponse
     {
         public string Name { get; init; } = null!;
         public string Surname { get; init; } = null!;

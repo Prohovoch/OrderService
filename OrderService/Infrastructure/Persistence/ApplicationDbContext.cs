@@ -3,7 +3,7 @@ using OrderService.Infrastructure.Entities.Administrator;
 using OrderService.Infrastructure.Entities.Catalog;
 using OrderService.Infrastructure.Entities.Buyer;
 using OrderService.Infrastructure.Entities.Deal;
-using OrderService.Infrastructure.Entities.Draft;
+using OrderService.Infrastructure.Entities.Cart;
 
 using OrderService.Infrastructure.Entities.Employee;
 

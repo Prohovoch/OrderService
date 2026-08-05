@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using OrderService.Infrastructure.Entities.Buyer;
 using OrderService.Infrastructure.Persistence;
 
-namespace OrderService.src.Customer.Profile.Update
+namespace OrderService.src.Customer.Profile
 {
-    public class UpdateCustomerProfileEndpoint(ApplicationDbContext dbContext) : EndpointWithMapper<UpdateProfileRequest,  ProfileMapper>
+    public class UpdateCustomerProfileEndpoint(ApplicationDbContext dbContext) : EndpointWithMapper<UpdateProfileRequest,  UpdateProfileMapper>
     {
         private readonly ApplicationDbContext _dbContext = dbContext;
 
@@ -47,7 +47,7 @@ namespace OrderService.src.Customer.Profile.Update
             RuleFor(x => x.Gender).IsInEnum();
         }
     }
-    public class ProfileMapper : RequestMapper<UpdateProfileRequest, CustomerProfile>
+    public class UpdateProfileMapper : RequestMapper<UpdateProfileRequest, CustomerProfile>
     {
         public override CustomerProfile ToEntity(UpdateProfileRequest r) => new()
         {
@@ -57,14 +57,14 @@ namespace OrderService.src.Customer.Profile.Update
             Age = r.Age,
             Gender = r.Gender switch
             {
-                Gender.Male => BuyerGender.Male,
-                Gender.Female => BuyerGender.Female,
+                UpdateRequestGender.Male => BuyerGender.Male,
+                UpdateRequestGender.Female => BuyerGender.Female,
                 _ => null
             }
         };
 
     }
-    public enum Gender { Male, Female }
+    public enum UpdateRequestGender { Male, Female }
     public sealed record UpdateProfileRequest
     {
         [FromClaim]
@@ -72,7 +72,7 @@ namespace OrderService.src.Customer.Profile.Update
         public string Name { get; init; } = null!;
         public string Surname { get; init; } = null!;
         public int Age { get; init; }
-        public Gender? Gender { get; init; }
+        public UpdateRequestGender? Gender { get; init; }
     }
 
     

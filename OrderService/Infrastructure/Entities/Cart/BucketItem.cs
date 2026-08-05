@@ -1,10 +1,10 @@
 ﻿using OrderService.Infrastructure.Entities.Catalog;
 
-namespace OrderService.Infrastructure.Entities.Draft;
+namespace OrderService.Infrastructure.Entities.Cart;
 
 
-// Draft item has a many-to-one relationship with DraftModel and ProductModel.
-// It represents a single item in a draft order, including the product and quantity.
+// Bucket item has a many-to-one relationship with Bucket and Product.
+// It represents a single item in a shopping cart, including the product and quantity.
 // ProductId for dynamic data update;
 public class BucketItem
 {

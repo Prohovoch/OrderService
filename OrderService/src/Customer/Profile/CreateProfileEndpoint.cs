@@ -3,10 +3,10 @@ using FluentValidation;
 using OrderService.Infrastructure.Persistence;
 using OrderService.Infrastructure.Entities.Buyer;
 
-namespace OrderService.src.Customer.Profile.Create
+namespace OrderService.src.Customer.Profile
 {
     // REPR endpoint
-    public class CreateProfileEndpoint(ApplicationDbContext dbContext) : EndpointWithMapper<CreateProfileRequest, ProfileMapper>
+    public class CreateProfileEndpoint(ApplicationDbContext dbContext) : EndpointWithMapper<CreateProfileRequest, CreateRequestProfileMapper>
     {
 
         public readonly ApplicationDbContext _dbContext = dbContext;
@@ -43,7 +43,7 @@ namespace OrderService.src.Customer.Profile.Create
     }
 
 
-    public class ProfileMapper : RequestMapper<CreateProfileRequest, CustomerProfile>
+    public class CreateRequestProfileMapper : RequestMapper<CreateProfileRequest, CustomerProfile>
     {
         public override CustomerProfile ToEntity(CreateProfileRequest r) => new()
         {
@@ -53,14 +53,14 @@ namespace OrderService.src.Customer.Profile.Create
             Age = r.Age,
             Gender = r.Gender switch
             {
-                Gender.Male => BuyerGender.Male,
-                Gender.Female => BuyerGender.Female,
+                CreateRequestGender.Male => BuyerGender.Male,
+                CreateRequestGender.Female => BuyerGender.Female,
                 _ => null
             }
         };
     }
 
-    public enum Gender { Male, Female }
+    public enum CreateRequestGender { Male, Female }
     public class CreateProfileRequest
     {
         [FromClaim]
@@ -68,7 +68,7 @@ namespace OrderService.src.Customer.Profile.Create
         public string Name { get; set; } = null!;
         public string Surname { get; set; } = null!;
         public int Age { get; set; }
-        public Gender? Gender { get; set; }
+        public CreateRequestGender? Gender { get; set; }
     }
 
 }

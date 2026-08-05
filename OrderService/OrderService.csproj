@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <Folder Include="src\Catalog\" />
-    <Folder Include="src\Draft\" />
     <Folder Include="src\Auth\" />
     <Folder Include="src\Order\" />
   </ItemGroup>
