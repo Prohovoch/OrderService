@@ -1,5 +1,5 @@
 ﻿using OrderService.Infrastructure.Entities.Administrator;
-using OrderService.Infrastructure.Entities.Draft;
+using OrderService.Infrastructure.Entities.Cart;
 namespace OrderService.Infrastructure.Entities.Catalog
 {
     // Instead of TPH or TPT, i choose my own great combo.
@@ -11,7 +11,7 @@ namespace OrderService.Infrastructure.Entities.Catalog
 
     public enum ProductAvailabilityStatus
     {
-        Available, OutOfStock, Discounted // for mvp is ok.
+        Available, OutOfStock,  // ...? Discounted // for mvp is ok.
     }
     // our main model.
     public class CatalogItem

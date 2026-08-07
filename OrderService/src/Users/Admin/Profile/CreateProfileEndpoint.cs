@@ -5,7 +5,7 @@ using OrderService.Infrastructure.Entities.Administrator;
 
 
 
-namespace OrderService.src.Admin.Profile
+namespace OrderService.src.Users.Admin.Profile
 {
     // REPR endpoint
     public class CreateProfileEndpoint(ApplicationDbContext dbContext) : EndpointWithMapper<CreateProfileRequest, CreateRequestProfileMapper>

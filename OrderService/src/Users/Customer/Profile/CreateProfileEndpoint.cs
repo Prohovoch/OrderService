@@ -3,7 +3,7 @@ using FluentValidation;
 using OrderService.Infrastructure.Persistence;
 using OrderService.Infrastructure.Entities.Buyer;
 
-namespace OrderService.src.Customer.Profile
+namespace OrderService.src.Users.Customer.Profile
 {
     // REPR endpoint
     public class CreateProfileEndpoint(ApplicationDbContext dbContext) : EndpointWithMapper<CreateProfileRequest, CreateRequestProfileMapper>
