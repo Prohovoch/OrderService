@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using OrderService.Infrastructure.Entities.Buyer;
 using OrderService.Infrastructure.Persistence;
 
-namespace OrderService.src.Users.Customer.Profile
+namespace OrderService.src.CustomerOnBoarding
 {
     public class UpdateCustomerProfileEndpoint(ApplicationDbContext dbContext) : EndpointWithMapper<UpdateProfileRequest,  UpdateProfileMapper>
     {
