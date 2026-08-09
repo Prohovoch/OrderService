@@ -6,7 +6,7 @@ using OrderService.Infrastructure.Persistence;
 
 
 
-namespace OrderService.src.Users.Worker.Profile
+namespace OrderService.src.Worker.Profile
 
 
 {

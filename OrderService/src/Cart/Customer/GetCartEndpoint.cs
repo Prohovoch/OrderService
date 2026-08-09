@@ -50,8 +50,15 @@ namespace OrderService.src.Cart.Customer
     {
         public override GetCartResponse FromEntity(CustomerProfile e) => new()
         {
-           
-            
+            Name = e.Name,
+            Surname = e.Surname,
+            Age = e.Age,
+            Gender = e.Gender switch
+            {
+                BuyerGender.Male => Gender.Male,
+                BuyerGender.Female => Gender.Female,
+                _ => null
+            }
         };
 
     }
@@ -62,10 +69,13 @@ namespace OrderService.src.Cart.Customer
         public Guid UserId { get; init; }
     }
 
-  
+    public enum Gender { Male, Female }
     public sealed record GetCartResponse
     {
-       
+        public string Name { get; init; } = null!;
+        public string Surname { get; init; } = null!;
+        public int Age { get; init; }
+        public Gender? Gender { get; init; }
     }
 
 }

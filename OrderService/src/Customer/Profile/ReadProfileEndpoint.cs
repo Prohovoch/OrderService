@@ -5,7 +5,7 @@ using OrderService.Infrastructure.Entities.Buyer;
 using OrderService.Infrastructure.Persistence;
 
 
-namespace OrderService.src.Users.Customer.Profile
+namespace OrderService.src.Customer.Profile
 {
     // REPR endpoint
     public class ReadProfileEndpoint(ApplicationDbContext dbContext) : Endpoint<ReadProfileRequest, ReadProfileResponse, GetRequestProfileMapper>
