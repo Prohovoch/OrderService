@@ -6,7 +6,7 @@ using OrderService.Infrastructure.Entities.Cart;
 using OrderService.Infrastructure.Persistence;
 
 
-namespace OrderService.src.Cart
+namespace OrderService.src.Cart.Customer
 {
     // REPR endpoint
     public class GetCartEndpoint(ApplicationDbContext dbContext) : Endpoint<GetCartRequest, GetCartResponse, CartMapper>

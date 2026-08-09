@@ -5,7 +5,7 @@ using OrderService.Infrastructure.Entities.Administrator;
 using OrderService.Infrastructure.Persistence;
 
 
-namespace OrderService.src.AdminOnBoarding
+namespace OrderService.src.Users.Admin.Profile
 
 
 {

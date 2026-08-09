@@ -4,7 +4,7 @@ using OrderService.Infrastructure.Entities.Employee;
 using OrderService.Infrastructure.Persistence;
 
 
-namespace OrderService.src.WorkerOnBoarding
+namespace OrderService.src.Users.Worker.Profile
 {
     // REPR endpoint
     public class CreateProfileEndpoint(ApplicationDbContext dbContext) : EndpointWithMapper<CreateProfileRequest, CreateRequestProfileMapper>
