@@ -1,5 +1,5 @@
 ﻿using OrderService.Infrastructure.Entities.Administrator;
-using OrderService.Infrastructure.Entities.Draft;
+using OrderService.Infrastructure.Entities.Cart;
 namespace OrderService.Infrastructure.Entities.Catalog
 {
     // Instead of TPH or TPT, i choose my own great combo.
