@@ -11,7 +11,7 @@ public class BucketItem
     public Guid Id { get; set; } = Guid.CreateVersion7();
     public Guid BucketId { get; set; }
     public Guid ProductId { get; set; }
-    public int Quantity { get; set; }
+    public int BucketItemQuantity { get; set; } // make sure that we can get it from catalog.
     public Bucket Bucket { get; set; } = null!;
     public CatalogItem Product { get; set; } = null!;
 
