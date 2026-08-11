@@ -7,14 +7,12 @@ using OrderService.Infrastructure.Persistence;
 
 
 namespace OrderService.src.Worker.Profile
-
-
 {
     // REPR endpoint
     public class ReadProfileEndpoint(ApplicationDbContext dbContext) : Endpoint<ReadProfileRequest, ReadProfileResponse, ReadMapper>
     {
 
-        public readonly ApplicationDbContext _dbContext = dbContext;
+        private readonly ApplicationDbContext _dbContext = dbContext;
 
         public override void Configure()
         {

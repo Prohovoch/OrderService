@@ -10,7 +10,7 @@ namespace OrderService.src.Worker.Profile
     public class CreateProfileEndpoint(ApplicationDbContext dbContext) : EndpointWithMapper<CreateProfileRequest, CreateRequestProfileMapper>
     {
 
-        public readonly ApplicationDbContext _dbContext = dbContext;
+        private readonly ApplicationDbContext _dbContext = dbContext;
 
         public override void Configure()
         {

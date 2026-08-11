@@ -11,7 +11,7 @@ namespace OrderService.src.Customer.Profile
     public class ReadProfileEndpoint(ApplicationDbContext dbContext) : Endpoint<ReadProfileRequest, ReadProfileResponse, GetRequestProfileMapper>
     {
 
-        public readonly ApplicationDbContext _dbContext = dbContext;
+        private readonly ApplicationDbContext _dbContext = dbContext;
 
         public override void Configure()
         {

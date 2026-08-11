@@ -12,7 +12,7 @@ namespace OrderService.src.Cart.Customer
     public class GetCartEndpoint(ApplicationDbContext dbContext) : Endpoint<GetCartRequest, GetCartResponse, CartMapper>
     {
 
-        public readonly ApplicationDbContext _dbContext = dbContext;
+        private readonly ApplicationDbContext _dbContext = dbContext;
 
         public override void Configure()
         {

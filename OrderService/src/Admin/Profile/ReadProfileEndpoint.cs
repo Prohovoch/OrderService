@@ -13,7 +13,7 @@ namespace OrderService.src.Admin.Profile
     public class ReadProfileEndpoint(ApplicationDbContext dbContext) : Endpoint<ReadProfileRequest, ReadProfileResponse, ReadProfileMapper>
     {
 
-        public readonly ApplicationDbContext _dbContext = dbContext;
+        private readonly ApplicationDbContext _dbContext = dbContext;
 
         public override void Configure()
         {
