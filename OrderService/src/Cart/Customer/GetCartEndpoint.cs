@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using OrderService.Infrastructure.Entities.Buyer;
 using OrderService.Infrastructure.Entities.Cart;
 using OrderService.Infrastructure.Persistence;
+using System.Diagnostics.Contracts;
 
 
 namespace OrderService.src.Cart.Customer
@@ -25,17 +26,7 @@ namespace OrderService.src.Cart.Customer
 
         public override async Task HandleAsync(GetCartRequest req, CancellationToken ct)
         {
-            var CartEntity = await _dbContext.CustomerProfiles.AsNoTracking()
-                .FirstOrDefaultAsync(r => r.CustomerId == req.UserId, ct);
-
-            if (CartEntity is null)
-            {
-                await Send.NotFoundAsync();
-                return;
-            }
-
-            var resp = Map.FromEntity(CartEntity);
-            await Send.OkAsync(resp);
+            // TODO do this stuff.
         }
     }
 
@@ -61,10 +52,27 @@ namespace OrderService.src.Cart.Customer
         public Guid UserId { get; init; }
     }
 
-    public enum Gender { Male, Female }
+    
     public sealed record GetCartResponse
     {
-        
+
+        public List<CartItemResponse>? Items { get; init; } = [];
+            
     }
 
+    // We using flatenned version here due to the fact that we gonna have then 3 nested levels of objects in the response, and we want to avoid that for now.
+
+    public enum GetCartItemAvailability { Available, OutOfStock, Discounted }
+
+    public sealed record CartItemResponse
+    {
+        public string Naming { get; init; } = null!;
+        public string Description { get; init; } = null!;
+        public GetCartItemAvailability Availability { get; init; }
+        public decimal Price { get; init; }
+
+         
+
+        
+    }
 }

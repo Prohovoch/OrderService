@@ -18,7 +18,8 @@ namespace OrderService.Infrastructure.Entities.Catalog
     {
         public Guid Id { get; set; } = Guid.CreateVersion7();
         public Guid? AdminId { get; set;  }
-        public Admin? Admin { get; set; }  
+        public Admin? Admin { get; set; }
+        public string ProductName { get; set; } = string.Empty;
         public decimal Price { get; set; }
         public ProductType Type { get; set; }
         public ProductAvailabilityStatus AvailabilityStatus { get; set; }

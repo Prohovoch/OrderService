@@ -24,6 +24,7 @@ namespace OrderService.Infrastructure.Configuration.Catalog
             builder.Property(c => c.Quantity).HasColumnName("quantity");
             builder.Property(c => c.Description).HasMaxLength(500).HasColumnName("description");
             builder.Property(c => c.Price).HasColumnType("decimal(18,2)").HasColumnName("price");
+            builder.Property(c => c.ProductName).HasMaxLength(100).HasColumnName("product_name");
         }
     }
 }

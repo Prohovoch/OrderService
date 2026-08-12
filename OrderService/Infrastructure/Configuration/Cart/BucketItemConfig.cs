@@ -12,7 +12,7 @@ namespace OrderService.Infrastructure.Configuration.Cart
             builder.HasKey(bi => bi.Id);
 
             builder.Property(bi => bi.Id).HasColumnName("id").ValueGeneratedOnAdd();
-            builder.Property(bi => bi.Quantity).HasColumnName("quantity").IsRequired();
+            builder.Property(bi => bi.BucketItemQuantity).HasColumnName("quantity").IsRequired();
         }
     }
 }
