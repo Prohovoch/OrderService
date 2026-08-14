@@ -21,8 +21,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<AdminProfile> AdminProfiles => Set<AdminProfile>();
     // Draft
 
-    public DbSet<Bucket> Drafts => Set<Bucket>();
-    public DbSet<BucketItem> DraftItems => Set<BucketItem>();
+    public DbSet<Bucket> Carts => Set<Bucket>();
+    public DbSet<BucketItem> CartItems => Set<BucketItem>();
 
     // Catalog
     public DbSet<CatalogItem> Products => Set<CatalogItem>();
