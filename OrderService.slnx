@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="OrderService/OrderService.csproj" />
+  <Project Path="TelegramClient/TelegramClient.csproj" Id="debc386c-c5e8-4707-aaed-b773381ff821" />
 </Solution>
