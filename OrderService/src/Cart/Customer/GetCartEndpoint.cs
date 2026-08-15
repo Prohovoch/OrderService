@@ -33,7 +33,8 @@ namespace OrderService.src.Cart.Customer
                     {
                         Name = i.Product.ProductName,
                         Description = i.Product.Description,
-                        Availability = i.Product.AvailabilityStatus == 
+                        Availability = i.Product.AvailabilityStatus ==  
+                        
                             ProductAvailabilityStatus.Available ?  GetCartItemAvailability.Available
                             : i.Product.AvailabilityStatus == ProductAvailabilityStatus.Discounted ? GetCartItemAvailability.Discounted
                             : GetCartItemAvailability.OutOfStock, 
