@@ -14,7 +14,7 @@ namespace OrderService.src.Customer.Profile
         public override void Configure()
         {
             Post("api/customer/profile");
-            Roles("customer");
+            AllowAnonymous();
             Validator<ValidatorClass>();
             
         }

@@ -55,7 +55,9 @@ namespace OrderService.src.Cart.Customer
                 // check if cart is null, if so return 404
                 if (cartResponse == null)
                 {
-                    await Send.NotFoundAsync();
+                    await Send.NotFoundAsync(new()
+                   
+                        );
                     return;
                 }
               

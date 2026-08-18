@@ -13,7 +13,7 @@ namespace OrderService.src.Worker.Profile
         public override void Configure()
         {
             Put("api/administrator/profile");
-            Roles("administator");
+            AllowAnonymous();
             Validator<UpdateProfileValidator>();
         }
         public override async Task HandleAsync(UpdateProfileRequest req, CancellationToken ct)

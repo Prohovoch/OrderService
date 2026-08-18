@@ -18,7 +18,7 @@ namespace OrderService.src.Admin.Profile
         public override void Configure()
         {
             Get("api/admin/profile");
-            Roles("administrator");
+            AllowAnonymous();
             Validator<ReadProfileValidator>();
 
         }

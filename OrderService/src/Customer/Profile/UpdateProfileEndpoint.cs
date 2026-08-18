@@ -13,7 +13,7 @@ namespace OrderService.src.Customer.Profile
         public override void Configure()
         {
             Put("api/customer/profile");
-            Roles("customer");
+            AllowAnonymous();
             Validator<UpdateProfileValidator>();
         }
         public override async Task HandleAsync(UpdateProfileRequest req, CancellationToken ct)
