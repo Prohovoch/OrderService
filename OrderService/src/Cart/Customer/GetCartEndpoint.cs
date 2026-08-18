@@ -44,8 +44,8 @@ namespace OrderService.src.Cart.Customer
                         Ingredients = i.Product.Details.Ingredients,
                         Volume = i.Product.Details.Volume,
                         Weight = i.Product.Details.Weight,
-                        Quantity = i.BucketItemQuantity,
-                        Price = i.Product.Price,
+                        Quantity = i.BucketItemQuantity, // idea - every time when we get cart, we can multiply 
+                        Price = i.Product.Price * i.BucketItemQuantity,
 
                         // ???
                     }).ToList()

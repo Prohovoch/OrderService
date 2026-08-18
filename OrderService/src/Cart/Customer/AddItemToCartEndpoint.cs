@@ -27,17 +27,18 @@ namespace OrderService.src.Cart.Customer
 
         public override async Task HandleAsync(AddItemToCartRequest req, CancellationToken ct)
         {
-            // checks if the product exists in the database
+            // checks if the product exists in the database on CATALOG page
             var productExists = await _dbContext.Products.AnyAsync(p => p.Id == req.ProductId, ct);
 
             if (!productExists)
             {
+                AddError("ProductId", "The specified product does not exist. Reload page to see what changed");
                 await Send.ErrorsAsync();
                 return;
             }
             // checks if the cart exists for the user, if not creates a new cart (1 of 2 possibilities)
-            var bucket = await _dbContext.Carts.Include(c => c.
-            Items).FirstOrDefaultAsync(c => c.CustomerId == req.UserId, ct);
+            var bucket = await _dbContext.Carts.FirstOrDefaultAsync(c => c.CustomerId == req.UserId, ct);
+
             if (bucket is null)
             {
                 var newCart = new Bucket
@@ -47,10 +48,12 @@ namespace OrderService.src.Cart.Customer
                    
                 };
                 _dbContext.Carts.Add(newCart);
-               
+
+                bucket = newCart; //shut up this null warning, cause now we have a new cart and we can use it below 
             }
             // проверяет, есть ли уже товар в корзине, если есть, увеличивает количество на 1, если нет, добавляет новый товар в корзину 
-            var existingCartItem = await _dbContext.CartItems.FirstOrDefaultAsync(i => i.ProductId == req.ProductId, ct);
+            var existingCartItem = await _dbContext.CartItems.FirstOrDefaultAsync(i => i.ProductId == req.ProductId && i.BucketId == bucket.Id, ct);
+            
             if (existingCartItem is not null)
             {
                 existingCartItem.BucketItemQuantity++;
@@ -61,15 +64,18 @@ namespace OrderService.src.Cart.Customer
                 {
                     ProductId = req.ProductId,
                     BucketItemQuantity = 1,
-                    BucketId = bucket?.Id ?? _dbContext.Carts.First(c => c.CustomerId == req.UserId).Id
+                    BucketId = bucket.Id
                 };
                 _dbContext.CartItems.Add(newCartItem);
+                
             }
-            
+
+            var productName = await _dbContext.Products.AsNoTracking().Where(i => i.Id == req.ProductId)
+                .Select(i => i.ProductName).FirstAsync(ct);
             
             await _dbContext.SaveChangesAsync(ct);
-
-            await Send.OkAsync(new AddItemToCartResponse { Message = "Item added to cart successfully." });
+            
+            await Send.OkAsync(new AddItemToCartResponse { Message = "Item added to cart successfully.", ProductName = productName  }); // hack!
 
 
 
@@ -101,8 +107,8 @@ namespace OrderService.src.Cart.Customer
 
     public sealed record AddItemToCartResponse  
     {
-
-        public string Message { get; init; } = String.Empty;
+        public string ProductName { get; init; } = null!;
+        public string Message { get; init; } = null!;
 
     }
     
