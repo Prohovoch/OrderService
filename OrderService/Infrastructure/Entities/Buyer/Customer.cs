@@ -1,4 +1,4 @@
-﻿using OrderService.Infrastructure.Entities.Draft;
+﻿using OrderService.Infrastructure.Entities.Cart;
 using OrderService.Infrastructure.Entities.Deal;
 
 namespace OrderService.Infrastructure.Entities.Buyer;

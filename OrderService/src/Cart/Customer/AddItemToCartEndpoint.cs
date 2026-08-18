@@ -43,11 +43,13 @@ namespace OrderService.src.Cart.Customer
             {
                 var newCart = new Bucket
                 {
+                    Id = Guid.CreateVersion7(),
                     CustomerId = req.UserId,
                     
-                   
+                   // we creating in db v7 guid, 
                 };
                 _dbContext.Carts.Add(newCart);
+                
 
                 bucket = newCart; //shut up this null warning, cause now we have a new cart and we can use it below 
             }
