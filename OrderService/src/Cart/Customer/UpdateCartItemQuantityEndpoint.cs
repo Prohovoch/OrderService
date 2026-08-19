@@ -28,24 +28,25 @@ namespace OrderService.src.Cart.Customer
         public override async Task HandleAsync(UpdateItemQuantityRequest req, CancellationToken ct)
         {
             // checks if the product exists in the database
-            decimal? productPrice = await _dbContext.Products.Where(p => p.Id == req.ProductId).Select(p => (decimal?)p.Price).FirstOrDefaultAsync(ct);
+            decimal? productPrice = await _dbContext.CartItems.Where(p => p.Id == req.BucketItemId).Select(p => (decimal?)p.Product.Price).FirstOrDefaultAsync(ct);
 
             if (productPrice == null)
             {
-                AddError("ProductId", "Product does not exist.");
+                AddError("ProductId" , "Product does not exist.");
                 await Send.ErrorsAsync();
                 return;
             }
 
             // checks if the cart item exists in the database and updates the quantity
             var affectedRows = await _dbContext.CartItems
-                .Where(ci => ci.BucketId == req.BucketId && ci.ProductId == req.ProductId)
+                .Where(ci => ci.Id == req.BucketItemId)
                 .ExecuteUpdateAsync(setters => setters.SetProperty(ci => ci.BucketItemQuantity, ci => req.Quantity), ct);
             // if item is deleted by foreign key where it is null? when what we should do?
             if (affectedRows == 0)
             {
                 AddError("ProductID", "Product has been deleted");
-                await Send.NotFoundAsync();
+                
+                await Send.ErrorsAsync();
                 return;
             }
 
@@ -65,7 +66,7 @@ namespace OrderService.src.Cart.Customer
     {
         public UpdateCartItemQuantityValidator()
         {
-            RuleFor(x => x.ProductId).NotNull().WithMessage("ProductId is required.");
+            RuleFor(x => x.BucketItemId).NotNull().WithMessage("BucketItemId is required.");
             RuleFor(x => x.Quantity).GreaterThan(0).WithMessage("Quantity must be a positive number.");
 
         }
@@ -76,8 +77,8 @@ namespace OrderService.src.Cart.Customer
     public sealed record UpdateItemQuantityRequest
     {
 
-        public Guid BucketId { get; init; }
-        public Guid ProductId { get; init; }
+        public Guid BucketItemId { get; init; }
+     
         public int Quantity { get; init; }
     }
 

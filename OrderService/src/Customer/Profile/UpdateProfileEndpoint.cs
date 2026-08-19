@@ -67,7 +67,7 @@ namespace OrderService.src.Customer.Profile
     public enum UpdateRequestGender { Male, Female }
     public sealed record UpdateProfileRequest
     {
-        [FromClaim]
+
         public Guid UserId { get; init; }
         public string Name { get; init; } = null!;
         public string Surname { get; init; } = null!;
