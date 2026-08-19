@@ -12,7 +12,7 @@ public class BucketItem
     public Guid BucketId { get; set; }
     public Guid ProductId { get; set; }
     public int BucketItemQuantity { get; set; } // make sure that we can get it from catalog.
-    public Bucket Bucket { get; set; } = null!;
+    public Bucket? Bucket { get; set; }  //  we dont exactly when it will be created. it could potentially be in catalog.
     public CatalogItem Product { get; set; } = null!;
 
     // Bucket item ->  get some items -> check quantity on product ->

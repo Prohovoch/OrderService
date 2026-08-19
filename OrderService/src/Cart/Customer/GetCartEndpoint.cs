@@ -102,7 +102,7 @@ namespace OrderService.src.Cart.Customer
 
     // We using flatenned version here due to the fact that we gonna have then 3 nested levels of objects in the response, and we want to avoid that for now.
 
-    public enum GetCartItemAvailability { Available, OutOfStock, Discounted }
+    public enum GetCartItemAvailability { Available, OutOfStock }
 
     public sealed record CartItemResponse
     {
