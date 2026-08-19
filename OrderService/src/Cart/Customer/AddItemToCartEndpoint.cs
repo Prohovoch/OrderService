@@ -19,7 +19,7 @@ namespace OrderService.src.Cart.Customer
         public override void Configure()
         {
             Post("api/customer/cart/items");
-            AllowAnonymous();
+            Roles("customer");
             Validator<AddItemToCartValidator>();
 
         }
@@ -43,7 +43,7 @@ namespace OrderService.src.Cart.Customer
             {
                 var newCart = new Bucket
                 {
-                    Id = Guid.CreateVersion7(),
+                    Id = Guid.CreateVersion7(), // lol, my ValueGeneratedOnAdd working very nicely.
                     CustomerId = req.UserId,
                     
                    // we creating in db v7 guid, 
@@ -51,9 +51,9 @@ namespace OrderService.src.Cart.Customer
                 _dbContext.Carts.Add(newCart);
                 
 
-                bucket = newCart; //shut up this null warning, cause now we have a new cart and we can use it below 
+                bucket = newCart; // shit, i could use potentially a command driven approach, but no.
             }
-            // проверяет, есть ли уже товар в корзине, если есть, увеличивает количество на 1, если нет, добавляет новый товар в корзину 
+            // i hate this code but VSA AND REPR told me to do so,
             var existingCartItem = await _dbContext.CartItems.FirstOrDefaultAsync(i => i.ProductId == req.ProductId && i.BucketId == bucket.Id, ct);
             
             if (existingCartItem is not null)
@@ -72,7 +72,7 @@ namespace OrderService.src.Cart.Customer
                 
             }
 
-            var productName = await _dbContext.Products.AsNoTracking().Where(i => i.Id == req.ProductId)
+            var productName = await _dbContext.Products.AsNoTracking().Where(i => i.Id == req.ProductId) //  i use this shitty, messy thing to just make a notification to use.
                 .Select(i => i.ProductName).FirstAsync(ct);
             
             await _dbContext.SaveChangesAsync(ct);
@@ -100,7 +100,7 @@ namespace OrderService.src.Cart.Customer
 
     public sealed record AddItemToCartRequest
     {
-      
+        [FromClaim]
         public Guid UserId { get; init; }
         public Guid ProductId { get; init; }
       

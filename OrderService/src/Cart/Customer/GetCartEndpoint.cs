@@ -1,6 +1,7 @@
 ﻿using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using OrderService.Infrastructure.Entities.Cart;
 using OrderService.Infrastructure.Entities.Catalog;
 using OrderService.Infrastructure.Persistence;
 
@@ -35,8 +36,7 @@ namespace OrderService.src.Cart.Customer
                         Description = i.Product.Description,
                         Availability = i.Product.AvailabilityStatus == 
                             ProductAvailabilityStatus.Available ?  GetCartItemAvailability.Available
-                            : i.Product.AvailabilityStatus == ProductAvailabilityStatus.Discounted ? GetCartItemAvailability.Discounted
-                            : GetCartItemAvailability.OutOfStock, 
+                            : GetCartItemAvailability.OutOfStock, // oh shit i forgot about that dumpster fire.
                             
                             
 
@@ -52,10 +52,18 @@ namespace OrderService.src.Cart.Customer
 
                 }).FirstOrDefaultAsync(ct);
 
-                // check if cart is null, if so return 404
+                // This shit is made by me :-)
                 if (cartResponse == null)
                 {
-                    await Send.NotFoundAsync();
+                    var bucket = new Bucket
+                    {
+                        Id = Guid.CreateVersion7(),
+                        CustomerId = req.UserId
+                    };
+                    _dbContext.Carts.Add(bucket);
+                    await _dbContext.SaveChangesAsync(ct);
+                    
+                    await Send.NoContentAsync();
                     return;
                 }
               

@@ -11,7 +11,8 @@ namespace OrderService.Infrastructure.Entities.Catalog
 
     public enum ProductAvailabilityStatus
     {
-        Available, OutOfStock, Discounted // for mvp is ok.
+        Available, OutOfStock, // Discounted only for soft delete. too bad idc abt this type of shit for now. We dont analize what they bout as for now
+                               // for mvp is ok.
     }
     // our main model.
     public class CatalogItem
@@ -29,7 +30,7 @@ namespace OrderService.Infrastructure.Entities.Catalog
         public ProductDetails Details { get; set; } = new ();
     }
     // JSONB column, idk what to add lol.
-    public class ProductDetails
+    public class ProductDetailsd
     {
         public List<string> Ingredients { get; set; } = [];
         public decimal? Volume { get; set; } // full vol.

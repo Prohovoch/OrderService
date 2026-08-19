@@ -13,7 +13,7 @@ namespace OrderService.src.Customer.Profile
         public override void Configure()
         {
             Put("api/customer/profile");
-            AllowAnonymous();
+            Roles("customer");
             Validator<UpdateProfileValidator>();
         }
         public override async Task HandleAsync(UpdateProfileRequest req, CancellationToken ct)
@@ -67,7 +67,7 @@ namespace OrderService.src.Customer.Profile
     public enum UpdateRequestGender { Male, Female }
     public sealed record UpdateProfileRequest
     {
-
+        [FromClaim]
         public Guid UserId { get; init; }
         public string Name { get; init; } = null!;
         public string Surname { get; init; } = null!;

@@ -17,7 +17,7 @@ namespace OrderService.src.Worker.Profile
         public override void Configure()
         {
             Get("api/employee/profile");
-            AllowAnonymous();
+            Roles("employee");
             Validator<ReadProfileValidator>();
 
         }

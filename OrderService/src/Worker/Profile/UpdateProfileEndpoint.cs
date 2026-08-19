@@ -12,8 +12,8 @@ namespace OrderService.src.Worker.Profile
 
         public override void Configure()
         {
-            Put("api/administrator/profile");
-            AllowAnonymous();
+            Put("api/employee/profile");
+            Roles("employee");
             Validator<UpdateProfileValidator>();
         }
         public override async Task HandleAsync(UpdateProfileRequest req, CancellationToken ct)

@@ -19,7 +19,7 @@ namespace OrderService.src.Cart.Customer
         public override void Configure()
         {
             Delete("api/customer/cart/items");
-            AllowAnonymous();
+            Roles("customer");
             Validator<DeleteAnItemValidator>();
         }
 
@@ -27,7 +27,7 @@ namespace OrderService.src.Cart.Customer
         public override async Task HandleAsync(DeleteItemRequest req, CancellationToken ct)
         {
             var affectedRows = await _dbContext.CartItems
-                .Where(bi => bi.Id == req.BucketItemId && bi.BucketId == req.BucketId)
+                .Where(bi => bi.Id == req.BucketItemId && bi.BucketId == req.BucketId && bi.Bucket.CustomerId == req.UserId)
                 .ExecuteDeleteAsync(ct);
 
             if (affectedRows == 0)
@@ -52,9 +52,11 @@ namespace OrderService.src.Cart.Customer
 
     public sealed record DeleteItemRequest
     {
+        [FromClaim]
+        public Guid UserId { get; init; }
         public Guid BucketId { get; init; }
         public Guid BucketItemId { get; init; }
-        
+
     }
 
     public sealed record DeleteItemResponse // i fought a framework and i won.
@@ -65,5 +67,6 @@ namespace OrderService.src.Cart.Customer
         } = null!;
 
 
-   }
+    }
+}
     
