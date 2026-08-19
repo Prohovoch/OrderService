@@ -82,7 +82,7 @@ namespace OrderService.src.Cart.Customer
 
     public sealed record GetCartRequest
     {
-        [FromClaim]
+
         public Guid UserId { get; init; }
     }
 
