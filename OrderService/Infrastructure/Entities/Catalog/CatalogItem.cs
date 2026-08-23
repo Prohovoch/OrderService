@@ -30,7 +30,7 @@ namespace OrderService.Infrastructure.Entities.Catalog
         public ProductDetails Details { get; set; } = new ();
     }
     // JSONB column, idk what to add lol.
-    public class ProductDetailsd
+    public class ProductDetails
     {
         public List<string> Ingredients { get; set; } = [];
         public decimal? Volume { get; set; } // full vol.
