@@ -8,7 +8,7 @@ using OrderService.Infrastructure.Entities.Administrator;
 namespace OrderService.src.Admin.Profile
 {
     // REPR endpoint
-    public class CreateProfileEndpoint(ApplicationDbContext dbContext) : EndpointWithMapper<CreateProfileRequest, CreateRequestProfileMapper>
+    public class CreateProfile(ApplicationDbContext dbContext) : EndpointWithMapper<CreateProfileRequest, CreateRequestProfileMapper>
     {
 
         private readonly ApplicationDbContext _dbContext = dbContext;

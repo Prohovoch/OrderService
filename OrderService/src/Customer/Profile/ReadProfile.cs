@@ -8,7 +8,7 @@ using OrderService.Infrastructure.Persistence;
 namespace OrderService.src.Customer.Profile
 {
     // REPR endpoint
-    public class ReadProfileEndpoint(ApplicationDbContext dbContext) : Endpoint<ReadProfileRequest, ReadProfileResponse, GetRequestProfileMapper>
+    public class ReadProfile(ApplicationDbContext dbContext) : Endpoint<ReadProfileRequest, ReadProfileResponse, GetRequestProfileMapper>
     {
 
         private readonly ApplicationDbContext _dbContext = dbContext;

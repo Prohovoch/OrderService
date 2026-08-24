@@ -10,7 +10,7 @@ using OrderService.Infrastructure.Persistence;
 namespace OrderService.src.Cart.Customer
 {
     // REPR endpoint
-    public class GetCartEndpoint(ApplicationDbContext dbContext) : Endpoint<GetCartRequest, GetCartResponse>
+    public class GetCart(ApplicationDbContext dbContext) : Endpoint<GetCartRequest, GetCartResponse>
     {
 
         private readonly ApplicationDbContext _dbContext = dbContext;

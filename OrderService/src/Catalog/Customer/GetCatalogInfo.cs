@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using OrderService.Infrastructure.Persistence;
 using OrderService.Infrastructure.Entities.Catalog;
 
-namespace OrderService.src.Catalog.Admin
+namespace OrderService.src.Catalog.Customer
 {
-    public class GetCatalogAdInfoEndpoint(ApplicationDbContext dbContext) : EndpointWithoutRequest
+    public class GetCatalogInfo(ApplicationDbContext dbContext) : EndpointWithoutRequest
     {
 
         private readonly ApplicationDbContext _dbContext = dbContext;
@@ -13,8 +13,8 @@ namespace OrderService.src.Catalog.Admin
         public override void Configure()
         {
             Post("api/catalog");
-            Roles("admin");
-
+            Roles("customer");
+           
 
         }
 
@@ -61,8 +61,8 @@ namespace OrderService.src.Catalog.Admin
     public sealed record CatalogResponse
 
     {
-        // return a list of calatog items.
-        // use a flattenned dto without heritance.
+       // return a list of calatog items.
+       // use a flattenned dto without heritance.
 
         public string ProductName { get; init; } = string.Empty;
         public decimal Price { get; init; }
@@ -70,7 +70,7 @@ namespace OrderService.src.Catalog.Admin
         public GetProductType ProductType { get; init; }
 
         public GetProductAvailabilityStatus AvailabilityStatus { get; init; }
-        // this is from JsonB part
+       // this is from JsonB part
         public List<string> Ingredients { get; set; } = [];
         public decimal? Volume { get; set; } // full vol.
         public decimal? Weight { get; set; }

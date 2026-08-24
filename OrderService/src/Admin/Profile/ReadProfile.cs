@@ -10,7 +10,7 @@ namespace OrderService.src.Admin.Profile
 
 {
     // REPR endpoint
-    public class ReadProfileEndpoint(ApplicationDbContext dbContext) : Endpoint<ReadProfileRequest, ReadProfileResponse, ReadProfileMapper>
+    public class ReadProfile(ApplicationDbContext dbContext) : Endpoint<ReadProfileRequest, ReadProfileResponse, ReadProfileMapper>
     {
 
         private readonly ApplicationDbContext _dbContext = dbContext;

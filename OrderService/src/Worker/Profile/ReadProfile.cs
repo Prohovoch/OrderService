@@ -9,7 +9,7 @@ using OrderService.Infrastructure.Persistence;
 namespace OrderService.src.Worker.Profile
 {
     // REPR endpoint
-    public class ReadProfileEndpoint(ApplicationDbContext dbContext) : Endpoint<ReadProfileRequest, ReadProfileResponse, ReadMapper>
+    public class ReadProfile(ApplicationDbContext dbContext) : Endpoint<ReadProfileRequest, ReadProfileResponse, ReadMapper>
     {
 
         private readonly ApplicationDbContext _dbContext = dbContext;

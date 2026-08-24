@@ -11,7 +11,7 @@ using OrderService.Infrastructure.Persistence;
 namespace OrderService.src.Cart.Customer
 {
     // REPR endpoint
-    public class AddItemToCartEndpoint(ApplicationDbContext dbContext) : Endpoint<AddItemToCartRequest, AddItemToCartResponse>
+    public class AddItemToCart(ApplicationDbContext dbContext) : Endpoint<AddItemToCartRequest, AddItemToCartResponse>
     {
 
         private readonly ApplicationDbContext _dbContext = dbContext;
@@ -27,7 +27,7 @@ namespace OrderService.src.Cart.Customer
 
         public override async Task HandleAsync(AddItemToCartRequest req, CancellationToken ct)
         {
-            // checks if the product exists in the database on CATALOG page
+            // checks if the product exists in the database on a CATALOG page
             var productExists = await _dbContext.Products.AnyAsync(p => p.Id == req.ProductId, ct);
 
             if (!productExists)

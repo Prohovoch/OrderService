@@ -1,38 +1,37 @@
 ﻿using FastEndpoints;
 using FluentValidation;
-using OrderService.Infrastructure.Entities.Employee;
 using OrderService.Infrastructure.Persistence;
+using OrderService.Infrastructure.Entities.Buyer;
 
-
-namespace OrderService.src.Worker.Profile
+namespace OrderService.src.Customer.Profile
 {
     // REPR endpoint
-    public class CreateProfileEndpoint(ApplicationDbContext dbContext) : EndpointWithMapper<CreateProfileRequest, CreateRequestProfileMapper>
+    public class CreateProfile(ApplicationDbContext dbContext) : EndpointWithMapper<CreateProfileRequest, CreateRequestProfileMapper>
     {
 
         private readonly ApplicationDbContext _dbContext = dbContext;
 
         public override void Configure()
         {
-            Post("api/employee/profile");
-            Roles("employee");
-            Validator<CreateProfileValidator>();
-
+            Post("api/customer/profile");
+            Roles("customer");
+            Validator<ValidatorClass>();
+            
         }
 
 
         public override async Task HandleAsync(CreateProfileRequest req, CancellationToken ct)
         {
-            WorkerProfile entity = Map.ToEntity(req);
+            CustomerProfile entity = Map.ToEntity(req);
 
             _dbContext.Add(entity);
             await _dbContext.SaveChangesAsync();
             await Send.OkAsync();
         }
     }
-    public class CreateProfileValidator : Validator<CreateProfileRequest>
+    public class ValidatorClass : Validator<CreateProfileRequest>
     {
-        public CreateProfileValidator()
+        public ValidatorClass()
         {
             RuleFor(x => x.Name).MinimumLength(3).WithMessage("Name must be at least 3 characters long.")
                 .NotEmpty().WithMessage("Name is required.");
@@ -42,33 +41,34 @@ namespace OrderService.src.Worker.Profile
             RuleFor(x => x.Gender).IsInEnum();
         }
     }
-    public class CreateRequestProfileMapper : RequestMapper<CreateProfileRequest, WorkerProfile>
+
+
+    public class CreateRequestProfileMapper : RequestMapper<CreateProfileRequest, CustomerProfile>
     {
-        public override WorkerProfile ToEntity(CreateProfileRequest r) => new()
+        public override CustomerProfile ToEntity(CreateProfileRequest r) => new()
         {
-            WorkerId = r.UserId,
+            CustomerId = r.UserId,
             Name = r.Name,
             Surname = r.Surname,
             Age = r.Age,
             Gender = r.Gender switch
             {
-                CreateReqGender.Male => WorkerGender.Male,
-                CreateReqGender.Female => WorkerGender.Female,
+                CreateRequestGender.Male => BuyerGender.Male,
+                CreateRequestGender.Female => BuyerGender.Female,
                 _ => null
             }
         };
     }
 
-
-    public enum CreateReqGender { Male, Female }
-    public sealed record CreateProfileRequest
+    public enum CreateRequestGender { Male, Female }
+    public class CreateProfileRequest
     {
-
         [FromClaim]
-        public Guid UserId { get; init; }
-        public string Name { get; init; } = null!;
-        public string Surname { get; init; } = null!;
-        public int Age { get; init; }
-        public CreateReqGender? Gender { get; init; }
+        public Guid UserId { get; set; }
+        public string Name { get; set; } = null!;
+        public string Surname { get; set; } = null!;
+        public int Age { get; set; }
+        public CreateRequestGender? Gender { get; set; }
     }
+
 }

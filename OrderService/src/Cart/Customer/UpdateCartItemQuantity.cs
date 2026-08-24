@@ -12,7 +12,7 @@ using OrderService.Infrastructure.Persistence;
 namespace OrderService.src.Cart.Customer
 {
     // REPR endpoint
-    public class UpdateCartItemQuantityEndpoint(ApplicationDbContext dbContext) : Endpoint<UpdateItemQuantityRequest, UpdateItemQuantityResponse>
+    public class UpdateCartItemQuantity(ApplicationDbContext dbContext) : Endpoint<UpdateItemQuantityRequest, UpdateItemQuantityResponse>
     {
 
         private readonly ApplicationDbContext _dbContext = dbContext;

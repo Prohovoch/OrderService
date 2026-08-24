@@ -11,7 +11,7 @@ using OrderService.Infrastructure.Persistence;
 namespace OrderService.src.Cart.Customer
 {
     // REPR endpoint
-    public class DeleteAnItemEndpoint(ApplicationDbContext dbContext) : Endpoint<DeleteItemRequest, DeleteItemResponse> // this is bad.
+    public class DeleteAnItem(ApplicationDbContext dbContext) : Endpoint<DeleteItemRequest, DeleteItemResponse> // this is bad.
     {
 
         private readonly ApplicationDbContext _dbContext = dbContext;

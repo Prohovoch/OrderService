@@ -6,7 +6,7 @@ using OrderService.Infrastructure.Persistence;
 
 namespace OrderService.src.Admin.Profile
 {
-    public class UpdateProfileEndpoint(ApplicationDbContext dbContext) : EndpointWithMapper<UpdateProfileRequest, UpdateProfileMapper>
+    public class UpdateProfile(ApplicationDbContext dbContext) : EndpointWithMapper<UpdateProfileRequest, UpdateProfileMapper>
     {
         private readonly ApplicationDbContext _dbContext = dbContext;
 
