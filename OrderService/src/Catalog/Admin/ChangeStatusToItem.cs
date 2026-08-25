@@ -78,7 +78,7 @@ namespace OrderService.src.Catalog.Admin
 
         public ChangeProductAvStatus? AvailabilityStatus { get; init; }
         // this is from JsonB part 
-        public List<string>? Ingredients { get; set; } = [];
+        public List<string>? Ingredients { get; set; }
         public decimal? Volume { get; set; } // full vol.
         public decimal? Weight { get; set; }
 
