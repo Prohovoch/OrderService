@@ -25,7 +25,7 @@ namespace OrderService.src.Customer.Profile
             CustomerProfile entity = Map.ToEntity(req);
 
             _dbContext.Add(entity);
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync(ct);
             await Send.OkAsync();
         }
     }

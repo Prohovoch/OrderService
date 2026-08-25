@@ -26,11 +26,21 @@ namespace OrderService.src.Cart.Customer
 
         public override async Task HandleAsync(DeleteItemRequest req, CancellationToken ct)
         {
+            // check if user has it
+            bool isOwned = await _dbContext.Carts.AnyAsync(c => c.Id == req.BucketId && c.CustomerId == req.UserId, ct);
+
+            if (!isOwned)
+            {
+                AddError("BucketId: ", "Invalid cart id ");
+                await Send.ErrorsAsync();
+            }
+
             var affectedRows = await _dbContext.CartItems
-                .Where(bi => bi.Id == req.BucketItemId && bi.BucketId == req.BucketId && bi.Bucket!.CustomerId == req.UserId) //  hack. mocking warnings. we already have created cart at this point.
+                .Where(bi => bi.Id == req.BucketItemId && bi.BucketId == req.BucketId) //  hack. mocking warnings. we already have created cart at this point.
 
                 .ExecuteDeleteAsync(ct);
-
+            
+            // if wifi is baddie :(
             if (affectedRows == 0)
             {
                 AddError("Item not found.");

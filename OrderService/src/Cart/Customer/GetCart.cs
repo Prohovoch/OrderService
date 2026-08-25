@@ -68,10 +68,6 @@ namespace OrderService.src.Cart.Customer
                 }
               
                 await Send.OkAsync(cartResponse);
-                
-            
-
-
                
         }
     }
