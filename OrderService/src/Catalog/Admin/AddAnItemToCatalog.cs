@@ -52,7 +52,7 @@ namespace OrderService.src.Catalog.Admin {
                 
             };
             _dbContext.Products.Add(catalogItem);
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync(ct);
 
 
         }
