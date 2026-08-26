@@ -57,7 +57,7 @@ public sealed record UpdateProfileRequest
     [FromClaim]
 
     public Guid UserId { get; init; }
-    public Guid? ProfileId { get; init;}
+    public Guid? ProfileId { get; init; }
     public string? Name { get; init; }
     public string? Surname { get; init; }
     public int? Age { get; init; }
