@@ -43,7 +43,6 @@ namespace OrderService.src.Catalog.Admin
 
             };
            
-    
 
 
             await _dbContext.SaveChangesAsync(ct);

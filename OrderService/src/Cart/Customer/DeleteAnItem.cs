@@ -35,19 +35,17 @@ namespace OrderService.src.Cart.Customer
                 await Send.ErrorsAsync();
             }
 
-            var cartItem = await _dbContext.CartItems.FirstOrDefaultAsync(c => c.Id == req.BucketItemId);
+            var affectedRows = await _dbContext.CartItems
+                .Where(bi => bi.Id == req.BucketItemId && bi.BucketId == req.BucketId) //  hack. mocking warnings. we already have created cart at this point.
+                .ExecuteDeleteAsync(ct);
             
             // if wifi is baddie :(
-            if (cartItem == null)
+            if (affectedRows == 0)
             {
                 AddError("Item not found.");
                 await Send.ErrorsAsync();
                 return;
             }
-
-            _dbContext.CartItems.Remove(cartItem);
-            await _dbContext.SaveChangesAsync(ct);
-
             await Send.StringAsync(new DeleteItemResponse { message = "Item deleted successfully." }.ToString(), 204); // idk what a fuck did i do here, but i guess it could work.
 
         }
