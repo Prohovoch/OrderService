@@ -28,7 +28,7 @@ namespace OrderService.src.Catalog.Admin
             if (product == null)
             {
                 AddError("ProductID:", "Product not found.");
-                await Send.NotFoundAsync();
+                await Send.ErrorsAsync();
                 return;
             } 
 

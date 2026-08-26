@@ -31,7 +31,7 @@ namespace OrderService.src.Cart.Customer
 
             if (!isOwned)
             {
-                AddError("BucketId: ", "Invalid cart id ");
+                AddError("Some of credentials are invalid! ");
                 await Send.ErrorsAsync();
             }
 

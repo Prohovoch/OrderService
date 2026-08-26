@@ -2,33 +2,37 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using OrderService.Infrastructure.Entities.Administrator;
+using OrderService.Infrastructure.Entities.Catalog;
 using OrderService.Infrastructure.Persistence;
 
 namespace OrderService.src.Admin.Profile
 {
-    public class UpdateProfile(ApplicationDbContext dbContext) : EndpointWithMapper<UpdateProfileRequest, UpdateProfileMapper>
+    public class UpdateProfile(ApplicationDbContext dbContext) : Endpoint<UpdateProfileRequest>
     {
         private readonly ApplicationDbContext _dbContext = dbContext;
 
         public override void Configure()
         {
-            Put("api/administrator/profile");
+            Patch("api/administrator/profile/{ProfileId}");
             Roles("admin");
             Validator<UpdateProfileValidator>();
         }
         public override async Task HandleAsync(UpdateProfileRequest req, CancellationToken ct)
         {
-            var adminProfileEntity = Map.ToEntity(req);
+            var profile = await _dbContext.AdminProfiles.FirstOrDefaultAsync(p => p.Id == req.ProfileId && p.AdminId == req.UserId, ct);
 
-            var affectedRows = await _dbContext.AdminProfiles.Where(c => c.Id == adminProfileEntity.Id).ExecuteUpdateAsync(c => c.SetProperty(c => c.Name, c => adminProfileEntity.Name)
-            .SetProperty(c => c.Surname, c => adminProfileEntity.Surname)
-            .SetProperty(c => c.Age, c => adminProfileEntity.Age)
-            .SetProperty(c => c.Gender, adminProfileEntity.Gender), ct);
-            if (affectedRows == 0)
+            if (profile == null)
             {
-                await Send.NotFoundAsync();
+                AddError("profileID","No object was found.");
+                await Send.ErrorsAsync();
                 return;
             }
+
+            profile.Name = req.Name ?? profile.Name;
+            profile.Surname = req.Surname ?? profile.Surname;
+            profile.Age = req.Age ?? profile.Age;
+            profile.Gender = req.Gender.HasValue ? (AdminGender)req.Gender.Value : profile.Gender ;
+
             await Send.NoContentAsync();
         }
 
@@ -40,38 +44,23 @@ public class UpdateProfileValidator : Validator<UpdateProfileRequest>
 {
     public UpdateProfileValidator()
     {
-
-        RuleFor(x => x.Surname).MinimumLength(3).WithMessage("Surname must be at least 3 characters long.")
-            .NotEmpty().WithMessage("Surname is required.");
-        RuleFor(x => x.Age).InclusiveBetween(18, 120).WithMessage("Age must be between 18 and 120.");
-        RuleFor(x => x.Gender).IsInEnum();
+            RuleFor(x => x.UserId).NotEmpty().WithMessage("UserId required");
+            RuleFor(x => x.Surname).MinimumLength(3).WithMessage("Surname must be at least 3 characters long.").When(x => x.Surname != null);
+            RuleFor(x => x.Age).InclusiveBetween(18, 120).WithMessage("Age must be between 18 and 120.").When(x => x.Age != null);
+            RuleFor(x => x.Gender).IsInEnum().When(x => x.Gender != null);
     }
 }
-public class UpdateProfileMapper : RequestMapper<UpdateProfileRequest, AdminProfile>
-{
-    public override AdminProfile ToEntity(UpdateProfileRequest r) => new()
-    {
-        AdminId = r.UserId,
-        Name = r.Name,
-        Surname = r.Surname,
-        Age = r.Age,
-        Gender = r.Gender switch
-        {
-            UpdateGender.Male => AdminGender.Male,
-            UpdateGender.Female => AdminGender.Female,
-            _ => null
-        }
-    };
 
-}
 public enum UpdateGender { Male, Female }
 public sealed record UpdateProfileRequest
 {
     [FromClaim]
+
     public Guid UserId { get; init; }
-    public string Name { get; init; } = null!;
-    public string Surname { get; init; } = null!;
-    public int Age { get; init; }
+    public Guid? ProfileId { get; init;}
+    public string? Name { get; init; }
+    public string? Surname { get; init; }
+    public int? Age { get; init; }
     public UpdateGender? Gender { get; init; }
 }
 
