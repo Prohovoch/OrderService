@@ -16,7 +16,7 @@ namespace OrderService.src.Worker.Profile
 
         public override void Configure()
         {
-            Get("api/employee/profile");
+            Get("api/employee/profile/{ProfileId}");
             Roles("employee");
             Validator<ReadProfileValidator>();
 
@@ -24,7 +24,7 @@ namespace OrderService.src.Worker.Profile
         public override async Task HandleAsync(ReadProfileRequest req, CancellationToken ct)
         {
             var adminProfileEntity = await _dbContext.WorkerProfiles.AsNoTracking()
-                .FirstOrDefaultAsync(r => r.WorkerId == req.UserId, ct);
+                .FirstOrDefaultAsync(r => r.WorkerId == req.UserId &&  r.Id == req.ProfileId, ct);
 
             if (adminProfileEntity is null)
             {
@@ -65,6 +65,7 @@ public sealed record ReadProfileRequest
 {
     [FromClaim]
     public Guid UserId { get; init; }
+    public Guid ProfileId { get; init; }
 }
 public enum ReadRequestGender { Male, Female }
 public sealed record ReadProfileResponse

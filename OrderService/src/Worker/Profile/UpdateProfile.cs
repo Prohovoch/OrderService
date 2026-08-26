@@ -1,34 +1,37 @@
 ﻿using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using OrderService.Infrastructure.Entities.Buyer;
 using OrderService.Infrastructure.Entities.Employee;
 using OrderService.Infrastructure.Persistence;
 
 namespace OrderService.src.Worker.Profile
 {
-    public class UpdateProfile(ApplicationDbContext dbContext) : EndpointWithMapper<UpdateProfileRequest, UpdateProfileMapper>
+    public class UpdateProfile(ApplicationDbContext dbContext) : Endpoint<UpdateProfileRequest>
     {
         private readonly ApplicationDbContext _dbContext = dbContext;
 
         public override void Configure()
         {
-            Put("api/employee/profile");
+            Patch("api/employee/profile/{ProfileId}");
             Roles("employee");
             Validator<UpdateProfileValidator>();
         }
         public override async Task HandleAsync(UpdateProfileRequest req, CancellationToken ct)
         {
-            var employeeProfileEntity = Map.ToEntity(req);
-
-            var affectedRows = await _dbContext.WorkerProfiles.Where(c => c.Id == employeeProfileEntity.Id).ExecuteUpdateAsync(c => c.SetProperty(c => c.Name, c => employeeProfileEntity.Name)
-            .SetProperty(c => c.Surname, c => employeeProfileEntity.Surname)
-            .SetProperty(c => c.Age, c => employeeProfileEntity.Age)
-            .SetProperty(c => c.Gender, employeeProfileEntity.Gender), ct);
-            if (affectedRows == 0)
+            var profile = await _dbContext.WorkerProfiles.FirstOrDefaultAsync(p => p.Id == req.ProfileId && p.WorkerId == req.UserId, ct);
+            if (profile == null)
             {
-                await Send.NotFoundAsync();
+                AddError("ProfileId:", "Profile object not found");
+                await Send.ErrorsAsync();
                 return;
             }
+
+            profile.Name = req.Name ?? profile.Name;
+            profile.Surname = req.Surname ?? profile.Surname;
+            profile.Age = req.Age ?? profile.Age;
+            profile.Gender = req.Gender.HasValue ? (WorkerGender)req.Gender.Value : profile.Gender;
+         
             await Send.NoContentAsync();
         }
 
@@ -41,37 +44,22 @@ namespace OrderService.src.Worker.Profile
         public UpdateProfileValidator()
         {
 
-            RuleFor(x => x.Surname).MinimumLength(3).WithMessage("Surname must be at least 3 characters long.")
-                .NotEmpty().WithMessage("Surname is required.");
-            RuleFor(x => x.Age).InclusiveBetween(18, 120).WithMessage("Age must be between 18 and 120.");
-            RuleFor(x => x.Gender).IsInEnum();
+            RuleFor(x => x.UserId).NotEmpty().WithMessage("UserId required");
+            RuleFor(x => x.Surname).MinimumLength(3).WithMessage("Surname must be at least 3 characters long.").When(x => x.Surname != null);
+            RuleFor(x => x.Age).InclusiveBetween(18, 120).WithMessage("Age must be between 18 and 120.").When(x => x.Age != null);
+            RuleFor(x => x.Gender).IsInEnum().When(x => x.Gender != null);
         }
     }
-    public class UpdateProfileMapper : RequestMapper<UpdateProfileRequest, WorkerProfile>
-    {
-        public override WorkerProfile ToEntity(UpdateProfileRequest r) => new()
-        {
-            WorkerId = r.UserId,
-            Name = r.Name,
-            Surname = r.Surname,
-            Age = r.Age,
-            Gender = r.Gender switch
-            {
-                UpdateGender.Male => WorkerGender.Male,
-                UpdateGender.Female => WorkerGender.Female,
-                _ => null
-            }
-        };
 
-    }
     public enum UpdateGender { Male, Female }
     public sealed record UpdateProfileRequest
     {
         [FromClaim]
         public Guid UserId { get; init; }
-        public string Name { get; init; } = null!;
-        public string Surname { get; init; } = null!;
-        public int Age { get; init; }
+        public Guid ProfileId { get; init; }
+        public string? Name { get; init; } = null!;
+        public string? Surname { get; init; } = null!;
+        public int? Age { get; init; }
         public UpdateGender? Gender { get; init; }
     }
 
