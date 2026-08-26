@@ -19,7 +19,7 @@ namespace OrderService.src.Cart.Customer
 
         public override void Configure()
         {
-            Patch("api/customer/cart/items");
+            Patch("api/customer/cart/{BucketId}/items/{BucketItemId}");
             Roles("customer");
             Validator<UpdateCartItemQuantityValidator>();
 
@@ -29,9 +29,9 @@ namespace OrderService.src.Cart.Customer
         public override async Task HandleAsync(UpdateItemQuantityRequest req, CancellationToken ct)
         {
             // checks if the product exists in the database
-            // OMG THIS SHIT JUST CAME OUT OF MY FKN BRAIN AS FKN STUOID EDGE CASE!!!! LMAO>_)
 
-            var productInfo = await _dbContext.CartItems.Where(p => p.Id == req.BucketItemId && p.BucketId == req.BucketId).Select(p =>  new { p.Product.Price, p.Product.AvailabilityStatus }).FirstOrDefaultAsync(ct);
+           
+            var productInfo = await _dbContext.CartItems.Where(p => p.Id == req.BucketItemId && p.BucketId == req.BucketId && p.Bucket!.CustomerId == req.UserId).Select(p =>  new { p.Product.Price}).FirstOrDefaultAsync(ct);
 
             if (productInfo == null) //  guarantees not existing
             {
@@ -41,14 +41,8 @@ namespace OrderService.src.Cart.Customer
             }
 
           
-            
-            // I KNOW THAT STUPID FSM EXISTS BUT I DONT CARE, CAUSE I HAVE 2 STATS TYPE SO ... YAGNI AND KISS
-            if (productInfo.AvailabilityStatus == ProductAvailabilityStatus.OutOfStock)
-            {
-                await Send.ErrorsAsync();
-                return;
-            }
-            var affectedRows = await _dbContext.CartItems.Where(p => p.Id == req.BucketItemId && p.BucketId == req.BucketId).ExecuteUpdateAsync(p => p.SetProperty(x => x.BucketItemQuantity, req.Quantity), ct);
+       
+            var affectedRows = await _dbContext.CartItems.Where(p => p.Id == req.BucketItemId && p.BucketId == req.BucketId && p.Bucket!.CustomerId == req.UserId).ExecuteUpdateAsync(p => p.SetProperty(x => x.BucketItemQuantity, req.Quantity), ct);
             if (affectedRows == 0)
             {
                 AddError("UpdateFailed", "Failed to update the item quantity.");
@@ -74,6 +68,7 @@ namespace OrderService.src.Cart.Customer
     {
         public UpdateCartItemQuantityValidator()
         {
+            RuleFor(x => x.UserId).NotEmpty().WithMessage("UserId is required");
             RuleFor(x => x.BucketId).NotNull().WithMessage("BucketId is required.");
             RuleFor(x => x.BucketItemId).NotNull().WithMessage("BucketItemId is required.");
             RuleFor(x => x.Quantity).GreaterThan(0).WithMessage("Quantity must be a positive number.");
@@ -85,6 +80,8 @@ namespace OrderService.src.Cart.Customer
 
     public sealed record UpdateItemQuantityRequest
     {
+        [FromClaim]
+        public Guid UserId { get; init; }
         public Guid BucketId { get; init; }
         public Guid BucketItemId { get; init; }
      

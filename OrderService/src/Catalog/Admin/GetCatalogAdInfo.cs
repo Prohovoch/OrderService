@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using OrderService.Infrastructure.Persistence;
 using OrderService.Infrastructure.Entities.Catalog;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace OrderService.src.Catalog.Admin
 {
@@ -23,8 +24,10 @@ namespace OrderService.src.Catalog.Admin
         {
             // checks if the product exists in the database on CATALOG page
 
-            var catalogResult = _dbContext.Products.Select(r => new CatalogResponse
+            var catalogResult = await _dbContext.Products.Select(r => new CatalogResponse
             {
+                CreatorName = r.Admin!.Profile!.Name,
+                CreatorSurname = r.Admin!.Profile!.Surname,
                 ProductName = r.ProductName,
                 Price = r.Price,
                 AvailabilityStatus = r.AvailabilityStatus == ProductAvailabilityStatus.Available ? GetProductAvailabilityStatus.Available : GetProductAvailabilityStatus.OutOfStock,
@@ -37,7 +40,7 @@ namespace OrderService.src.Catalog.Admin
                 : r.Type == ProductType.Salad ? GetProductType.Salad
                 : r.Type == ProductType.Sushi ? GetProductType.Sushi
                 : GetProductType.Drinks,
-                Ingredients = r.Details.Ingredients.ToList(),
+                Ingredients = r.Details.Ingredients,
                 Volume = r.Details.Volume,
                 Weight = r.Details.Weight
 
@@ -63,7 +66,8 @@ namespace OrderService.src.Catalog.Admin
     {
         // return a list of calatog items.
         // use a flattenned dto without heritance.
-
+        public string CreatorName { get; init; } = string.Empty;
+        public string CreatorSurname { get; init; } = string.Empty;
         public string ProductName { get; init; } = string.Empty;
         public decimal Price { get; init; }
 

@@ -24,7 +24,7 @@ namespace OrderService.src.Catalog.Admin
         public override async Task HandleAsync(ChangeStatsCatalogRequest req, CancellationToken ct)
         {
             // mapping 
-            var product = await _dbContext.Products.FindAsync(new object[] { req.ProductId }, ct);
+            var product = await _dbContext.Products.FirstOrDefaultAsync(x => x.Id == req.ProductId && x.AdminId == req.AdminId, ct);
             if (product == null)
             {
                 AddError("ProductID:", "Product not found.");
@@ -42,6 +42,9 @@ namespace OrderService.src.Catalog.Admin
                 Weight = req.Weight ?? product.Details.Weight,
 
             };
+           
+    
+
 
             await _dbContext.SaveChangesAsync(ct);
   }
@@ -71,6 +74,8 @@ namespace OrderService.src.Catalog.Admin
     {
         // return a list of calatog items.
         // use a flattenned dto without heritance.
+        [FromClaim]
+        public Guid AdminId { get; init; }
         public Guid ProductId { get; init; }
         public string? ProductName { get; init; }
         public decimal? Price { get; init; }

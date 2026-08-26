@@ -24,6 +24,7 @@ namespace OrderService.src.Catalog.Admin {
             // mapping 
             var catalogItem = new CatalogItem
             {
+                AdminId = req.AdminId,
                 ProductName = req.ProductName,
                 Price = req.Price,
                 Type = req.ProductType switch
@@ -61,6 +62,7 @@ namespace OrderService.src.Catalog.Admin {
     {
             public AddAnItemToCatalogValidator()
             {
+                RuleFor(x => x.AdminId).NotEmpty().WithMessage("AdminId is required.");
                 RuleFor(x => x.ProductName).NotEmpty().WithMessage("Product name must not be empty.");
                 RuleFor(x => x.Price).NotEmpty().WithMessage("Price is required.");
                 RuleFor(x => x.ProductType).IsInEnum().WithMessage("Invalid product type.");
@@ -82,7 +84,8 @@ namespace OrderService.src.Catalog.Admin {
     {
         // return a list of calatog items.
         // use a flattenned dto without heritance.
-
+        [FromClaim]
+        public Guid AdminId { get; init; }
         public string ProductName { get; init; } = string.Empty;
         public decimal Price { get; init; }
 
