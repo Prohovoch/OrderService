@@ -13,13 +13,13 @@ namespace OrderService.src.Customer.Profile
 
         public override void Configure()
         {
-            Patch("api/customer/profile/{ProfileId}");
+            Patch("api/customer/profile/me");
             Roles("customer");
             Validator<UpdateProfileValidator>();
         }
         public override async Task HandleAsync(UpdateProfileRequest req, CancellationToken ct)
         {
-            var profile = await _dbContext.CustomerProfiles.FirstOrDefaultAsync(p => p.Id == req.ProfileId && p.CustomerId == req.UserId, ct);
+            var profile = await _dbContext.CustomerProfiles.FirstOrDefaultAsync(p => p.CustomerId == req.UserId, ct);
             if (profile == null)
             {
                 AddError("ProfileId:", "Profile object not found");
@@ -55,7 +55,7 @@ namespace OrderService.src.Customer.Profile
     {
         [FromClaim] 
         public Guid UserId { get; init; }
-        public Guid ProfileId { get; init; }
+       
 
         public string? Name { get; init; }
         public string? Surname { get; init; } 

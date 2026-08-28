@@ -15,7 +15,7 @@ namespace OrderService.src.Customer.Profile
 
         public override void Configure()
         {
-            Get("api/customer/profile/{ProfileId}");
+            Get("api/customer/profile/me");
             Roles("customer"); 
 
             Validator<ReadProfileValidator>();
@@ -26,7 +26,7 @@ namespace OrderService.src.Customer.Profile
         public override async Task HandleAsync(ReadProfileRequest req, CancellationToken ct)
         {
             var customerProfileEntity = await _dbContext.CustomerProfiles.AsNoTracking()
-                .FirstOrDefaultAsync(r => r.CustomerId == req.UserId && r.Id == req.ProfileId, ct);
+                .FirstOrDefaultAsync(r => r.CustomerId == req.UserId, ct);
 
             if (customerProfileEntity is null)
             {
@@ -67,8 +67,7 @@ namespace OrderService.src.Customer.Profile
     {
         [FromClaim]
         public Guid UserId { get; init; }
-        public Guid ProfileId { get; init;  }
-
+        
     }
 
     public enum GetRequestGender { Male, Female }
