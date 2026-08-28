@@ -26,6 +26,7 @@ namespace OrderService.src.Catalog.Admin
 
             var catalogResult = await _dbContext.Products.Select(r => new CatalogResponse
             {
+                ItemId = r.Id,
                 CreatorName = r.Admin!.Profile!.Name,
                 CreatorSurname = r.Admin!.Profile!.Surname,
                 ProductName = r.ProductName,
@@ -66,6 +67,8 @@ namespace OrderService.src.Catalog.Admin
     {
         // return a list of calatog items.
         // use a flattenned dto without heritance.
+
+        public Guid ItemId { get; init; }
         public string CreatorName { get; init; } = string.Empty;
         public string CreatorSurname { get; init; } = string.Empty;
         public string ProductName { get; init; } = string.Empty;

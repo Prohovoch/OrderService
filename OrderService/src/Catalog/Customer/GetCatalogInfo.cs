@@ -12,7 +12,7 @@ namespace OrderService.src.Catalog.Customer
 
         public override void Configure()
         {
-            Post("api/catalog");
+            Get("api/catalog");
             Roles("customer");
            
 
@@ -25,6 +25,7 @@ namespace OrderService.src.Catalog.Customer
 
             var catalogResult = _dbContext.Products.Select(r => new CatalogResponse
             {
+                ItemId = r.Id,
                 ProductName = r.ProductName,
                 Price = r.Price,
                 AvailabilityStatus = r.AvailabilityStatus == ProductAvailabilityStatus.Available ? GetProductAvailabilityStatus.Available : GetProductAvailabilityStatus.OutOfStock,
@@ -64,6 +65,7 @@ namespace OrderService.src.Catalog.Customer
        // return a list of calatog items.
        // use a flattenned dto without heritance.
 
+        public Guid ItemId { get; init; }
         public string ProductName { get; init; } = string.Empty;
         public decimal Price { get; init; }
 

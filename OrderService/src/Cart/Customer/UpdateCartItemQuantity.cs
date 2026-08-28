@@ -19,7 +19,7 @@ namespace OrderService.src.Cart.Customer
 
         public override void Configure()
         {
-            Patch("api/customer/cart/{BucketId}/items/{BucketItemId}");
+            Patch("api/customer/cart/items/{BucketItemId}");
             Roles("customer");
             Validator<UpdateCartItemQuantityValidator>();
 
@@ -31,7 +31,7 @@ namespace OrderService.src.Cart.Customer
             // checks if the product exists in the database
 
            
-            var productInfo = await _dbContext.CartItems.Where(p => p.Id == req.BucketItemId && p.BucketId == req.BucketId && p.Bucket!.CustomerId == req.UserId).Select(p =>  new { p.Product.Price}).FirstOrDefaultAsync(ct);
+            var productInfo = await _dbContext.CartItems.Where(p => p.Id == req.BucketItemId && p.Bucket!.CustomerId == req.UserId).Select(p =>  new { p.Product.Price}).FirstOrDefaultAsync(ct);
 
             if (productInfo == null) //  guarantees not existing
             {
@@ -69,7 +69,6 @@ namespace OrderService.src.Cart.Customer
         public UpdateCartItemQuantityValidator()
         {
             RuleFor(x => x.UserId).NotEmpty().WithMessage("UserId is required");
-            RuleFor(x => x.BucketId).NotNull().WithMessage("BucketId is required.");
             RuleFor(x => x.BucketItemId).NotNull().WithMessage("BucketItemId is required.");
             RuleFor(x => x.Quantity).GreaterThan(0).WithMessage("Quantity must be a positive number.");
 
@@ -82,7 +81,7 @@ namespace OrderService.src.Cart.Customer
     {
         [FromClaim]
         public Guid UserId { get; init; }
-        public Guid BucketId { get; init; }
+     
         public Guid BucketItemId { get; init; }
      
         public int Quantity { get; init; }

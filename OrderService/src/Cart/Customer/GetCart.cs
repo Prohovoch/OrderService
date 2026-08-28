@@ -32,6 +32,7 @@ namespace OrderService.src.Cart.Customer
                 {
                     Items = c.Items.Select(i => new CartItemResponse
                     {
+                        ItemId = i.Id,
                         Name = i.Product.ProductName,
                         Description = i.Product.Description,
                         Availability = i.Product.AvailabilityStatus == 
@@ -102,6 +103,7 @@ namespace OrderService.src.Cart.Customer
 
     public sealed record CartItemResponse
     {
+        public Guid ItemId { get; init; }
         public string Name { get; init; } = null!;
         public string Description { get; init; } = null!;
         public GetCartItemAvailability Availability { get; init; }
