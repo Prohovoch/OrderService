@@ -13,13 +13,13 @@ namespace OrderService.src.Worker.Profile
 
         public override void Configure()
         {
-            Patch("api/employee/profile/{ProfileId}");
+            Patch("api/employee/profile/me");
             Roles("employee");
             Validator<UpdateProfileValidator>();
         }
         public override async Task HandleAsync(UpdateProfileRequest req, CancellationToken ct)
         {
-            var profile = await _dbContext.WorkerProfiles.FirstOrDefaultAsync(p => p.Id == req.ProfileId && p.WorkerId == req.UserId, ct);
+            var profile = await _dbContext.WorkerProfiles.FirstOrDefaultAsync(p => p.WorkerId == req.UserId, ct);
             if (profile == null)
             {
                 AddError("ProfileId:", "Profile object not found");
