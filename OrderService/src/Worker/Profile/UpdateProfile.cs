@@ -57,8 +57,8 @@ namespace OrderService.src.Worker.Profile
         [FromClaim]
         public Guid UserId { get; init; }
         public Guid ProfileId { get; init; }
-        public string? Name { get; init; } = null!;
-        public string? Surname { get; init; } = null!;
+        public string? Name { get; init; } 
+        public string? Surname { get; init; } 
         public int? Age { get; init; }
         public UpdateGender? Gender { get; init; }
     }

@@ -29,6 +29,9 @@ namespace OrderService.src.Admin.Profile
             _dbContext.Add(entity);
             await _dbContext.SaveChangesAsync(ct);
             await Send.OkAsync();
+
+                
+                
         }
     }
 
@@ -64,6 +67,8 @@ namespace OrderService.src.Admin.Profile
 
 
     public enum CreateReqGender { Male, Female }
+
+    
     public sealed record CreateProfileRequest
     {
          [FromClaim]

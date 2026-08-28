@@ -18,7 +18,7 @@ namespace OrderService.src.Cart.Customer
 
         public override void Configure()
         {
-            Delete("api/customer/cart/items");
+            Delete("api/customer/cart/items{BucketItemId}");
             Roles("customer");
             Validator<DeleteAnItemValidator>();
         }

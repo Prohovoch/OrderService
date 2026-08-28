@@ -17,7 +17,7 @@ namespace OrderService.src.Admin.Profile
 
         public override void Configure()
         {
-            Get("api/admin/profile/{ProfileId}");
+            Get("api/admin/profile/me");
             Roles("admin");
             Validator<ReadProfileValidator>();
 
@@ -25,7 +25,7 @@ namespace OrderService.src.Admin.Profile
         public override async Task HandleAsync(ReadProfileRequest req, CancellationToken ct)
         {
             var adminProfileEntity = await _dbContext.AdminProfiles.AsNoTracking()
-                .FirstOrDefaultAsync(r => r.AdminId == req.UserId && r.Id == req.ProfileId, ct);
+                .FirstOrDefaultAsync(r => r.AdminId == req.UserId, ct);
 
             if (adminProfileEntity is null)
             {
@@ -66,7 +66,7 @@ namespace OrderService.src.Admin.Profile
     {
          [FromClaim]
          public Guid UserId { get; init; }
-         public Guid ProfileId { get; init; }
+    
     }
     public enum ReadReqGender { Male, Female }
     public sealed record ReadProfileResponse

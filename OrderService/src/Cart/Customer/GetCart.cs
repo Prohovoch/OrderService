@@ -36,7 +36,7 @@ namespace OrderService.src.Cart.Customer
                         Description = i.Product.Description,
                         Availability = i.Product.AvailabilityStatus == 
                             ProductAvailabilityStatus.Available ?  GetCartItemAvailability.Available
-                            : GetCartItemAvailability.OutOfStock, // oh shit i forgot about that dumpster fire.
+                            : GetCartItemAvailability.OutOfStock, 
                             
                             
 

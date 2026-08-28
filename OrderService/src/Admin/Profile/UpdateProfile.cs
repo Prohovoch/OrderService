@@ -13,13 +13,13 @@ namespace OrderService.src.Admin.Profile
 
         public override void Configure()
         {
-            Patch("api/administrator/profile/{ProfileId}");
+            Patch("api/administrator/profile/me");
             Roles("admin");
             Validator<UpdateProfileValidator>();
         }
         public override async Task HandleAsync(UpdateProfileRequest req, CancellationToken ct)
         {
-            var profile = await _dbContext.AdminProfiles.FirstOrDefaultAsync(p => p.Id == req.ProfileId && p.AdminId == req.UserId, ct);
+            var profile = await _dbContext.AdminProfiles.FirstOrDefaultAsync(p => p.AdminId == req.UserId, ct);
 
             if (profile == null)
             {
@@ -57,7 +57,6 @@ public sealed record UpdateProfileRequest
     [FromClaim]
 
     public Guid UserId { get; init; }
-    public Guid? ProfileId { get; init; }
     public string? Name { get; init; }
     public string? Surname { get; init; }
     public int? Age { get; init; }
