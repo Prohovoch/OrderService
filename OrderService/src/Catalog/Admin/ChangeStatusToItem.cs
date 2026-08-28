@@ -24,7 +24,7 @@ namespace OrderService.src.Catalog.Admin
         public override async Task HandleAsync(ChangeStatsCatalogRequest req, CancellationToken ct)
         {
             // mapping 
-            var product = await _dbContext.Products.FirstOrDefaultAsync(x => x.Id == req.ProductId && x.AdminId == req.AdminId, ct);
+            var product = await _dbContext.Products.FirstOrDefaultAsync(x => x.Id == req.ProductId && x.AdminId == req.AdminId, ct); // protection from concurrent requests, shit -  no solution.
             if (product == null)
             {
                 AddError("ProductID:", "Product not found.");

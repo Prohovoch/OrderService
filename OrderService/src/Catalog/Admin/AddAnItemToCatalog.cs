@@ -1,5 +1,6 @@
 ﻿using FastEndpoints;
 using FluentValidation;
+using Microsoft.AspNetCore.Server.Kestrel.Transport.NamedPipes;
 using OrderService.Infrastructure.Entities.Catalog;
 using OrderService.Infrastructure.Persistence;
 using OrderService.src.Cart.Customer;
@@ -23,7 +24,9 @@ namespace OrderService.src.Catalog.Admin {
         {
             // mapping 
             var catalogItem = new CatalogItem
-            {
+            {   
+                Id = Guid.CreateVersion7(),
+                // client send
                 AdminId = req.AdminId,
                 ProductName = req.ProductName,
                 Price = req.Price,
@@ -52,8 +55,16 @@ namespace OrderService.src.Catalog.Admin {
                 }
                 
             };
+
+            var response = new AddAnItemResponse
+            {
+                Id = catalogItem.Id,
+            };
+
             _dbContext.Products.Add(catalogItem);
             await _dbContext.SaveChangesAsync(ct);
+
+            await Send.OkAsync(response);
 
 
         }
@@ -78,6 +89,11 @@ namespace OrderService.src.Catalog.Admin {
     public enum AddProductAvailabilityStatus
     {
         Available, OutOfStock
+    }
+
+    public sealed record AddAnItemResponse
+    {
+        public Guid Id { get; init; }
     }
     public sealed record AddAnItemToCatalogRequest
 
