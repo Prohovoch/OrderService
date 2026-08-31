@@ -42,8 +42,10 @@ namespace OrderService.src.Admin.Profile
         AdminId = r.UserId,
         Name = r.Name,
         Surname = r.Surname,
-        Age = r.Age,
+        Age = r.Age, 
+        PhoneNumber = r.PhoneNumber,
         Gender = r.Gender switch
+       
         {
             CreateReqGender.Male => AdminGender.Male,
             CreateReqGender.Female => AdminGender.Female,
@@ -62,7 +64,10 @@ namespace OrderService.src.Admin.Profile
         RuleFor(x => x.Surname).MinimumLength(3).WithMessage("Surname must be at least 3 characters long.")
             .NotEmpty().WithMessage("Surname is required.");
         RuleFor(x => x.Age).InclusiveBetween(18, 120).WithMessage("Age must be between 18 and 120.");
-    }
+        
+        RuleFor(x => x.PhoneNumber).NotEmpty().WithMessage("Phone number must not be null!");
+        
+        }
 }
 
 
@@ -73,8 +78,9 @@ namespace OrderService.src.Admin.Profile
     {
          [FromClaim]
          public Guid UserId { get; init; }
-         public string Name { get; init; } = null!;
-         public string Surname { get; init; } = null!;
+         public required string Name { get; init; } 
+         public required string Surname { get; init; } 
+         public required string PhoneNumber { get; init; } 
          public int Age { get; init; }
          public CreateReqGender? Gender { get; init; }
     }
