@@ -70,8 +70,8 @@ public sealed record ReadProfileRequest
 public enum ReadRequestGender { Male, Female }
 public sealed record ReadProfileResponse
 {
-    public string Name { get; init; } = null!;
-    public string Surname { get; init; } = null!;
+    public required string Name { get; init; } 
+    public required string Surname { get; init; } 
     public int Age { get; init; }
     public ReadRequestGender? Gender { get; init; }
 }

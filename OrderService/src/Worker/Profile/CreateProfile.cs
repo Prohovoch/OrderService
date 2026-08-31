@@ -40,6 +40,7 @@ namespace OrderService.src.Worker.Profile
                 .NotEmpty().WithMessage("Surname is required.");
             RuleFor(x => x.Age).InclusiveBetween(18, 120).WithMessage("Age must be between 18 and 120.");
             RuleFor(x => x.Gender).IsInEnum();
+            RuleFor(x => x.PhoneNumber).NotEmpty().WithMessage("Phone must not be empty!");
         }
     }
     public class CreateRequestProfileMapper : RequestMapper<CreateProfileRequest, WorkerProfile>
@@ -50,6 +51,7 @@ namespace OrderService.src.Worker.Profile
             Name = r.Name,
             Surname = r.Surname,
             Age = r.Age,
+            PhoneNumber = r.PhoneNumber,
             Gender = r.Gender switch
             {
                 CreateReqGender.Male => WorkerGender.Male,
@@ -66,8 +68,9 @@ namespace OrderService.src.Worker.Profile
 
         [FromClaim]
         public Guid UserId { get; init; }
-        public string Name { get; init; } = null!;
-        public string Surname { get; init; } = null!;
+        public required string Name { get; init; } 
+        public required string Surname { get; init; } 
+        public required string PhoneNumber { get; init; }
         public int Age { get; init; }
         public CreateReqGender? Gender { get; init; }
     }
