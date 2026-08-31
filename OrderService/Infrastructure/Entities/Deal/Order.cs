@@ -1,5 +1,6 @@
 ﻿using OrderService.Infrastructure.Entities.Employee;
-using OrderService.Infrastructure.Entities.Buyer; 
+using OrderService.Infrastructure.Entities.Buyer;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OrderService.Infrastructure.Entities.Deal
 {
@@ -21,8 +22,10 @@ namespace OrderService.Infrastructure.Entities.Deal
         public Guid? WorkerId { get; set; }
         public Customer? Customer { get; set; }
         public Worker? Worker { get; set; }
-        public List<OrderItem> Items { get; } = [];
+        public required string CustomerPhoneNumber { get; set; }
 
+        public List<OrderItem> Items { get; } = [];
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
         public OrderStatus Status { get; set; }
         
 
