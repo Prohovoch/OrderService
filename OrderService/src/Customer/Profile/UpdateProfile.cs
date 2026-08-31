@@ -31,6 +31,7 @@ namespace OrderService.src.Customer.Profile
             profile.Surname = req.Surname ?? profile.Surname;
             profile.Age = req.Age ?? profile.Age;
             profile.Gender = req.Gender.HasValue ? (BuyerGender)req.Gender.Value : profile.Gender;
+            profile.PhoneNumber = req.PhoneNumber ?? profile.PhoneNumber;
             await Send.NoContentAsync();
         }
 
@@ -47,6 +48,7 @@ namespace OrderService.src.Customer.Profile
             RuleFor(x => x.Surname).MinimumLength(3).WithMessage("Surname must be at least 3 characters long.").When(x => x.Surname != null);
             RuleFor(x => x.Age).InclusiveBetween(18, 120).WithMessage("Age must be between 18 and 120.").When(x => x.Age != null);
             RuleFor(x => x.Gender).IsInEnum().When(x => x.Gender != null);
+            RuleFor(x => x.PhoneNumber).NotEmpty().When(x => x.PhoneNumber != null).WithMessage("PhoneNumber cannot be null!");
         }
     }
    
@@ -60,6 +62,9 @@ namespace OrderService.src.Customer.Profile
         public string? Name { get; init; }
         public string? Surname { get; init; } 
         public int? Age { get; init; }
+
+        public string? Address { get; init; }
+        public string? PhoneNumber { get; init; }
         public UpdateRequestGender? Gender { get; init; }
     }
 

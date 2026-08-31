@@ -38,7 +38,6 @@ namespace OrderService.src.Customer.Profile
             RuleFor(x => x.Surname).MinimumLength(3).WithMessage("Surname must be at least 3 characters long.")
                 .NotEmpty().WithMessage("Surname is required.");
             RuleFor(x => x.Age).InclusiveBetween(18, 120).WithMessage("Age must be between 18 and 120.");
-            RuleFor(x => x.Adress).NotEmpty().WithMessage("Adress is required");
             RuleFor(x => x.PhoneNumber).NotEmpty().WithMessage("Phone number is required");
             RuleFor(x => x.Gender).IsInEnum();
         }
@@ -53,7 +52,7 @@ namespace OrderService.src.Customer.Profile
             Name = r.Name,
             Surname = r.Surname,
             Age = r.Age,
-            Adress = r.Adress,
+  
             PhoneNumber = r.PhoneNumber,
 
             Gender = r.Gender switch
@@ -72,7 +71,6 @@ namespace OrderService.src.Customer.Profile
         public Guid UserId { get; init; }
         public required string Name { get; init; } 
         public required string Surname { get; init; } 
-        public required string Adress { get; init; }
         public required string PhoneNumber { get; init; }
         public int Age { get; set; }
         public CreateRequestGender? Gender { get; init; }
