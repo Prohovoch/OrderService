@@ -38,7 +38,7 @@ namespace OrderService.src.Customer.Profile
             RuleFor(x => x.Surname).MinimumLength(3).WithMessage("Surname must be at least 3 characters long.")
                 .NotEmpty().WithMessage("Surname is required.");
             RuleFor(x => x.Age).InclusiveBetween(18, 120).WithMessage("Age must be between 18 and 120.");
-            RuleFor(x => x.PhoneNumber).NotEmpty().WithMessage("Phone number is required");
+            RuleFor(x => x.PhoneNumber).Matches(@"^(\+?7|8)\d{10}$").NotEmpty().WithMessage("Phone number from Russian Federation");
             RuleFor(x => x.Gender).IsInEnum();
         }
     }

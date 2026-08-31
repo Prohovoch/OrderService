@@ -8,7 +8,7 @@ using OrderService.src.Cart.Customer;
 using OrderService.src.Catalog.Admin;
 
 
-namespace OrderService.src.Deal.Cutomer
+namespace OrderService.src.Deal.Customer
 {
     public class AddAnItemToOrder(ApplicationDbContext dbContext) : Endpoint<AddAnItemToOrderRequest>
     {
@@ -26,10 +26,8 @@ namespace OrderService.src.Deal.Cutomer
 
         public override async Task HandleAsync(AddAnItemToOrderRequest req, CancellationToken ct)
         {
-            // 1. Check if that item have an available status.
-            // 2. Check if the bucket thing is belongs to our request user.
-            // 2. Put this objects into order item.
-            var uniqueCartItemsIds = req.CartItemIds.Distinct().ToList();
+           
+            var uniqueCartItemsIds = req.CartItemIds.ToHashSet();
             var selectedBucketItems = await _dbContext.CartItems.Where(ci => uniqueCartItemsIds.Contains(ci.Id) && ci.Bucket!.CustomerId == req.UserId).ToListAsync(ct);
             
             if(selectedBucketItems.Count != uniqueCartItemsIds.Count)
@@ -38,40 +36,53 @@ namespace OrderService.src.Deal.Cutomer
                 await Send.ErrorsAsync();
                 return;
             }
-            
-            
+
+
 
             // take out products ids from selected  items;
-            var productsIds = selectedBucketItems.Select(ci => ci.ProductId).Distinct().ToList();
-            var products = await _dbContext.Products.Where(p => productsIds.Contains(p.Id)).ToDictionaryAsync(p => p.Id); // o(1)
+            var productsIds = selectedBucketItems.Select(ci => ci.ProductId).ToHashSet();
+            var products = await _dbContext.Products.Where(p => productsIds.Contains(p.Id)).ToDictionaryAsync(p => p.Id, ct); // o(1)
 
             if (productsIds.Count != products.Count)
             {
-                AddError("ProductId:", "An Item was deleted");
+                AddError("ProductId:", $"An Item  was deleted");
                 await Send.ErrorsAsync();
                 return;
             }
 
+            var unavailableProducts = selectedBucketItems
+            .Select(item => products[item.ProductId])
+            .Where(p => p.AvailabilityStatus != ProductAvailabilityStatus.Available)
+            .ToList(); // ?
+
+            if (unavailableProducts.Count > 0)
+            {
+                foreach (var p in unavailableProducts)
+                {
+                    AddError("Status", $"Product {p.ProductName} is unavailable.");
+                }
+                await Send.ErrorsAsync();
+                return; // ?
+            }
+
             // Creating an Order object.
+            var customerPhoneNumber = await _dbContext.CustomerProfiles.Where(cp => cp.CustomerId == req.UserId).Select(p => p.PhoneNumber).FirstAsync(ct);
+
 
             var order = new DomainOrder // Fast endpoint somehow have a defitnition for order???????
             {
                 Id = Guid.CreateVersion7(),
+
                 CustomerId = req.UserId,
-                Status = OrderStatus.Created
+                CustomerPhoneNumber = customerPhoneNumber,
+                Status = OrderStatus.Created,
+                CreatedAt = DateTimeOffset.UtcNow,
+
             };
         
-        // welp no n+1...
             foreach (var item in selectedBucketItems)
             {
                 var product = products[item.ProductId];
-                if (product.AvailabilityStatus != ProductAvailabilityStatus.Available)
-                {
-                    AddError("Status: ", "This product cannot be assigned to order due avalaibility status.");
-                    await Send.ErrorsAsync();
-                    return;
-                }
-
                 order.Items.Add(new OrderItem
                 {
                     ProductId = product.Id,
@@ -114,6 +125,8 @@ namespace OrderService.src.Deal.Cutomer
         [FromClaim]
         public Guid UserId { get; init; }
         public required List<Guid> CartItemIds { get; init; }
+
+        public required string DeliveryAddress {  get; init; }
 
     }
 
