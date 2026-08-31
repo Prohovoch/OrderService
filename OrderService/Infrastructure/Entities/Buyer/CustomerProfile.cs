@@ -15,8 +15,10 @@ public class CustomerProfile
 
 
     public int Age { get; set; }
-    public string Name { get; set; } = null!;
-    public string Surname { get; set; } = null!;
+    public required string Name { get; set; } 
+    public required string Surname { get; set; }
+    public required string Adress { get; set; } 
+    public required string PhoneNumber { get; set; }
     public BuyerGender? Gender { get; set; } // We dont know exactly what is it gonna be... 
     public Customer Customer { get; set; } = null!;
 

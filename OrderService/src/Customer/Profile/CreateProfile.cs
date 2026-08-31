@@ -15,7 +15,7 @@ namespace OrderService.src.Customer.Profile
         {
             Post("api/customer/profile");
             Roles("customer");
-            Validator<ValidatorClass>();
+            Validator<CreateProfileValidator>();
             
         }
 
@@ -29,15 +29,17 @@ namespace OrderService.src.Customer.Profile
             await Send.OkAsync();
         }
     }
-    public class ValidatorClass : Validator<CreateProfileRequest>
+    public class CreateProfileValidator : Validator<CreateProfileRequest>
     {
-        public ValidatorClass()
+        public CreateProfileValidator()
         {
             RuleFor(x => x.Name).MinimumLength(3).WithMessage("Name must be at least 3 characters long.")
                 .NotEmpty().WithMessage("Name is required.");
             RuleFor(x => x.Surname).MinimumLength(3).WithMessage("Surname must be at least 3 characters long.")
                 .NotEmpty().WithMessage("Surname is required.");
             RuleFor(x => x.Age).InclusiveBetween(18, 120).WithMessage("Age must be between 18 and 120.");
+            RuleFor(x => x.Adress).NotEmpty().WithMessage("Adress is required");
+            RuleFor(x => x.PhoneNumber).NotEmpty().WithMessage("Phone number is required");
             RuleFor(x => x.Gender).IsInEnum();
         }
     }
@@ -51,6 +53,9 @@ namespace OrderService.src.Customer.Profile
             Name = r.Name,
             Surname = r.Surname,
             Age = r.Age,
+            Adress = r.Adress,
+            PhoneNumber = r.PhoneNumber,
+
             Gender = r.Gender switch
             {
                 CreateRequestGender.Male => BuyerGender.Male,
@@ -61,14 +66,16 @@ namespace OrderService.src.Customer.Profile
     }
 
     public enum CreateRequestGender { Male, Female }
-    public class CreateProfileRequest
+    public sealed record CreateProfileRequest
     {
         [FromClaim]
-        public Guid UserId { get; set; }
-        public string Name { get; set; } = null!;
-        public string Surname { get; set; } = null!;
+        public Guid UserId { get; init; }
+        public required string Name { get; init; } 
+        public required string Surname { get; init; } 
+        public required string Adress { get; init; }
+        public required string PhoneNumber { get; init; }
         public int Age { get; set; }
-        public CreateRequestGender? Gender { get; set; }
+        public CreateRequestGender? Gender { get; init; }
     }
 
 }

@@ -53,6 +53,8 @@ namespace OrderService.src.Customer.Profile
             Name = e.Name,
             Surname = e.Surname,
             Age = e.Age,
+            Adress = e.Adress,
+            PhoneNumber = e.PhoneNumber,
             Gender = e.Gender switch
             {
                 BuyerGender.Male => GetRequestGender.Male,
@@ -73,8 +75,10 @@ namespace OrderService.src.Customer.Profile
     public enum GetRequestGender { Male, Female }
     public sealed record ReadProfileResponse
     {
-        public string Name { get; init; } = null!;
-        public string Surname { get; init; } = null!;
+        public required string Name { get; init; }
+        public required string Surname { get; init; } 
+        public required string Adress { get; init; }
+        public required string PhoneNumber { get; init; }
         public int Age { get; init; }
         public GetRequestGender? Gender { get; init; }
     }
