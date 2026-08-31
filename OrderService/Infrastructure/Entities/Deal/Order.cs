@@ -1,6 +1,6 @@
 ﻿using OrderService.Infrastructure.Entities.Employee;
 using OrderService.Infrastructure.Entities.Buyer; 
-;
+
 namespace OrderService.Infrastructure.Entities.Deal
 {
     // One customer can create many orders, but one order can only belong to one customer.
@@ -14,7 +14,7 @@ namespace OrderService.Infrastructure.Entities.Deal
         Stopped 
     }
 
-    public class Order
+    public class DomainOrder
     {
         public Guid Id { get; set; } = Guid.CreateVersion7();
         public Guid? CustomerId { get; set; }

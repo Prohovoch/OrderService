@@ -27,7 +27,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     // Catalog
     public DbSet<CatalogItem> Products => Set<CatalogItem>();
     // Orders
-    public DbSet<Order> Orders => Set<Order>();
+    public DbSet<DomainOrder> Orders => Set<DomainOrder>();
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
 
 

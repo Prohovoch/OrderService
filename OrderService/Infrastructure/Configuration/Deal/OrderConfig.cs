@@ -5,9 +5,9 @@ using OrderService.Infrastructure.Entities.Deal;
 
 namespace OrderService.Infrastructure.Configuration.Deal
 {
-    public class BucketConfig : IEntityTypeConfiguration<Order>
+    public class BucketConfig : IEntityTypeConfiguration<DomainOrder>
     {
-        public void Configure(EntityTypeBuilder<Order> builder)
+        public void Configure(EntityTypeBuilder<DomainOrder> builder)
         {
             builder.ToTable("order");
             builder.HasKey(o => o.Id);
