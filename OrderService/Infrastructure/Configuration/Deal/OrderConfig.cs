@@ -18,7 +18,7 @@ namespace OrderService.Infrastructure.Configuration.Deal
                 .IsRequired();
             builder.Property(o => o.Id).HasColumnName("id").ValueGeneratedOnAdd();
             builder.Property(o => o.Status).HasColumnName("status").HasConversion<string>().IsRequired();
-            builder.Property(o => o.CreatedAt).HasColumnName("created_at").HasColumnType("timestamp with time zone").HasDefaultValueSql("now()").ValueGeneratedOnAdd();
+
         }
     }
 }
