@@ -50,20 +50,7 @@ namespace OrderService.src.Deal.Customer
                 return;
             }
 
-            var unavailableProducts = selectedBucketItems
-            .Select(item => products[item.ProductId])
-            .Where(p => p.AvailabilityStatus != ProductAvailabilityStatus.Available)
-            .ToList(); // ?
-
-            if (unavailableProducts.Count > 0)
-            {
-                foreach (var p in unavailableProducts)
-                {
-                    AddError("Status", $"Product {p.ProductName} is unavailable.");
-                }
-                await Send.ErrorsAsync();
-                return; // ?
-            }
+         
 
             // Creating an Order object.
             var customerPhoneNumber = await _dbContext.CustomerProfiles.Where(cp => cp.CustomerId == req.UserId).Select(p => p.PhoneNumber).FirstAsync(ct);
