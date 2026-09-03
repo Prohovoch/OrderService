@@ -61,10 +61,13 @@ namespace OrderService.src.Deal.Customer
                 Id = Guid.CreateVersion7(),
 
                 CustomerId = req.UserId,
+
                 CustomerPhoneNumber = customerPhoneNumber,
                 Status = OrderStatus.Created,
                 CreatedAt = DateTimeOffset.UtcNow,
-
+                ClientName = req.ClientName,
+                ClientSurname = req.ClientSurname,
+                DisplayOrderNumber =  Random.Shared.Next(1000, 9999), // Generate a random 6-digit number
             };
         
             foreach (var item in selectedBucketItems)
@@ -95,6 +98,8 @@ namespace OrderService.src.Deal.Customer
         {
             RuleFor(x => x.UserId).NotEmpty().WithMessage("UserId required!");
             RuleFor(x => x.CartItemIds).NotEmpty().WithMessage("An Empty order cannot be created!");
+            RuleFor(x => x.ClientName).NotEmpty().WithMessage("Client name is required.");
+            RuleFor(x => x.ClientSurname).NotEmpty().WithMessage("Client surname is required.");
         }
     }
 
@@ -112,7 +117,8 @@ namespace OrderService.src.Deal.Customer
         [FromClaim]
         public Guid UserId { get; init; }
         public required List<Guid> CartItemIds { get; init; }
-
+        public required string ClientName {  get; init; }
+        public required string ClientSurname { get; init; }
         public required string DeliveryAddress {  get; init; }
 
     }

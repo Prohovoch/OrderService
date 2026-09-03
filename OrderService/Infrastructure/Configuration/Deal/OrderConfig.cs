@@ -14,11 +14,15 @@ namespace OrderService.Infrastructure.Configuration.Deal
             builder.HasMany(o => o.Items)
                 .WithOne(oi => oi.Order)
                 .HasForeignKey(oi => oi.OrderId)
-                .OnDelete(DeleteBehavior.ClientNoAction)
+                .OnDelete(DeleteBehavior.ClientNoAction) // or delete cascade?
                 .IsRequired();
             builder.Property(o => o.Id).HasColumnName("id").ValueGeneratedOnAdd();
             builder.Property(o => o.Status).HasColumnName("status").HasConversion<string>().IsRequired();
             builder.Property(o => o.CreatedAt).HasColumnName("created_at").HasColumnType("timestamp with time zone").HasDefaultValueSql("now()").ValueGeneratedOnAdd();
+            builder.Property(o => o.CompletedAt).HasColumnName("completed_at").HasColumnType("timestamp with time zone").HasDefaultValueSql("now()").ValueGeneratedOnAdd();
+            builder.Property(o => o.ClientName).HasColumnName("client_name").HasMaxLength(100);
+            builder.Property(o => o.ClientSurname).HasColumnName("client_surname").HasMaxLength(100);
+            builder.Property(o => o.DisplayOrderNumber).HasColumnName("display_order_number").IsRequired();
         }
     }
 }
