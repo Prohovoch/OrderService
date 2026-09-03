@@ -34,10 +34,14 @@ namespace OrderService.src.Deal.Customer
 
                 {
                     // first two params is checked for anon.
-                    CustomerName = o.Customer != null && o.Customer.Profile != null ? o.Customer.Profile.Name : "Неизвестно",
-                    CustomerSurname = o.Customer != null && o.Customer.Profile != null ? o.Customer.Profile.Surname : "Неизвестно",
+                    // CustomerName = o.Customer != null && o.Customer.Profile != null ? o.Customer.Profile.Name : "Неизвестно",
+                    // CustomerSurname = o.Customer != null && o.Customer.Profile != null ? o.Customer.Profile.Surname : "Неизвестно",
+                    
+                    CustomerName = o.ClientName!, // Assuming o.Customer and o.Customer.Profile are not null and we know that user is active here.
+                    CustomerSurname = o.ClientSurname!,
                     CreatedAt = o.CreatedAt,
                     CompletedAt = o.CompletedAt,
+
 
                     Items = o.Items.Select(oi => new GetOrderResponseItems
                     {

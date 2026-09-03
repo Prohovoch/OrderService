@@ -12,7 +12,9 @@ namespace OrderService.Infrastructure.Entities.Deal
         Created, // user created order, but not yet picked up by worker
         Processing, // worker picked up order and is processing it
         Completed, // worker completed order
-        Stopped 
+        Stopped,
+
+        Delivered,
     }
 
     public class DomainOrder
@@ -22,8 +24,10 @@ namespace OrderService.Infrastructure.Entities.Deal
         public Guid? WorkerId { get; set; }
         public Customer? Customer { get; set; }
         public Worker? Worker { get; set; }
-        public required string CustomerPhoneNumber { get; set; }
-
+        public string? ClientName { get; set; }  // safe thing
+        public string? ClientSurname { get; set; } 
+        public int DisplayOrderNumber { get; set; } // This is a number that will be displayed to the customer.
+        public string? CustomerPhoneNumber { get; set; } 
         public List<OrderItem> Items { get; } = [];
         public DateTimeOffset CreatedAt { get; set; } 
         public DateTimeOffset? CompletedAt { get; set; } 
