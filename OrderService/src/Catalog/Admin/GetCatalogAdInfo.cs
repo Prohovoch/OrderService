@@ -24,7 +24,7 @@ namespace OrderService.src.Catalog.Admin
         {
             // checks if the product exists in the database on CATALOG page
 
-            var catalogResult = await _dbContext.Products.Select(r => new CatalogResponse
+            var catalogResult = await _dbContext.Products.AsNoTracking().Select(r => new CatalogResponse
             {
                 ItemId = r.Id,
                 CreatorName = r.Admin!.Profile!.Name,

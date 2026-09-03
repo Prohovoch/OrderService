@@ -25,7 +25,8 @@ namespace OrderService.Infrastructure.Entities.Deal
         public required string CustomerPhoneNumber { get; set; }
 
         public List<OrderItem> Items { get; } = [];
-        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+        public DateTimeOffset CreatedAt { get; set; } 
+        public DateTimeOffset? CompletedAt { get; set; } 
         public OrderStatus Status { get; set; }
         
 
