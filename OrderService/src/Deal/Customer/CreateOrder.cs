@@ -66,7 +66,7 @@ namespace OrderService.src.Deal.Customer
                 CreatedAt = DateTimeOffset.UtcNow,
                 ClientName = req.ClientName,
                 ClientSurname = req.ClientSurname,
-                DisplayOrderNumber =  Random.Shared.Next(1000, 9999), // Generate a random 6-digit number
+                DisplayOrderNumber =  Random.Shared.Next(1000, 9999), 
             };
         
             foreach (var item in selectedBucketItems)

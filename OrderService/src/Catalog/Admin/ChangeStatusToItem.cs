@@ -15,7 +15,7 @@ namespace OrderService.src.Catalog.Admin
         public override void Configure()
         {
             Patch("api/catalog/item/{ProductId}");
-            Roles("admin");
+            AllowAnonymous();
             Validator<ChangeStatsCatalogValidator>();
 
         }
@@ -23,14 +23,21 @@ namespace OrderService.src.Catalog.Admin
 
         public override async Task HandleAsync(ChangeStatsCatalogRequest req, CancellationToken ct)
         {
+
+            var adminId = await _dbContext.Admins.Where(x => x.TgId == req.TelegramId).Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             // mapping 
-            var product = await _dbContext.Products.FirstOrDefaultAsync(x => x.Id == req.ProductId && x.AdminId == req.AdminId, ct); // protection from concurrent requests, shit -  no solution.
+            var product = await _dbContext.Products.FirstOrDefaultAsync(x => x.Id == req.ProductId && x.AdminId == adminId || x.AdminId == null, ct); // protection from concurrent requests, shit -  no solution.
             if (product is null)
             {
                 AddError("ProductID:", "Product not found.");
                 await Send.ErrorsAsync();
                 return;
-            } 
+            }
+
+            if (product.AdminId is null) // if orphanic dependency
+            {
+                product.AdminId = adminId;
+            }
 
             product.ProductName = req.ProductName ?? product.ProductName;
             product.Price = req.Price ?? product.Price;
@@ -46,6 +53,7 @@ namespace OrderService.src.Catalog.Admin
 
 
             await _dbContext.SaveChangesAsync(ct);
+            await Send.OkAsync();
   }
 
         }
@@ -54,6 +62,8 @@ namespace OrderService.src.Catalog.Admin
     {
         public ChangeStatsCatalogValidator()
         {
+            RuleFor(x => x.TelegramId).NotEmpty().WithMessage("Telegram ID is required.");
+            RuleFor(x => x.ProductId).NotEmpty().WithMessage("Product ID is required.");
             RuleFor(x => x.ProductName).NotEmpty().MaximumLength(100).When(x => x.ProductName != null).WithMessage("Product name must not be empty.");
             RuleFor(x => x.Price).NotEmpty().When(x => x.Price != null).WithMessage("Price is required.");
             RuleFor(x => x.AvailabilityStatus).IsInEnum().WithMessage("Invalid availability status.");
@@ -73,8 +83,8 @@ namespace OrderService.src.Catalog.Admin
     {
         // return a list of calatog items.
         // use a flattenned dto without heritance.
-        [FromClaim]
-        public Guid AdminId { get; init; }
+       
+        public long TelegramId { get; init; }
         public Guid ProductId { get; init; }
         public string? ProductName { get; init; }
         public decimal? Price { get; init; }
