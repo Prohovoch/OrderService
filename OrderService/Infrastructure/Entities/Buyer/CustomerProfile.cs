@@ -13,7 +13,7 @@ public enum BuyerGender
 public class CustomerProfile
 {
     public Guid Id { get; set; } = Guid.CreateVersion7();
-    public Guid? CustomerId { get; set; }
+    public Guid CustomerId { get; set; }
 
 
     public int Age { get; set; }
