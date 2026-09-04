@@ -1,7 +1,6 @@
 ﻿using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using OrderService.Infrastructure.Entities.Administrator;
 using OrderService.Infrastructure.Entities.Buyer;
 using OrderService.Infrastructure.Persistence;
 
@@ -13,13 +12,25 @@ namespace OrderService.src.Customer.Profile
 
         public override void Configure()
         {
-            Patch("api/customer/profile/me");
-            Roles("customer");
+            Patch("api/customer/profile/{TelegramId}");
+            AllowAnonymous();
             Validator<UpdateProfileValidator>();
         }
         public override async Task HandleAsync(UpdateProfileRequest req, CancellationToken ct)
         {
-            var profile = await _dbContext.CustomerProfiles.FirstOrDefaultAsync(p => p.CustomerId == req.UserId, ct);
+
+
+            var mainId = await _dbContext.Customers
+                .Where(p => p.TgId == req.TelegramId)
+                .Select(p => p.Id)
+                .FirstOrDefaultAsync(ct);
+            if (mainId == Guid.Empty)
+            {
+                AddError("TelegramId", "Customer with this TelegramId not found.");
+                await Send.ErrorsAsync();
+                return;
+            }
+            var profile = await _dbContext.CustomerProfiles.FirstOrDefaultAsync(p => p.CustomerId == mainId, ct);
             if (profile is null)
             {
                 AddError("ProfileId:", "Profile object not found");
@@ -44,7 +55,7 @@ namespace OrderService.src.Customer.Profile
         public UpdateProfileValidator()
         {
 
-            RuleFor(x => x.UserId).NotEmpty().WithMessage("UserId required");
+            RuleFor(x => x.TelegramId).NotEmpty().WithMessage("TelegramId required");
             RuleFor(x => x.Surname).MinimumLength(3).WithMessage("Surname must be at least 3 characters long.").When(x => x.Surname != null);
             RuleFor(x => x.Age).InclusiveBetween(18, 120).WithMessage("Age must be between 18 and 120.").When(x => x.Age != null);
             RuleFor(x => x.Gender).IsInEnum().When(x => x.Gender != null);
@@ -52,11 +63,11 @@ namespace OrderService.src.Customer.Profile
         }
     }
    
-    public enum UpdateRequestGender { Male, Female }
+    public enum UpdateRequestGender { Male, Female, Unknown }
     public sealed record UpdateProfileRequest
     {
-        [FromClaim] 
-        public Guid UserId { get; init; }
+       
+        public long TelegramId { get; init; }
        
 
         public string? Name { get; init; }
