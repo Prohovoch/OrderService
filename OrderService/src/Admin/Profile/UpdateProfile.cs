@@ -21,7 +21,7 @@ namespace OrderService.src.Admin.Profile
         {
             var profile = await _dbContext.AdminProfiles.FirstOrDefaultAsync(p => p.AdminId == req.UserId, ct);
 
-            if (profile == null)
+            if (profile is null)
             {
                 AddError("profileID","No object was found.");
                 await Send.ErrorsAsync();

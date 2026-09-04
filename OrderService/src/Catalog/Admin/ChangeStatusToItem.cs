@@ -25,7 +25,7 @@ namespace OrderService.src.Catalog.Admin
         {
             // mapping 
             var product = await _dbContext.Products.FirstOrDefaultAsync(x => x.Id == req.ProductId && x.AdminId == req.AdminId, ct); // protection from concurrent requests, shit -  no solution.
-            if (product == null)
+            if (product is null)
             {
                 AddError("ProductID:", "Product not found.");
                 await Send.ErrorsAsync();

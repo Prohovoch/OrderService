@@ -33,7 +33,7 @@ namespace OrderService.src.Cart.Customer
            
             var productInfo = await _dbContext.CartItems.Where(p => p.Id == req.BucketItemId && p.Bucket!.CustomerId == req.UserId).Select(p =>  new { p.Product.Price}).FirstOrDefaultAsync(ct);
 
-            if (productInfo == null) //  guarantees not existing
+            if (productInfo is null) //  guarantees not existing
             {
                 AddError("ProductId" , "Product does not exist.");
                 await Send.ErrorsAsync(); // or 404?

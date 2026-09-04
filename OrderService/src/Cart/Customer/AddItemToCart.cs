@@ -52,7 +52,7 @@ namespace OrderService.src.Cart.Customer
                 _dbContext.Carts.Add(bucket);
             }
             var existingCartItem = bucket.Items.FirstOrDefault(i => i.ProductId == req.ProductId);
-            if (existingCartItem == null) 
+            if (existingCartItem is null) 
             {    
                 var newCartItem = new BucketItem
                 {

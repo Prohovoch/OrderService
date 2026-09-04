@@ -54,7 +54,7 @@ namespace OrderService.src.Cart.Customer
                 }).FirstOrDefaultAsync(ct);
 
                 // This shit is made by me :-)
-                if (cartResponse == null)
+                if (cartResponse is null)
                 {
                     var bucket = new Bucket
                     {
