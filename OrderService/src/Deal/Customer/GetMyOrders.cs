@@ -4,8 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using OrderService.Infrastructure.Entities.Catalog;
 using OrderService.Infrastructure.Entities.Deal;
 using OrderService.Infrastructure.Persistence;
-using OrderService.src.Cart.Customer;
-using OrderService.src.Catalog.Admin;
+
 
 
 namespace OrderService.src.Deal.Customer
@@ -17,7 +16,7 @@ namespace OrderService.src.Deal.Customer
 
         public override void Configure()
         {
-            Get("api/order/me");
+            Get("api/customer/orders/me");
             Roles("customer");
             Validator<GetMyOrdersValidator>();
 

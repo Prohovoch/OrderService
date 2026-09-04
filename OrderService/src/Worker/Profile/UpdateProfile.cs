@@ -20,7 +20,7 @@ namespace OrderService.src.Worker.Profile
         public override async Task HandleAsync(UpdateProfileRequest req, CancellationToken ct)
         {
             var profile = await _dbContext.WorkerProfiles.FirstOrDefaultAsync(p => p.WorkerId == req.UserId, ct);
-            if (profile == null)
+            if (profile is null)
             {
                 AddError("ProfileId:", "Profile object not found");
                 await Send.ErrorsAsync();

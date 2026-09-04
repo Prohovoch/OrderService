@@ -1,6 +1,7 @@
 ﻿using FastEndpoints;
 using FluentValidation;
 using Microsoft.AspNetCore.Server.Kestrel.Transport.NamedPipes;
+using Microsoft.EntityFrameworkCore;
 using OrderService.Infrastructure.Entities.Catalog;
 using OrderService.Infrastructure.Persistence;
 using OrderService.src.Cart.Customer;
@@ -13,7 +14,7 @@ namespace OrderService.src.Catalog.Admin {
 
         public override void Configure()
         {
-            Post("api/catalog");
+            Post("api/catalog/item");
             Roles("admin");
             Validator<AddAnItemToCatalogValidator>();
 
@@ -22,13 +23,25 @@ namespace OrderService.src.Catalog.Admin {
 
         public override async Task HandleAsync(AddAnItemToCatalogRequest req, CancellationToken ct)
         {
-            // mapping 
+            var adminId = await _dbContext.Admins
+                .Where(x => x.TgId == req.TelegramId)
+                .Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+
+            if (adminId == null)
+            {
+                AddError("admin id", "no requried object were found! ");
+                await Send.ErrorsAsync();
+                return;
+            }
+                            // mapping 
             var catalogItem = new CatalogItem
             {   
                 Id = Guid.CreateVersion7(),
                 // client send
-                AdminId = req.AdminId,
+                AdminId = adminId,
                 ProductName = req.ProductName,
+                CreatorName = req.CreatorName,
+                CreatorSurname = req.CreatorSurname,
                 Price = req.Price,
                 Type = req.ProductType switch
                 {
@@ -73,13 +86,17 @@ namespace OrderService.src.Catalog.Admin {
     {
             public AddAnItemToCatalogValidator()
             {
-                RuleFor(x => x.AdminId).NotEmpty().WithMessage("AdminId is required.");
+                RuleFor(x => x.TelegramId).NotEmpty().WithMessage("Telegram ID is required.");
                 RuleFor(x => x.ProductName).NotEmpty().WithMessage("Product name must not be empty.");
                 RuleFor(x => x.Price).NotEmpty().WithMessage("Price is required.");
                 RuleFor(x => x.ProductType).IsInEnum().WithMessage("Invalid product type.");
                 RuleFor(x => x.AvailabilityStatus).IsInEnum().WithMessage("Invalid availability status.");
+                RuleFor(x => x.Ingredients).Must(ing => ing != null && ing.Count > 0).WithMessage("Ingredients are required.");
+                RuleFor(x => x.CreatorName).NotEmpty().WithMessage("Creator name is required.");
+                RuleFor(x => x.CreatorSurname).NotEmpty().WithMessage("Creator surname is required.");
+                
 
-            }
+        }
         }
 
     public enum AddProductType
@@ -100,9 +117,11 @@ namespace OrderService.src.Catalog.Admin {
     {
         // return a list of calatog items.
         // use a flattenned dto without heritance.
-        [FromClaim]
-        public Guid AdminId { get; init; }
-        public string ProductName { get; init; } = string.Empty;
+        
+        public long TelegramId { get; init; }
+        public required string ProductName { get; init; }
+        public required string CreatorName { get; init; }
+        public required string CreatorSurname { get; init; }
         public decimal Price { get; init; }
 
         public AddProductType ProductType { get; init; }

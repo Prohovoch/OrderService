@@ -14,7 +14,7 @@ namespace OrderService.src.Catalog.Admin
         public override void Configure()
         {
             Delete("api/catalog/item/{ProductId}");
-            Roles("admin");
+            AllowAnonymous();
             Validator<DeleteItemValidator>();
 
         }
@@ -22,11 +22,19 @@ namespace OrderService.src.Catalog.Admin
 
         public override async Task HandleAsync(DeleteItemRequest req, CancellationToken ct)
         {
-            bool isOwned = await _dbContext.Products.AnyAsync(p => p.Id == req.ProductId && p.AdminId == req.AdminId, ct); // same as in patch thing.
+
+            var adminId = await _dbContext.Admins.Where(a => a.TgId == req.TelegramId).Select(a => (Guid?)a.Id).FirstOrDefaultAsync(ct); // XDDDDDDDDDDDDDDDDD
+            if (adminId is null)
+            {
+                AddError("TelegramId: ", "Invalid Telegram ID.");
+                await Send.ErrorsAsync();
+                return;
+            }
+            bool isOwned = await _dbContext.Products.AnyAsync(p => p.Id == req.ProductId && p.AdminId == adminId, ct); // same as in patch thing.
             // i dont want to think about concurrency right now cause i guess there will be only 1 instance of app.
             if (!isOwned)
             {
-                AddError("AdminId: ", "Invalid id ");
+                AddError("AdminId: ", "Invalid id");
                 await Send.ErrorsAsync();
                 return;
             }
@@ -41,17 +49,17 @@ namespace OrderService.src.Catalog.Admin
             }
 
 
-
+            await Send.NoContentAsync();
             
         }
 
     }
 
-    public class DeleteItemValidator : Validator<ChangeStatsCatalogRequest>
+    public class DeleteItemValidator : Validator<DeleteItemRequest>
     {
         public DeleteItemValidator()
         {
-            RuleFor(x => x.AdminId).NotEmpty().WithMessage(" AdminId is required.");
+            RuleFor(x => x.TelegramId).NotEmpty().WithMessage("TelegramId is required.");
             RuleFor(x => x.ProductId).NotEmpty().WithMessage("ProductId required.");
         }
     }
@@ -63,8 +71,7 @@ namespace OrderService.src.Catalog.Admin
     {
         // return a list of calatog items.
         // use a flattenned dto without heritance.
-        [FromClaim]
-        public Guid AdminId { get; init; }
+        public long TelegramId { get; init; }
         public Guid ProductId { get; init; }
     
 

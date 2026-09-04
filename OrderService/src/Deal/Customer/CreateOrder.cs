@@ -4,8 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using OrderService.Infrastructure.Entities.Catalog;
 using OrderService.Infrastructure.Entities.Deal;
 using OrderService.Infrastructure.Persistence;
-using OrderService.src.Cart.Customer;
-using OrderService.src.Catalog.Admin;
+
 
 
 namespace OrderService.src.Deal.Customer
@@ -17,7 +16,7 @@ namespace OrderService.src.Deal.Customer
 
         public override void Configure()
         {
-            Post("api/order");
+            Post("api/customer/order");
             Roles("customer");
             Validator<AddAnItemToOrderValidator>();
 
@@ -67,7 +66,7 @@ namespace OrderService.src.Deal.Customer
                 CreatedAt = DateTimeOffset.UtcNow,
                 ClientName = req.ClientName,
                 ClientSurname = req.ClientSurname,
-                DisplayOrderNumber =  Random.Shared.Next(1000, 9999), // Generate a random 6-digit number
+                DisplayOrderNumber =  Random.Shared.Next(1000, 9999), 
             };
         
             foreach (var item in selectedBucketItems)

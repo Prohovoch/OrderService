@@ -13,8 +13,8 @@ namespace OrderService.src.Catalog.Admin
 
         public override void Configure()
         {
-            Post("api/catalog");
-            Roles("admin");
+            Get("api/catalog");
+            AllowAnonymous();
 
 
         }
@@ -27,8 +27,8 @@ namespace OrderService.src.Catalog.Admin
             var catalogResult = await _dbContext.Products.AsNoTracking().Select(r => new CatalogResponse
             {
                 ItemId = r.Id,
-                CreatorName = r.Admin!.Profile!.Name,
-                CreatorSurname = r.Admin!.Profile!.Surname,
+                CreatorName = r.CreatorName,
+                CreatorSurname = r.CreatorSurname,
                 ProductName = r.ProductName,
                 Price = r.Price,
                 AvailabilityStatus = r.AvailabilityStatus == ProductAvailabilityStatus.Available ? GetProductAvailabilityStatus.Available : GetProductAvailabilityStatus.OutOfStock,
@@ -69,9 +69,9 @@ namespace OrderService.src.Catalog.Admin
         // use a flattenned dto without heritance.
 
         public Guid ItemId { get; init; }
-        public string CreatorName { get; init; } = string.Empty;
-        public string CreatorSurname { get; init; } = string.Empty;
-        public string ProductName { get; init; } = string.Empty;
+        public required string CreatorName { get; init; }
+        public required string CreatorSurname { get; init; } 
+        public required string ProductName { get; init; }
         public decimal Price { get; init; }
 
         public GetProductType ProductType { get; init; }
