@@ -19,7 +19,7 @@ namespace OrderService.src.Cart.Customer
         public override void Configure()
         {
             Post("api/customer/cart/items");
-            Roles("customer");
+            AllowAnonymous();
             Validator<AddItemToCartValidator>();
 
         }
@@ -28,6 +28,7 @@ namespace OrderService.src.Cart.Customer
         public override async Task HandleAsync(AddItemToCartRequest req, CancellationToken ct)
         {
             // checks if the product exists in the database on a CATALOG page
+            var entityId = await _dbContext.Customers.Where(x => x.TgId == req.TelegramId).Select(x => x.Id).FirstAsync(ct);
             var productExists = await _dbContext.Products.AnyAsync(p => p.Id == req.ProductId, ct);
 
             if (!productExists)
@@ -44,7 +45,7 @@ namespace OrderService.src.Cart.Customer
                 bucket = new Bucket
                 {
                     Id = Guid.CreateVersion7(), // lol, my ValueGeneratedOnAdd working very nicely.
-                    CustomerId = req.UserId,
+                    CustomerId = entityId,
                     
 
                     // we creating in db v7 guid, 
@@ -86,7 +87,7 @@ namespace OrderService.src.Cart.Customer
     {
         public AddItemToCartValidator()
         {
-            RuleFor(x => x.UserId).NotNull().WithMessage("UserId is required.");
+            RuleFor(x => x.TelegramId).NotNull().WithMessage("UserId is required.");
             RuleFor(x => x.ProductId).NotNull().WithMessage("ProductId is required.");
            
         }
@@ -96,8 +97,8 @@ namespace OrderService.src.Cart.Customer
 
     public sealed record AddItemToCartRequest
     {
-        [FromClaim]
-        public Guid UserId { get; init; }
+        
+        public long TelegramId { get; init; }
         public Guid ProductId { get; init; }
       
     }

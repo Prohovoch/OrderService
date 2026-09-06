@@ -18,7 +18,7 @@ namespace OrderService.src.Cart.Customer
         public override void Configure()
         {
             Get("api/customer/cart");
-            Roles("customer");
+            AllowAnonymous();
             Validator<GetCartValidator>();
 
         }
@@ -26,13 +26,15 @@ namespace OrderService.src.Cart.Customer
 
         public override async Task HandleAsync(GetCartRequest req, CancellationToken ct)
         {
+            var entityId = await _dbContext.Customers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => x.Id).FirstAsync(ct);
+
             // We need  a projection so we made this tyoe of query. Fast endpoints cant do any shit with custom dto from combo entity.
-            var cartResponse = await _dbContext.Carts.Where(c => c.CustomerId == req.UserId).AsNoTracking()
+            var cartResponse = await _dbContext.Carts.Where(c => c.CustomerId == entityId).AsNoTracking()
                 .Select(c => new GetCartResponse
                 {
                     Items = c.Items.Select(i => new CartItemResponse
                     {
-                        ItemId = i.Id,
+                       
                         Name = i.Product.ProductName,
                         Description = i.Product.Description,
                         Availability = i.Product.AvailabilityStatus == 
@@ -59,7 +61,7 @@ namespace OrderService.src.Cart.Customer
                     var bucket = new Bucket
                     {
                         Id = Guid.CreateVersion7(),
-                        CustomerId = req.UserId
+                        CustomerId = entityId,
                     };
                     _dbContext.Carts.Add(bucket);
                     await _dbContext.SaveChangesAsync(ct);
@@ -77,7 +79,7 @@ namespace OrderService.src.Cart.Customer
     {
         public GetCartValidator()
         {
-            RuleFor(x => x.UserId).NotNull().WithMessage("UserId is required.");
+            RuleFor(x => x.TelegramId).NotNull().WithMessage("UserId is required.");
         }
     }
     
@@ -86,7 +88,7 @@ namespace OrderService.src.Cart.Customer
     public sealed record GetCartRequest
     {
 
-        public Guid UserId { get; init; }
+        public long TelegramId { get; init; }
     }
 
     
@@ -103,7 +105,7 @@ namespace OrderService.src.Cart.Customer
 
     public sealed record CartItemResponse
     {
-        public Guid ItemId { get; init; }
+        
         public string Name { get; init; } = null!;
         public string Description { get; init; } = null!;
         public GetCartItemAvailability Availability { get; init; }

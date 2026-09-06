@@ -18,16 +18,18 @@ namespace OrderService.src.Cart.Customer
 
         public override void Configure()
         {
-            Delete("api/customer/cart/items{BucketItemId}");
-            Roles("customer");
+            Delete("api/customer/cart/items{bucketItemId}");
+            AllowAnonymous();
             Validator<DeleteAnItemValidator>();
         }
 
 
         public override async Task HandleAsync(DeleteItemRequest req, CancellationToken ct)
         {
+
+            var entityId = await _dbContext.Customers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => x.Id).FirstAsync();
             // check if user has it
-            bool isOwned = await _dbContext.Carts.AnyAsync(c => c.CustomerId == req.UserId, ct);
+            bool isOwned = await _dbContext.Carts.AnyAsync(c => c.CustomerId == entityId, ct);
 
             if (!isOwned)
             {
@@ -36,7 +38,7 @@ namespace OrderService.src.Cart.Customer
             }
 
             var affectedRows = await _dbContext.CartItems
-                .Where(bi => bi.Id == req.BucketItemId && bi.Bucket!.CustomerId == req.UserId) //  hack. mocking warnings. we already have created cart at this point.
+                .Where(bi => bi.Id == req.BucketItemId && bi.Bucket!.CustomerId == entityId) //  hack. mocking warnings. we already have created cart at this point.
                 .ExecuteDeleteAsync(ct);
             
             // if wifi is baddie :(
@@ -56,7 +58,7 @@ namespace OrderService.src.Cart.Customer
         public DeleteAnItemValidator()
             
         {
-            RuleFor(x => x.UserId).NotNull().WithMessage("UserId is required.");
+            RuleFor(x => x.TelegramId).NotNull().WithMessage("UserId is required.");
             RuleFor(x => x.BucketItemId).NotNull().WithMessage("BucketItemId is required.");
           
         }
@@ -64,9 +66,10 @@ namespace OrderService.src.Cart.Customer
 
     public sealed record DeleteItemRequest
     {
-        [FromClaim]
-        public Guid UserId { get; init; }
+ 
+        public long TelegramId{ get; init; }
 
+        [BindFrom("bucketItemId")]
         public Guid BucketItemId { get; init; }
 
     }

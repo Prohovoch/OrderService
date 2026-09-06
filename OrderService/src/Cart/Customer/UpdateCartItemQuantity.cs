@@ -19,8 +19,8 @@ namespace OrderService.src.Cart.Customer
 
         public override void Configure()
         {
-            Patch("api/customer/cart/items/{BucketItemId}");
-            Roles("customer");
+            Patch("api/customer/cart/{bucketId}/items/{bucketItemId}");
+            AllowAnonymous();
             Validator<UpdateCartItemQuantityValidator>();
 
         }
@@ -30,19 +30,19 @@ namespace OrderService.src.Cart.Customer
         {
             // checks if the product exists in the database
 
-           
-            var productInfo = await _dbContext.CartItems.Where(p => p.Id == req.BucketItemId && p.Bucket!.CustomerId == req.UserId).Select(p =>  new { p.Product.Price}).FirstOrDefaultAsync(ct);
+            var entityId = await _dbContext.Customers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => x.Id).FirstAsync(ct);
+            var productInfo = await _dbContext.CartItems.Where(p => p.Id == req.BucketItemId && p.BucketId == req.BucketId && p.Bucket!.CustomerId == entityId).AsNoTracking().Select(p =>  new { p.Product.Price}).FirstOrDefaultAsync(ct);
 
             if (productInfo is null) //  guarantees not existing
             {
-                AddError("ProductId" , "Product does not exist.");
-                await Send.ErrorsAsync(); // or 404?
+              
+                await Send.NotFoundAsync(); // or 404?
                 return;
             }
 
           
        
-            var affectedRows = await _dbContext.CartItems.Where(p => p.Id == req.BucketItemId && p.BucketId == req.BucketId && p.Bucket!.CustomerId == req.UserId).ExecuteUpdateAsync(p => p.SetProperty(x => x.BucketItemQuantity, req.Quantity), ct);
+            var affectedRows = await _dbContext.CartItems.Where(p => p.Id == req.BucketItemId && p.BucketId == req.BucketId && p.Bucket!.CustomerId == entityId).ExecuteUpdateAsync(p => p.SetProperty(x => x.BucketItemQuantity, req.Quantity), ct);
             if (affectedRows == 0)
             {
                 AddError("UpdateFailed", "Failed to update the item quantity.");
@@ -68,9 +68,10 @@ namespace OrderService.src.Cart.Customer
     {
         public UpdateCartItemQuantityValidator()
         {
-            RuleFor(x => x.UserId).NotEmpty().WithMessage("UserId is required");
+            RuleFor(x => x.TelegramId).NotEmpty().WithMessage("UserId is required");
             RuleFor(x => x.BucketItemId).NotNull().WithMessage("BucketItemId is required.");
             RuleFor(x => x.Quantity).GreaterThan(0).WithMessage("Quantity must be a positive number.");
+            RuleFor(x => x.BucketId).NotEmpty().WithMessage("BucketId is required");
 
         }
     }
@@ -79,9 +80,12 @@ namespace OrderService.src.Cart.Customer
 
     public sealed record UpdateItemQuantityRequest
     {
-        [FromClaim]
-        public Guid UserId { get; init; }
-     
+        
+        public long TelegramId { get; init; }
+
+        [BindFrom("bucketId")]
+        public Guid BucketId { get; init; }
+        [BindFrom("bucketItemId")]
         public Guid BucketItemId { get; init; }
      
         public int Quantity { get; init; }
