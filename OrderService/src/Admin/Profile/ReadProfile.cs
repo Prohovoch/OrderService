@@ -10,7 +10,7 @@ namespace OrderService.src.Admin.Profile
 
 {
     // REPR endpoint
-    public class ReadProfile(ApplicationDbContext dbContext) : Endpoint<ReadProfileRequest, ReadProfileResponse, ReadProfileMapper>
+    public class ReadProfile(ApplicationDbContext dbContext) : Endpoint<ReadProfileRequest, ReadProfileResponse>
     {
 
         private readonly ApplicationDbContext _dbContext = dbContext;
@@ -18,14 +18,15 @@ namespace OrderService.src.Admin.Profile
         public override void Configure()
         {
             Get("api/admin/profile/me");
-            Roles("admin");
+            AllowAnonymous();
             Validator<ReadProfileValidator>();
 
         }
         public override async Task HandleAsync(ReadProfileRequest req, CancellationToken ct)
         {
+            var entityId = await _dbContext.Admins.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => x.Id).FirstAsync(ct);
             var adminProfileEntity = await _dbContext.AdminProfiles.AsNoTracking()
-                .FirstOrDefaultAsync(r => r.AdminId == req.UserId, ct);
+                .FirstOrDefaultAsync(r => r.AdminId == entityId, ct);
 
             if (adminProfileEntity is null)
             {
@@ -33,39 +34,35 @@ namespace OrderService.src.Admin.Profile
                 return;
             }
 
-            var resp = Map.FromEntity(adminProfileEntity);
-            await Send.OkAsync(resp);
+            var response = new ReadProfileResponse
+            {
+                Name = adminProfileEntity.Name,
+                Surname = adminProfileEntity.Surname,
+                Age = adminProfileEntity.Age,
+                Gender = adminProfileEntity.Gender switch
+                {
+                    AdminGender.Male => ReadReqGender.Male,
+                    AdminGender.Female => ReadReqGender.Female,
+                    _ => null
+                }
+            };
+
+            await Send.OkAsync(response);
         }
     }
 
-    public class ReadProfileMapper : ResponseMapper<ReadProfileResponse, AdminProfile>
-    {
-    
-    public override ReadProfileResponse FromEntity(AdminProfile e) => new()
-    {
-        
-        Name = e.Name,
-        Surname = e.Surname,
-        Age = e.Age,
-        Gender = e.Gender switch
-        {
-            AdminGender.Male => ReadReqGender.Male,
-            AdminGender.Female => ReadReqGender.Female,
-            _ => null
-        }
-    };
-}
+   
     public class ReadProfileValidator : Validator<ReadProfileRequest>
     {
     public ReadProfileValidator()
     {
-        RuleFor(x => x.UserId).NotNull().WithMessage("UserId is required.");
+        RuleFor(x => x.TelegramId).NotNull().WithMessage("UserId is required.");
     }
 }
     public sealed record ReadProfileRequest
     {
-         [FromClaim]
-         public Guid UserId { get; init; }
+        
+         public long TelegramId{ get; init; }
     
     }
     public enum ReadReqGender { Male, Female }
