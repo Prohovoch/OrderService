@@ -1,10 +1,9 @@
 ﻿using FastEndpoints;
 using FluentValidation;
-using Microsoft.AspNetCore.Server.Kestrel.Transport.NamedPipes;
 using Microsoft.EntityFrameworkCore;
 using OrderService.Infrastructure.Entities.Catalog;
 using OrderService.Infrastructure.Persistence;
-using OrderService.src.Cart.Customer;
+
 
 namespace OrderService.src.Catalog.Admin { 
     public class AddAnItemToCatalog(ApplicationDbContext dbContext) : Endpoint<AddAnItemToCatalogRequest>
@@ -15,7 +14,7 @@ namespace OrderService.src.Catalog.Admin {
         public override void Configure()
         {
             Post("api/catalog/item");
-            Roles("admin");
+            AllowAnonymous();
             Validator<AddAnItemToCatalogValidator>();
 
         }
@@ -25,14 +24,9 @@ namespace OrderService.src.Catalog.Admin {
         {
             var adminId = await _dbContext.Admins
                 .Where(x => x.TgId == req.TelegramId)
-                .Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+                .Select(x => x.Id).FirstAsync(ct);
 
-            if (adminId == null)
-            {
-                AddError("admin id", "no requried object were found! ");
-                await Send.ErrorsAsync();
-                return;
-            }
+            
                             // mapping 
             var catalogItem = new CatalogItem
             {   

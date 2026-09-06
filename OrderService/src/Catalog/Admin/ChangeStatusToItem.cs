@@ -14,7 +14,7 @@ namespace OrderService.src.Catalog.Admin
 
         public override void Configure()
         {
-            Patch("api/catalog/item/{ProductId}");
+            Patch("api/catalog/item/{productId}");
             AllowAnonymous();
             Validator<ChangeStatsCatalogValidator>();
 
@@ -66,7 +66,7 @@ namespace OrderService.src.Catalog.Admin
             RuleFor(x => x.ProductId).NotEmpty().WithMessage("Product ID is required.");
             RuleFor(x => x.ProductName).NotEmpty().MaximumLength(100).When(x => x.ProductName != null).WithMessage("Product name must not be empty.");
             RuleFor(x => x.Price).NotEmpty().When(x => x.Price != null).WithMessage("Price is required.");
-            RuleFor(x => x.AvailabilityStatus).IsInEnum().WithMessage("Invalid availability status.");
+            RuleFor(x => x.AvailabilityStatus).IsInEnum().WithMessage("Invalid availability status.").When(x => x.AvailabilityStatus != null);
             RuleFor(x => x.Ingredients).Must(ing => ing != null && ing.Count > 0).When(x => x.Ingredients != null).WithMessage("Ingredients are required.");
             RuleFor(x => x.Volume).GreaterThan(0).When(x => x.Volume != null).WithMessage("Volume must be greater than 0.");
             RuleFor(x => x.Weight).GreaterThan(0).When(x => x.Weight != null).WithMessage("Weight must be greater than 0.");
@@ -85,6 +85,7 @@ namespace OrderService.src.Catalog.Admin
         // use a flattenned dto without heritance.
        
         public long TelegramId { get; init; }
+        [BindFrom("productId")]
         public Guid ProductId { get; init; }
         public string? ProductName { get; init; }
         public decimal? Price { get; init; }
