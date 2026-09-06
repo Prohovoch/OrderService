@@ -8,7 +8,6 @@ public enum BuyerGender
     Male,
     Female,
 
-    Unknown,
 }
 public class CustomerProfile
 {
@@ -20,7 +19,7 @@ public class CustomerProfile
     public required string Name { get; set; } 
     public required string Surname { get; set; }
     public required string PhoneNumber { get; set; }
-    public BuyerGender Gender { get; set; } // We dont know exactly what is it gonna be... 
+    public BuyerGender? Gender { get; set; } // We dont know exactly what is it gonna be... 
     public Customer Customer { get; set; } = null!;
 
 }

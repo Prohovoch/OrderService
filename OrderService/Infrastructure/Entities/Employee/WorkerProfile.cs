@@ -7,7 +7,7 @@ public enum WorkerGender
     Male,
     Female,
 
-    Unknown,
+    
 }
 public class WorkerProfile
 {
@@ -17,6 +17,6 @@ public class WorkerProfile
     public required string Name { get; set; } 
     public required string Surname { get; set; } 
     public required string PhoneNumber { get; set; }
-    public WorkerGender Gender { get; set; } // We dont know exactly what is it gonna be... 
+    public WorkerGender? Gender { get; set; } // We dont know exactly what is it gonna be... 
     public Worker Worker { get; set; } = null!;
 }

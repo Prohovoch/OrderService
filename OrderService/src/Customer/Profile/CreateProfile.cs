@@ -25,18 +25,13 @@ namespace OrderService.src.Customer.Profile
         public override async Task HandleAsync(CreateCustomerProfileRequest req, CancellationToken ct)
         {
 
-            var mainId = await _dbContext.Customers.Where(x => x.TgId == req.TelegramId).Select(x => x.Id).FirstOrDefaultAsync(ct);
+            var entityId = await _dbContext.Customers.Where(x => x.TgId == req.TelegramId).Select(x => x.Id).FirstAsync(ct);
 
-            if (mainId == Guid.Empty)
-            {
-                AddError("Id", "Customer with this Id not found.");
-                await Send.ErrorsAsync();
-                return;
-            }
+           
 
             var customerProfile = new CustomerProfile
             {
-                CustomerId = mainId,
+                CustomerId = entityId,
                 Name = req.Name,
                 Surname = req.Surname,
                 Age = req.Age,
@@ -48,7 +43,7 @@ namespace OrderService.src.Customer.Profile
                     CreateRequestGender.Male => BuyerGender.Male,
                     CreateRequestGender.Female => BuyerGender.Female,
                    
-                    _ => BuyerGender.Unknown,
+                    _ => null,
                 },
 
 
@@ -88,7 +83,7 @@ namespace OrderService.src.Customer.Profile
         public required string Surname { get; init; } 
         public required string PhoneNumber { get; init; }
         public int Age { get; set; }
-        public CreateRequestGender Gender { get; init; }
+        public CreateRequestGender? Gender { get; init; }
     }
 
 }

@@ -3,7 +3,7 @@ namespace OrderService.Infrastructure.Entities.Administrator
 {
     public enum AdminGender
     {
-        Male, Female, Unknown
+        Male, Female, 
     }
     public class AdminProfile
     {
@@ -13,7 +13,7 @@ namespace OrderService.Infrastructure.Entities.Administrator
         public required string Name { get; set; }
         public required string Surname { get; set; } 
         public required string PhoneNumber { get; set; } 
-        public AdminGender Gender { get; set; } // We dont know exactly what is it gonna be... 
+        public AdminGender? Gender { get; set; } // We dont know exactly what is it gonna be... 
         public Admin Admin { get; set; } = null!;
     }
 }

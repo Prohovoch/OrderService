@@ -15,7 +15,7 @@ namespace OrderService.src.Customer.Profile
 
         public override void Configure()
         {
-            Get("api/customer/profile/{TelegramId}");
+            Get("api/customer/profile/me");
             AllowAnonymous();
 
             Validator<ReadProfileValidator>();
@@ -28,13 +28,8 @@ namespace OrderService.src.Customer.Profile
             var mainId = await _dbContext.Customers.AsNoTracking()
                 .Where(r => r.TgId == req.TelegramId)
                 .Select(r => r.Id)
-                .FirstOrDefaultAsync(ct);
-            if (mainId == Guid.Empty)
-            {
-                AddError("Id","Customer with this TelegramId not found.");
-                await Send.ErrorsAsync();
-                return;
-            }
+                .FirstAsync(ct);
+            
 
             var customerProfileEntity = await _dbContext.CustomerProfiles.AsNoTracking()
                 .Where(r => r.CustomerId == mainId).FirstOrDefaultAsync(ct);
@@ -59,7 +54,7 @@ namespace OrderService.src.Customer.Profile
                 {
                     BuyerGender.Male => GetRequestGender.Male,
                     BuyerGender.Female => GetRequestGender.Female,
-                    _ => GetRequestGender.Unknown,
+                    _ => null,
                 }
 
             };
@@ -91,7 +86,7 @@ namespace OrderService.src.Customer.Profile
         public required string Surname { get; init; }
         public required string PhoneNumber { get; init; }
         public int Age { get; init; }
-        public GetRequestGender Gender { get; init; }
+        public GetRequestGender? Gender { get; init; }
     }
 
 }

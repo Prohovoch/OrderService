@@ -12,7 +12,7 @@ namespace OrderService.src.Customer.Profile
 
         public override void Configure()
         {
-            Patch("api/customer/profile/{TelegramId}");
+            Patch("api/customer/profile/me");
             AllowAnonymous();
             Validator<UpdateProfileValidator>();
         }
@@ -23,13 +23,8 @@ namespace OrderService.src.Customer.Profile
             var mainId = await _dbContext.Customers
                 .Where(p => p.TgId == req.TelegramId)
                 .Select(p => p.Id)
-                .FirstOrDefaultAsync(ct);
-            if (mainId == Guid.Empty)
-            {
-                AddError("TelegramId", "Customer with this TelegramId not found.");
-                await Send.ErrorsAsync();
-                return;
-            }
+                .FirstAsync(ct);
+            
             var profile = await _dbContext.CustomerProfiles.FirstOrDefaultAsync(p => p.CustomerId == mainId, ct);
             if (profile is null)
             {
