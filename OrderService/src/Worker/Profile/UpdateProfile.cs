@@ -14,12 +14,15 @@ namespace OrderService.src.Worker.Profile
         public override void Configure()
         {
             Patch("api/employee/profile/me");
-            Roles("employee");
+            AllowAnonymous();
             Validator<UpdateProfileValidator>();
         }
         public override async Task HandleAsync(UpdateProfileRequest req, CancellationToken ct)
         {
-            var profile = await _dbContext.WorkerProfiles.FirstOrDefaultAsync(p => p.WorkerId == req.UserId, ct);
+            var entityId = await _dbContext.Workers.Where(x => x.TgId == req.TelegramId).Select(x => x.Id).FirstAsync(ct);
+
+            
+            var profile = await _dbContext.WorkerProfiles.FirstOrDefaultAsync(p => p.WorkerId == entityId, ct);
             if (profile is null)
             {
                 AddError("ProfileId:", "Profile object not found");
@@ -45,7 +48,7 @@ namespace OrderService.src.Worker.Profile
         public UpdateProfileValidator()
         {
 
-            RuleFor(x => x.UserId).NotEmpty().WithMessage("UserId required");
+            RuleFor(x => x.TelegramId).NotEmpty().WithMessage("UserId required");
             RuleFor(x => x.Surname).MinimumLength(3).WithMessage("Surname must be at least 3 characters long.").When(x => x.Surname != null);
             RuleFor(x => x.Age).InclusiveBetween(18, 120).WithMessage("Age must be between 18 and 120.").When(x => x.Age != null);
             RuleFor(x => x.Gender).IsInEnum().When(x => x.Gender != null);
@@ -56,8 +59,8 @@ namespace OrderService.src.Worker.Profile
     public enum UpdateGender { Male, Female }
     public sealed record UpdateProfileRequest
     {
-        [FromClaim]
-        public Guid UserId { get; init; }
+        
+        public long TelegramId { get; init; }
         public Guid ProfileId { get; init; }
         public string? Name { get; init; } 
         public string? Surname { get; init; } 

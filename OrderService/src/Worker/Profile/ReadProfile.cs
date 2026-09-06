@@ -9,7 +9,7 @@ using OrderService.Infrastructure.Persistence;
 namespace OrderService.src.Worker.Profile
 {
     // REPR endpoint
-    public class ReadProfile(ApplicationDbContext dbContext) : Endpoint<ReadProfileRequest, ReadProfileResponse, ReadMapper>
+    public class ReadProfile(ApplicationDbContext dbContext) : Endpoint<ReadProfileRequest, ReadProfileResponse>
     {
 
         private readonly ApplicationDbContext _dbContext = dbContext;
@@ -17,62 +17,65 @@ namespace OrderService.src.Worker.Profile
         public override void Configure()
         {
             Get("api/employee/profile/me");
-            Roles("employee");
+            AllowAnonymous();
             Validator<ReadProfileValidator>();
 
         }
         public override async Task HandleAsync(ReadProfileRequest req, CancellationToken ct)
         {
-            var adminProfileEntity = await _dbContext.WorkerProfiles.AsNoTracking()
-                .FirstOrDefaultAsync(r => r.WorkerId == req.UserId, ct);
+            var mainId = await _dbContext.Workers.AsNoTracking().Where(x => x.TgId == req.TelegramId).Select(x => (Guid?)x.Id).FirstAsync(ct);
+            
+            var workerProfileEntity = await _dbContext.WorkerProfiles.AsNoTracking()
+                .FirstOrDefaultAsync(r => r.WorkerId == mainId, ct);
 
-            if (adminProfileEntity is null)
+            if (workerProfileEntity is null)
             {
                 await Send.NotFoundAsync();
                 return;
             }
 
-            var resp = Map.FromEntity(adminProfileEntity);
+            var resp = new ReadProfileResponse
+            {
+                Name = workerProfileEntity.Name,
+                Surname = workerProfileEntity.Surname,
+                Age = workerProfileEntity.Age,   
+                Gender = workerProfileEntity.Gender switch
+                {
+                    WorkerGender.Male => ReadRequestGender.Male,
+                    WorkerGender.Female => ReadRequestGender.Female,
+                    _ => null
+
+                }
+            };
             await Send.OkAsync(resp);
         }
+
+
     }
 
-public class ReadMapper : ResponseMapper<ReadProfileResponse, WorkerProfile>
-{
 
-    public override ReadProfileResponse FromEntity(WorkerProfile e) => new()
-    {
 
-        Name = e.Name,
-        Surname = e.Surname,
-        Age = e.Age,
-        Gender = e.Gender switch
+
+        public class ReadProfileValidator : Validator<ReadProfileRequest>
         {
-            WorkerGender.Male => ReadRequestGender.Male,
-            WorkerGender.Female => ReadRequestGender.Female,
-            _ => null
+            public ReadProfileValidator()
+            {
+                RuleFor(x => x.TelegramId).NotNull().WithMessage("TelegramId is required.");
+            }
         }
-    };
-}
-public class ReadProfileValidator : Validator<ReadProfileRequest>
-{
-    public ReadProfileValidator()
-    {
-        RuleFor(x => x.UserId).NotNull().WithMessage("UserId is required.");
+        public sealed record ReadProfileRequest
+        {
+
+            public long TelegramId { get; init; }
+
+        }
+        public enum ReadRequestGender { Male, Female }
+        public sealed record ReadProfileResponse
+        {
+            public required string Name { get; init; }
+            public required string Surname { get; init; }
+            public int Age { get; init; }
+            public ReadRequestGender? Gender { get; init; }
+        }
     }
-}
-public sealed record ReadProfileRequest
-{
-    [FromClaim]
-    public Guid UserId { get; init; }
-   
-}
-public enum ReadRequestGender { Male, Female }
-public sealed record ReadProfileResponse
-{
-    public required string Name { get; init; } 
-    public required string Surname { get; init; } 
-    public int Age { get; init; }
-    public ReadRequestGender? Gender { get; init; }
-}
-}
+
