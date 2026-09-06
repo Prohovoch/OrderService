@@ -25,9 +25,9 @@ namespace OrderService.src.Deal.Customer
 
         public override async Task HandleAsync(AddAnItemToOrderRequest req, CancellationToken ct)
         {
-           
+            var entityId = await _dbContext.Customers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => x.Id).FirstAsync(ct);
             var uniqueCartItemsIds = req.CartItemIds.ToHashSet();
-            var selectedBucketItems = await _dbContext.CartItems.Where(ci => uniqueCartItemsIds.Contains(ci.Id) && ci.Bucket!.CustomerId == req.UserId).ToListAsync(ct);
+            var selectedBucketItems = await _dbContext.CartItems.Where(ci => uniqueCartItemsIds.Contains(ci.Id) && ci.Bucket!.CustomerId == entityId).ToListAsync(ct);
             
             if(selectedBucketItems.Count != uniqueCartItemsIds.Count)
             {
@@ -52,14 +52,14 @@ namespace OrderService.src.Deal.Customer
          
 
             // Creating an Order object.
-            var customerPhoneNumber = await _dbContext.CustomerProfiles.Where(cp => cp.CustomerId == req.UserId).Select(p => p.PhoneNumber).FirstAsync(ct);
+            var customerPhoneNumber = await _dbContext.CustomerProfiles.Where(cp => cp.CustomerId == entityId).Select(p => p.PhoneNumber).FirstAsync(ct);
 
 
             var order = new DomainOrder // Fast endpoint somehow have a defitnition for order???????
             {
                 Id = Guid.CreateVersion7(),
 
-                CustomerId = req.UserId,
+                CustomerId = entityId,
 
                 CustomerPhoneNumber = customerPhoneNumber,
                 Status = OrderStatus.Created,
@@ -95,7 +95,7 @@ namespace OrderService.src.Deal.Customer
     {
         public AddAnItemToOrderValidator()
         {
-            RuleFor(x => x.UserId).NotEmpty().WithMessage("UserId required!");
+            RuleFor(x => x.TelegramId).NotEmpty().WithMessage("UserId required!");
             RuleFor(x => x.CartItemIds).NotEmpty().WithMessage("An Empty order cannot be created!");
             RuleFor(x => x.ClientName).NotEmpty().WithMessage("Client name is required.");
             RuleFor(x => x.ClientSurname).NotEmpty().WithMessage("Client surname is required.");
@@ -113,8 +113,8 @@ namespace OrderService.src.Deal.Customer
     {
         // return a list of calatog items.
         // use a flattenned dto without heritance.
-        [FromClaim]
-        public Guid UserId { get; init; }
+        
+        public long TelegramId { get; init; }
         public required List<Guid> CartItemIds { get; init; }
         public required string ClientName {  get; init; }
         public required string ClientSurname { get; init; }

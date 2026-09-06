@@ -16,7 +16,7 @@ namespace OrderService.src.Deal.Worker
 
         public override void Configure()
         {
-            Patch("api/worker/order/{OrderId}");
+            Patch("api/worker/{telegramId}/order/{OrderId}");
             Roles("worker");
             Validator<PickUpOrderValidator>();
 
@@ -26,17 +26,17 @@ namespace OrderService.src.Deal.Worker
         public override async Task HandleAsync(PickUpOrderRequest req, CancellationToken ct)
         {
             // Get all orders which connects with the user.
+            var entityId = await _dbContext.Workers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => x.Id).FirstAsync(ct);
             var specOrder = await _dbContext.Orders.Where(x => x.Id == req.OrderId).FirstOrDefaultAsync(ct);
 
             if (specOrder is null)
             {
-                AddError("OrderId", " Object specified is not found");
-                await Send.ErrorsAsync();
+                await Send.NotFoundAsync();
                 return;
             }
 
 
-            specOrder.WorkerId = req.UserId;
+            specOrder.WorkerId = entityId;
             specOrder.Status = OrderStatus.Processing;
 
             await _dbContext.SaveChangesAsync(ct);
@@ -50,7 +50,7 @@ namespace OrderService.src.Deal.Worker
     {
         public PickUpOrderValidator()
         {
-            RuleFor(x => x.UserId).NotEmpty().WithMessage("UserId required!");
+            RuleFor(x => x.TelegramId).NotEmpty().WithMessage("UserId required!");
             RuleFor(x => x.OrderId).NotEmpty().WithMessage("OrderId required!");
         }
     }
@@ -62,8 +62,9 @@ namespace OrderService.src.Deal.Worker
 
     public sealed record PickUpOrderRequest
     {
-        [FromClaim]
-        public Guid UserId { get; init; }
+        [BindFrom("telegramId")]
+        public long TelegramId { get; init; }
+        [BindFrom("orderId")]
         public Guid OrderId { get; init; }
     }
 

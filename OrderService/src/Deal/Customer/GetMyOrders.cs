@@ -16,8 +16,8 @@ namespace OrderService.src.Deal.Customer
 
         public override void Configure()
         {
-            Get("api/customer/orders/me");
-            Roles("customer");
+            Get("api/customer/{telegramId}/orders");
+            AllowAnonymous();
             Validator<GetMyOrdersValidator>();
 
         }
@@ -26,9 +26,9 @@ namespace OrderService.src.Deal.Customer
         public override async Task HandleAsync(GetMyOrdersRequest req, CancellationToken ct)
         {
             // Get all orders which connects with the user.
-
+            var entityId = await _dbContext.Customers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => x.Id).FirstAsync(ct);
             var userOrders = await _dbContext.Orders.AsNoTracking()
-                .Where(o => o.CustomerId == req.UserId)
+                .Where(o => o.CustomerId == entityId)
                 .Select(o => new OrderResponseDto
 
                 {
@@ -62,7 +62,7 @@ namespace OrderService.src.Deal.Customer
     {
         public GetMyOrdersValidator()
         {
-            RuleFor(x => x.UserId).NotEmpty().WithMessage("UserId required!");
+            RuleFor(x => x.TelegramId).NotEmpty().WithMessage("UserId required!");
         }
     }
 
@@ -71,7 +71,7 @@ namespace OrderService.src.Deal.Customer
     public sealed record GetOrderResponseItems
     {
 
-        public DateTimeOffset CreatedAt { get; init; }
+       
         public string ProductName { get; init; } = null!;
         public int Quantity { get; init ; }
         public decimal TotalPrice { get; init; } // ?
@@ -96,8 +96,8 @@ namespace OrderService.src.Deal.Customer
     }
     public sealed record GetMyOrdersRequest
     {
-        [FromClaim]
-        public Guid UserId { get; init; }
+        [BindFrom("telegramId")]      
+        public long TelegramId { get; init; }
     }
         
    
