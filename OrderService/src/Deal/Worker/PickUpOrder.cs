@@ -1,7 +1,6 @@
 ﻿using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using OrderService.Infrastructure.Entities.Catalog;
 using OrderService.Infrastructure.Entities.Deal;
 using OrderService.Infrastructure.Persistence;
 
@@ -17,7 +16,7 @@ namespace OrderService.src.Deal.Worker
         public override void Configure()
         {
             Patch("api/worker/{telegramId}/order/{OrderId}");
-            Roles("worker");
+            AllowAnonymous();
             Validator<PickUpOrderValidator>();
 
         }
@@ -50,7 +49,7 @@ namespace OrderService.src.Deal.Worker
     {
         public PickUpOrderValidator()
         {
-            RuleFor(x => x.TelegramId).NotEmpty().WithMessage("UserId required!");
+            RuleFor(x => x.TelegramId).NotEmpty().WithMessage("TelegramId required!");
             RuleFor(x => x.OrderId).NotEmpty().WithMessage("OrderId required!");
         }
     }

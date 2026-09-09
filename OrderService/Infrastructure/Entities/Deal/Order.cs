@@ -11,10 +11,10 @@ namespace OrderService.Infrastructure.Entities.Deal
     {
         Created, // user created order, but not yet picked up by worker
         Processing, // worker picked up order and is processing it
-        Completed, // worker completed order
+        Cooked, // worker completed order
         Stopped,
-
-        Delivered,
+        Closed,
+        
     }
 
     public class DomainOrder
