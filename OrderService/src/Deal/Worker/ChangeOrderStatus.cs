@@ -33,9 +33,8 @@ namespace OrderService.src.Deal.Worker
         
         public override async Task HandleAsync(ChangeOrderStatusRequest req, CancellationToken ct)
         {
-            // Get all orders which connects with the user.
-          
-            var specOrder = await _dbContext.Orders.Where(x => x.Id == req.OrderId).FirstOrDefaultAsync(ct);
+           
+         
             var workerExists = await _dbContext.Workers.AnyAsync(x => x.TgId == req.TelegramId, ct);
             if (!workerExists)
             {
@@ -43,6 +42,8 @@ namespace OrderService.src.Deal.Worker
                 await Send.ErrorsAsync(400, ct);
                 return;
             }
+
+            var specOrder = await _dbContext.Orders.Where(x => x.Id == req.OrderId).FirstOrDefaultAsync(ct);
             if (specOrder is null)
             {
                 await Send.NotFoundAsync();
