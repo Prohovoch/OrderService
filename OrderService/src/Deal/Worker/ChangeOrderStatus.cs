@@ -21,14 +21,14 @@ namespace OrderService.src.Deal.Worker
         }
 
 
-        private static readonly HashSet<(string From, string To)> AllowedTransitions = new()
-        {
-            (nameof(OrderStatus.Created), nameof(OrderStatus.Processing)),
-            (nameof(OrderStatus.Processing), nameof(OrderStatus.Stopped)),
-            (nameof(OrderStatus.Processing), nameof(OrderStatus.Cooked)),
-            (nameof(OrderStatus.Stopped), nameof(OrderStatus.Processing)),
-            (nameof(OrderStatus.Cooked), nameof(OrderStatus.Closed)),
-        };
+        private static readonly HashSet<(OrderStatus From, StatusType To)> AllowedTransitions =
+        [
+            (OrderStatus.Created, StatusType.Processing),
+            (OrderStatus.Processing, StatusType.Stopped),
+            (OrderStatus.Processing, StatusType.Cooked),
+            (OrderStatus.Stopped, StatusType.Processing),
+            (OrderStatus.Cooked, StatusType.Closed),
+        ];
     
         
         public override async Task HandleAsync(ChangeOrderStatusRequest req, CancellationToken ct)
@@ -39,7 +39,7 @@ namespace OrderService.src.Deal.Worker
             var workerExists = await _dbContext.Workers.AnyAsync(x => x.TgId == req.TelegramId, ct);
             if (!workerExists)
             {
-                AddError("TelegramId", "Работник с таким Telegram ID не найден.");
+                AddError("TelegramId", "No worker found with the given Telegram ID.");
                 await Send.ErrorsAsync(400, ct);
                 return;
             }
@@ -51,7 +51,7 @@ namespace OrderService.src.Deal.Worker
 
             // doing some fsm magic on my kneel.
 
-            var isValid = AllowedTransitions.Contains((specOrder.Status.ToString(), req.Status.ToString())); // shit,
+            var isValid = AllowedTransitions.Contains((specOrder.Status, req.Status)); //idk,
             if (!isValid)
             {
                 AddError("Transition:", "Convert convert transition");
