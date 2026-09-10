@@ -8,7 +8,7 @@ using OrderService.Infrastructure.Persistence;
 
 namespace OrderService.src.Deal.Worker
 {
-    public class PickUpOrder(ApplicationDbContext dbContext) : Endpoint<PickUpOrderRequest>
+    public class DetachFromOrder(ApplicationDbContext dbContext) : Endpoint<DetachFromOrderRequest>
     {
 
         private readonly ApplicationDbContext _dbContext = dbContext;
@@ -17,16 +17,16 @@ namespace OrderService.src.Deal.Worker
         {
             Patch("api/worker/{telegramId}/order/{orderId}");
             AllowAnonymous();
-            Validator<PickUpOrderValidator>();
+            Validator<DetachFromOrderValidator>();
 
         }
 
 
-        public override async Task HandleAsync(PickUpOrderRequest req, CancellationToken ct)
+        public override async Task HandleAsync(DetachFromOrderRequest req, CancellationToken ct)
         {
             // Get all orders which connects with the user.
-            var entityId = await _dbContext.Workers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => x.Id).FirstOrDefaultAsync(ct);
-            if (entityId == default)
+            var workerExists = await _dbContext.Workers.AnyAsync(x => x.TgId == req.TelegramId, ct);
+            if (!workerExists)
             {
                 await Send.NotFoundAsync();
                 return;
@@ -40,8 +40,8 @@ namespace OrderService.src.Deal.Worker
             }
 
 
-            specOrder.WorkerId = entityId;
-            specOrder.Status = OrderStatus.Processing;
+            specOrder.WorkerId = null;
+            specOrder.Status = OrderStatus.Stopped;
 
             await _dbContext.SaveChangesAsync(ct);
             await Send.OkAsync();
@@ -50,9 +50,9 @@ namespace OrderService.src.Deal.Worker
         }
     }
 
-    public class PickUpOrderValidator : Validator<PickUpOrderRequest>
+    public class DetachFromOrderValidator : Validator<DetachFromOrderRequest>
     {
-        public PickUpOrderValidator()
+        public DetachFromOrderValidator()
         {
             RuleFor(x => x.TelegramId).NotEmpty().WithMessage("TelegramId required!");
             RuleFor(x => x.OrderId).NotEmpty().WithMessage("OrderId required!");
@@ -61,10 +61,10 @@ namespace OrderService.src.Deal.Worker
 
 
 
-   
 
 
-    public sealed record PickUpOrderRequest
+
+    public sealed record DetachFromOrderRequest
     {
         [BindFrom("telegramId")]
         public long TelegramId { get; init; }

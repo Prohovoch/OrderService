@@ -72,8 +72,8 @@ namespace OrderService.src.Deal.Worker
     {
         public ChangeOrderStatusValidator()
         {
-            RuleFor(x => x.TelegramId).NotEmpty().WithMessage("TelegramId required!");
-            RuleFor(x => x.OrderId).NotEmpty().WithMessage("OrderId required!");
+            RuleFor(x => x.TelegramId).NotEmpty().WithMessage("TelegramId is required!");
+            RuleFor(x => x.OrderId).NotEmpty().WithMessage("OrderId is required!");
             RuleFor(x => x.Status).IsInEnum().WithMessage("Status must be a valid enum value.");
         }
     }
