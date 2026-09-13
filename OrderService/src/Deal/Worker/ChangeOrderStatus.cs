@@ -21,13 +21,13 @@ namespace OrderService.src.Deal.Worker
         }
 
 
-        private static readonly HashSet<(OrderStatus From, StatusType To)> AllowedTransitions =
+        private static readonly HashSet<(OrderStatus From, OrderStatus To)> AllowedTransitions =
         [
-            (OrderStatus.Created, StatusType.Processing),
-            (OrderStatus.Processing, StatusType.Stopped),
-            (OrderStatus.Processing, StatusType.Cooked),
-            (OrderStatus.Stopped, StatusType.Processing),
-            (OrderStatus.Cooked, StatusType.Closed),
+            (OrderStatus.Created, OrderStatus.Processing),
+            (OrderStatus.Processing, OrderStatus.Stopped),
+            (OrderStatus.Processing, OrderStatus.Cooked),
+            (OrderStatus.Stopped, OrderStatus.Processing),
+            (OrderStatus.Cooked, OrderStatus.Closed),
         ];
     
         
@@ -49,17 +49,22 @@ namespace OrderService.src.Deal.Worker
                 await Send.NotFoundAsync();
                 return;
             }
-
+            if(!Enum.TryParse<OrderStatus>(req.Status.ToString(), out var newStatus))
+            {
+                AddError("Status", "Invalid status value.");
+                await Send.ErrorsAsync(400, ct);
+                return;
+            }   
             // doing some fsm magic on my kneel.
 
-            var isValid = AllowedTransitions.Contains((specOrder.Status, req.Status)); //idk,
+            var isValid = AllowedTransitions.Contains((specOrder.Status, newStatus)); 
             if (!isValid)
             {
-                AddError("Transition:", "Convert convert transition");
+                AddError("Transition:", "Cannot convert transition");
                 await Send.ErrorsAsync();
                 return;
             }
-            specOrder.Status = Enum.Parse<OrderStatus>(req.Status.ToString()); // omg
+            specOrder.Status = newStatus; 
 
             await _dbContext.SaveChangesAsync(ct);
             await Send.NoContentAsync();

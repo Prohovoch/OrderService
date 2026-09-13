@@ -16,7 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="src\Auth\" />
+    <Folder Include="src\Auth\Admin\" />
+    <Folder Include="src\Auth\Customer\" />
+    <Folder Include="src\Auth\Worker\" />
   </ItemGroup>
 
 </Project>
