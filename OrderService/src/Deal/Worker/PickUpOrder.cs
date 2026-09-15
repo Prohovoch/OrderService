@@ -15,7 +15,7 @@ namespace OrderService.src.Deal.Worker
 
         public override void Configure()
         {
-            Patch("api/worker/{telegramId}/order/{orderId}");
+            Patch("api/worker/{telegramId}/order/{orderId}/pickup");
             AllowAnonymous();
             Validator<PickUpOrderValidator>();
 
@@ -31,7 +31,7 @@ namespace OrderService.src.Deal.Worker
                 await Send.NotFoundAsync();
                 return;
             }
-            var specOrder = await _dbContext.Orders.Where(x => x.Id == req.OrderId && x.WorkerId == entityId.Id).FirstOrDefaultAsync(ct);
+            var specOrder = await _dbContext.Orders.Where(x => x.Id == req.OrderId).FirstOrDefaultAsync(ct);
 
             if (specOrder is null)
             {
@@ -39,12 +39,17 @@ namespace OrderService.src.Deal.Worker
                 return;
             }
 
+            if (specOrder.WorkerId is not null)
+            {
+                await Send.ForbiddenAsync();
+                return;
+            }
 
             specOrder.WorkerId = entityId.Id;
             specOrder.Status = OrderStatus.Processing;
 
             await _dbContext.SaveChangesAsync(ct);
-            await Send.OkAsync();
+            await Send.NoContentAsync();
 
 
         }
