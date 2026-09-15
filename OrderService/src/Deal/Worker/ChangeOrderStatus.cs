@@ -35,20 +35,21 @@ namespace OrderService.src.Deal.Worker
         {
            
          
-            var workerExists = await _dbContext.Workers.AnyAsync(x => x.TgId == req.TelegramId, ct);
-            if (!workerExists)
-            {
-                AddError("TelegramId", "No worker found with the given Telegram ID.");
-                await Send.ErrorsAsync(400, ct);
-                return;
-            }
-
-            var specOrder = await _dbContext.Orders.Where(x => x.Id == req.OrderId).FirstOrDefaultAsync(ct);
-            if (specOrder is null)
+            var workerId = await _dbContext.Workers.Where(x => x.TgId == req.TelegramId).Select(x => new {x.Id } ).FirstOrDefaultAsync(ct);
+            if (workerId is null) 
             {
                 await Send.NotFoundAsync();
                 return;
             }
+
+            var specOrder = await _dbContext.Orders.Where(x => x.Id == req.OrderId && x.WorkerId == workerId.Id).FirstOrDefaultAsync(ct);
+            if(specOrder is null)
+            {
+                AddError("OrderId:", "Order not found or does not belong to the worker.");
+                await Send.ForbiddenAsync();
+                return;
+            }
+           
             if(!Enum.TryParse<OrderStatus>(req.Status.ToString(), out var newStatus))
             {
                 AddError("Status", "Invalid status value.");

@@ -25,17 +25,17 @@ namespace OrderService.src.Deal.Worker
         public override async Task HandleAsync(DetachFromOrderRequest req, CancellationToken ct)
         {
             // Get all orders which connects with the user.
-            var workerExists = await _dbContext.Workers.AnyAsync(x => x.TgId == req.TelegramId, ct);
-            if (!workerExists)
+            var workerId = await _dbContext.Workers.Where(x => x.TgId == req.TelegramId).Select(x => new {x.Id}).FirstOrDefaultAsync(ct);
+            if (workerId is null)
             {
                 await Send.NotFoundAsync();
                 return;
             }
-            var specOrder = await _dbContext.Orders.Where(x => x.Id == req.OrderId).FirstOrDefaultAsync(ct);
+            var specOrder = await _dbContext.Orders.Where(x => x.Id == req.OrderId && x.WorkerId == workerId.Id).FirstOrDefaultAsync(ct);
 
             if (specOrder is null)
             {
-                await Send.NotFoundAsync();
+                await Send.ForbiddenAsync();
                 return;
             }
 
