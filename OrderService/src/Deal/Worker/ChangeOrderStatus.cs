@@ -62,7 +62,7 @@ namespace OrderService.src.Deal.Worker
             if (!isValid)
             {
                 AddError("Transition:", "Cannot convert transition");
-                await Send.ErrorsAsync();
+                await Send.ErrorsAsync(statusCode: 422);
                 return;
             }
             specOrder.Status = newStatus; 

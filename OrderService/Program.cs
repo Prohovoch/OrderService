@@ -12,7 +12,7 @@ namespace OrderService
 
 
             var app = builder.Build();
-            var 
+            // TODO: tg client or http factory client impl here.
 
             // Configure the HTTP request pipeline.
             app.UseFastEndpoints();
