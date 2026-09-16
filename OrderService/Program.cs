@@ -1,4 +1,5 @@
 using FastEndpoints;
+using Telegram.Bot;
 namespace OrderService
 {
     public class Program
@@ -7,7 +8,8 @@ namespace OrderService
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddFastEndpoints();
-
+            builder.Services.AddSingleton<ITelegramBotClient>(new TelegramBotClient("YOUR_TELEGRAM_BOT_TOKEN")); //mock. gonna change it 
+            // when i implement env vars.
             // Add services to the container.
 
 
