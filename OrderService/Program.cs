@@ -1,4 +1,5 @@
 using FastEndpoints;
+using System.Text.Json.Serialization;
 using Telegram.Bot;
 namespace OrderService
 {
@@ -17,7 +18,9 @@ namespace OrderService
             // TODO: tg client or http factory client impl here.
 
             // Configure the HTTP request pipeline.
-            app.UseFastEndpoints();
+            app.UseFastEndpoints(c =>
+                c.Serializer.Options.Converters.Add(new JsonStringEnumConverter())
+                );
             app.UseHttpsRedirection();
 
             // middleware;
