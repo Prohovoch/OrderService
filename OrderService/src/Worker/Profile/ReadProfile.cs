@@ -23,10 +23,14 @@ namespace OrderService.src.Worker.Profile
         }
         public override async Task HandleAsync(ReadProfileRequest req, CancellationToken ct)
         {
-            var mainId = await _dbContext.Workers.AsNoTracking().Where(x => x.TgId == req.TelegramId).Select(x => (Guid?)x.Id).FirstAsync(ct);
-            
+            var entityId = await _dbContext.Workers.AsNoTracking().Where(x => x.TgId == req.TelegramId).Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+            if (entityId is null)
+            {
+                await Send.NotFoundAsync();
+                return;
+            }
             var workerProfileEntity = await _dbContext.WorkerProfiles.AsNoTracking()
-                .FirstOrDefaultAsync(r => r.WorkerId == mainId, ct);
+                .FirstOrDefaultAsync(r => r.WorkerId == entityId.Value, ct);
 
             if (workerProfileEntity is null)
             {

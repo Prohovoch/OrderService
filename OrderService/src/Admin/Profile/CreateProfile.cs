@@ -26,10 +26,16 @@ namespace OrderService.src.Admin.Profile
         public override async Task HandleAsync(CreateProfileRequest req, CancellationToken ct)
         {
 
-            var entityId = await _dbContext.Admins.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => x.Id).FirstAsync(ct);
+            var entityId = await _dbContext.Admins.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+            if(entityId is null)
+            {
+                // make some logging logic here asap
+                await Send.NotFoundAsync();
+                return;
+            }
             var profile = new AdminProfile
             {
-                AdminId = entityId,
+                AdminId = entityId.Value,
                 Name = req.Name,
                 Surname = req.Surname,
                 Age = req.Age,

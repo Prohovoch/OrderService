@@ -28,12 +28,16 @@ namespace OrderService.src.Worker.Profile
         {
 
 
-            var mainId = await _dbContext.Workers.Where(x => x.TgId == req.TelegramId).Select(x => x.Id).FirstAsync(ct);
-
+            var entityId = await _dbContext.Workers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+            if (entityId is null)
+            {
+                await Send.NotFoundAsync();
+                return;
+            }
 
             var workerProfile = new WorkerProfile
             {
-                WorkerId = mainId,
+                WorkerId = entityId.Value,
                 Name = req.Name,
                 Surname = req.Surname,
                 Age = req.Age,

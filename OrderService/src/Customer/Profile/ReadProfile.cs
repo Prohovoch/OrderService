@@ -25,14 +25,18 @@ namespace OrderService.src.Customer.Profile
 
         public override async Task HandleAsync(ReadCustomerProfileRequest req, CancellationToken ct)
         {
-            var mainId = await _dbContext.Customers.AsNoTracking()
+            var entityId = await _dbContext.Customers.AsNoTracking()
                 .Where(r => r.TgId == req.TelegramId)
-                .Select(r => r.Id)
-                .FirstAsync(ct);
-            
+                .Select(r => (Guid?)r.Id)
+                .FirstOrDefaultAsync(ct);
+            if (entityId is null)
+            {
+                await Send.NotFoundAsync();
+                return;
+            }
 
             var customerProfileEntity = await _dbContext.CustomerProfiles.AsNoTracking()
-                .Where(r => r.CustomerId == mainId).FirstOrDefaultAsync(ct);
+                .Where(r => r.CustomerId == entityId.Value).FirstOrDefaultAsync(ct);
                 
             if (customerProfileEntity is null)
             {

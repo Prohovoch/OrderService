@@ -20,16 +20,22 @@ namespace OrderService.src.Customer.Profile
         {
 
 
-            var mainId = await _dbContext.Customers
-                .Where(p => p.TgId == req.TelegramId)
-                .Select(p => p.Id)
-                .FirstAsync(ct);
+            var entityId = await _dbContext.Customers
+                .Where(p => p.TgId == req.TelegramId).AsNoTracking()
+                .Select(p => (Guid?)p.Id)
+                .FirstOrDefaultAsync(ct);
+           
+            if (entityId is null)
+            {
+                await Send.NotFoundAsync();
+                return;
             
-            var profile = await _dbContext.CustomerProfiles.FirstOrDefaultAsync(p => p.CustomerId == mainId, ct);
+            }
+            var profile = await _dbContext.CustomerProfiles.FirstOrDefaultAsync(p => p.CustomerId == entityId.Value, ct);
             if (profile is null)
             {
-                AddError("ProfileId:", "Profile object not found");
-                await Send.ErrorsAsync();
+               
+                await Send.NotFoundAsync();
                 return;
             }
 
