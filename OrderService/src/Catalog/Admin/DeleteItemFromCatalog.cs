@@ -23,14 +23,17 @@ namespace OrderService.src.Catalog.Admin
         public override async Task HandleAsync(DeleteItemRequest req, CancellationToken ct)
         {
 
-            var adminId = await _dbContext.Admins.Where(a => a.TgId == req.TelegramId).Select(a => a.Id).FirstAsync(ct); // XDDDDDDDDDDDDDDDDD
-            
-            bool isOwned = await _dbContext.Products.AnyAsync(p => p.Id == req.ProductId && p.AdminId == adminId, ct); // same as in patch thing.
+            var entityId = await _dbContext.Admins.AsNoTracking().Where(a => a.TgId == req.TelegramId).Select(a => (Guid?)a.Id).FirstOrDefaultAsync(ct); // XDDDDDDDDDDDDDDDDD
+            if (entityId is null)
+            {
+                await Send.ForbiddenAsync();
+                return;
+            }
+            bool isOwned = await _dbContext.Products.AnyAsync(p => p.Id == req.ProductId && p.AdminId == entityId.Value, ct); // same as in patch thing.
             // i dont want to think about concurrency right now cause i guess there will be only 1 instance of app.
             if (!isOwned)
             {
-                AddError("AdminId: ", "Invalid id");
-                await Send.ErrorsAsync();
+                await Send.ForbiddenAsync();
                 return;
             }
 

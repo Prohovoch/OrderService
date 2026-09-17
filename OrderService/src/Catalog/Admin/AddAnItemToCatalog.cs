@@ -22,17 +22,22 @@ namespace OrderService.src.Catalog.Admin {
 
         public override async Task HandleAsync(AddAnItemToCatalogRequest req, CancellationToken ct)
         {
-            var adminId = await _dbContext.Admins
+            var entityId = await _dbContext.Admins
                 .Where(x => x.TgId == req.TelegramId)
-                .Select(x => x.Id).FirstAsync(ct);
-
+                .Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+            
+            if(entityId is null)
+            {
+                await Send.NotFoundAsync();
+                return;
+            }
             
                             // mapping 
             var catalogItem = new CatalogItem
             {   
                 Id = Guid.CreateVersion7(),
                 // client send
-                AdminId = adminId,
+                AdminId = entityId.Value,
                 ProductName = req.ProductName,
                 CreatorName = req.CreatorName,
                 CreatorSurname = req.CreatorSurname,

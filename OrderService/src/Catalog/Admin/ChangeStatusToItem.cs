@@ -24,9 +24,16 @@ namespace OrderService.src.Catalog.Admin
         public override async Task HandleAsync(ChangeStatsCatalogRequest req, CancellationToken ct)
         {
 
-            var adminId = await _dbContext.Admins.Where(x => x.TgId == req.TelegramId).Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
-            // mapping 
-            var product = await _dbContext.Products.FirstOrDefaultAsync(x => x.Id == req.ProductId && x.AdminId == adminId || x.AdminId == null, ct); // protection from concurrent requests, shit -  no solution.
+            var entityId = await _dbContext.Admins.AsNoTracking().Where(x => x.TgId == req.TelegramId).Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+            
+            if (entityId is null)
+            {
+                await Send.ForbiddenAsync();
+                return;
+            }
+            
+            // taking up product which we want to change.      
+            var product = await _dbContext.Products.FirstOrDefaultAsync(x => x.Id == req.ProductId, ct); // protection from concurrent requests, shit -  no solution.
             if (product is null)
             {
                 AddError("ProductID:", "Product not found.");
@@ -34,22 +41,33 @@ namespace OrderService.src.Catalog.Admin
                 return;
             }
 
-            if (product.AdminId is null) // if orphanic dependency
+            if (product.AdminId is not null && product.AdminId != entityId.Value) // if orphanic dependency
             {
-                product.AdminId = adminId;
+                await Send.ForbiddenAsync();
+                return;
             }
-
+            product.AdminId = entityId.Value;
             product.ProductName = req.ProductName ?? product.ProductName;
             product.Price = req.Price ?? product.Price;
-            product.AvailabilityStatus = req.AvailabilityStatus.HasValue ? (ProductAvailabilityStatus)req.AvailabilityStatus.Value : product.AvailabilityStatus;
-            product.Details = new ProductDetails
+            
+            if (req.AvailabilityStatus.HasValue)
             {
-                Ingredients = req.Ingredients ?? product.Details.Ingredients,
-                Volume = req.Volume ?? product.Details.Volume,
-                Weight = req.Weight ?? product.Details.Weight,
+                product.AvailabilityStatus = req.AvailabilityStatus.Value switch
+                {
+                    ChangeProductAvStatus.Available => ProductAvailabilityStatus.Available,
+                    ChangeProductAvStatus.OutOfStock => ProductAvailabilityStatus.OutOfStock,
+                    _ => product.AvailabilityStatus
+                };
+            }
 
-            };
-           
+            product.Details ??= new ProductDetails();
+            product.Details.Ingredients = req.Ingredients ?? product.Details.Ingredients;
+            product.Details.Volume = req.Volume ?? product.Details.Volume;
+            product.Details.Weight = req.Weight ?? product.Details.Weight;
+            
+
+
+
 
 
             await _dbContext.SaveChangesAsync(ct);
