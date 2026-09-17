@@ -28,24 +28,31 @@ namespace OrderService.src.Cart.Customer
         public override async Task HandleAsync(AddItemToCartRequest req, CancellationToken ct)
         {
             // checks if the product exists in the database on a CATALOG page
-            var entityId = await _dbContext.Customers.Where(x => x.TgId == req.TelegramId).Select(x => x.Id).FirstAsync(ct);
+            var entityId = await _dbContext.Customers.AsNoTracking().Where(x => x.TgId == req.TelegramId).Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+            
+            if (entityId is null)
+            {
+                await Send.NotFoundAsync();
+                return;
+            }
+            
             var productExists = await _dbContext.Products.AnyAsync(p => p.Id == req.ProductId, ct);
 
             if (!productExists)
             {
                 AddError("ProductId", "The specified product does not exist. Reload page to see what changed");
-                await Send.ErrorsAsync();
+                await Send.ErrorsAsync(); //?
                 return;
             }
             // checks if the cart exists for the user, if not creates a new cart (1 of 2 possibilities)
-            var bucket = await _dbContext.Carts.Include(c => c.Items).FirstOrDefaultAsync(c => c.CustomerId == req.UserId, ct);
+            var bucket = await _dbContext.Carts.Include(c => c.Items).FirstOrDefaultAsync(c => c.CustomerId == entityId.Value, ct);
 
             if (bucket is null)
             {
                 bucket = new Bucket
                 {
                     Id = Guid.CreateVersion7(), // lol, my ValueGeneratedOnAdd working very nicely.
-                    CustomerId = entityId,
+                    CustomerId = entityId.Value,
                     
 
                     // we creating in db v7 guid, 

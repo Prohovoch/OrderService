@@ -18,7 +18,7 @@ namespace OrderService.src.Cart.Customer
 
         public override void Configure()
         {
-            Delete("api/customer/cart/items{bucketItemId}");
+            Delete("api/customer/cart/items/{bucketItemId}");
             AllowAnonymous();
             Validator<DeleteAnItemValidator>();
         }
@@ -27,9 +27,14 @@ namespace OrderService.src.Cart.Customer
         public override async Task HandleAsync(DeleteItemRequest req, CancellationToken ct)
         {
 
-            var entityId = await _dbContext.Customers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => x.Id).FirstAsync();
+            var entityId = await _dbContext.Customers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             // check if user has it
-            bool isOwned = await _dbContext.Carts.AnyAsync(c => c.CustomerId == entityId, ct);
+            if (entityId is null)
+            {
+                await Send.NotFoundAsync();
+                return;
+            }
+            bool isOwned = await _dbContext.Carts.AnyAsync(c => c.CustomerId == entityId.Value, ct);
 
             if (!isOwned)
             {
@@ -38,7 +43,7 @@ namespace OrderService.src.Cart.Customer
             }
 
             var affectedRows = await _dbContext.CartItems
-                .Where(bi => bi.Id == req.BucketItemId && bi.Bucket!.CustomerId == entityId) //  hack. mocking warnings. we already have created cart at this point.
+                .Where(bi => bi.Id == req.BucketItemId && bi.Bucket!.CustomerId == entityId.Value) //  hack. mocking warnings. we already have created cart at this point.
                 .ExecuteDeleteAsync(ct);
             
             // if wifi is baddie :(

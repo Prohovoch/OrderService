@@ -26,10 +26,14 @@ namespace OrderService.src.Cart.Customer
 
         public override async Task HandleAsync(GetCartRequest req, CancellationToken ct)
         {
-            var entityId = await _dbContext.Customers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => x.Id).FirstAsync(ct);
-
+            var entityId = await _dbContext.Customers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+            if (entityId is null)
+            {
+                await Send.NotFoundAsync();
+                return;
+            }
             // We need  a projection so we made this tyoe of query. Fast endpoints cant do any shit with custom dto from combo entity.
-            var cartResponse = await _dbContext.Carts.Where(c => c.CustomerId == entityId).AsNoTracking()
+            var cartResponse = await _dbContext.Carts.Where(c => c.CustomerId == entityId.Value).AsNoTracking()
                 .Select(c => new GetCartResponse
                 {
                     Items = c.Items.Select(i => new CartItemResponse
@@ -61,7 +65,7 @@ namespace OrderService.src.Cart.Customer
                     var bucket = new Bucket
                     {
                         Id = Guid.CreateVersion7(),
-                        CustomerId = entityId,
+                        CustomerId = entityId.Value,
                     };
                     _dbContext.Carts.Add(bucket);
                     await _dbContext.SaveChangesAsync(ct);

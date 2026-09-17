@@ -30,8 +30,13 @@ namespace OrderService.src.Cart.Customer
         {
             // checks if the product exists in the database
 
-            var entityId = await _dbContext.Customers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => x.Id).FirstAsync(ct);
-            var productInfo = await _dbContext.CartItems.Where(p => p.Id == req.BucketItemId && p.BucketId == req.BucketId && p.Bucket!.CustomerId == entityId).AsNoTracking().Select(p =>  new { p.Product.Price}).FirstOrDefaultAsync(ct);
+            var entityId = await _dbContext.Customers.AsNoTracking().Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+            if (entityId is null)
+            {
+                await Send.NotFoundAsync();
+                return;
+            }
+            var productInfo = await _dbContext.CartItems.Where(p => p.Id == req.BucketItemId && p.BucketId == req.BucketId && p.Bucket!.CustomerId == entityId.Value).AsNoTracking().Select(p =>  new { p.Product.Price}).FirstOrDefaultAsync(ct);
 
             if (productInfo is null) //  guarantees not existing
             {
@@ -42,7 +47,7 @@ namespace OrderService.src.Cart.Customer
 
           
        
-            var affectedRows = await _dbContext.CartItems.Where(p => p.Id == req.BucketItemId && p.BucketId == req.BucketId && p.Bucket!.CustomerId == entityId).ExecuteUpdateAsync(p => p.SetProperty(x => x.BucketItemQuantity, req.Quantity), ct);
+            var affectedRows = await _dbContext.CartItems.Where(p => p.Id == req.BucketItemId && p.BucketId == req.BucketId && p.Bucket!.CustomerId == entityId.Value).ExecuteUpdateAsync(p => p.SetProperty(x => x.BucketItemQuantity, req.Quantity), ct);
             if (affectedRows == 0)
             {
                 AddError("UpdateFailed", "Failed to update the item quantity.");
