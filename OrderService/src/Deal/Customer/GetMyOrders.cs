@@ -26,9 +26,14 @@ namespace OrderService.src.Deal.Customer
         public override async Task HandleAsync(GetMyOrdersRequest req, CancellationToken ct)
         {
             // Get all orders which connects with the user.
-            var entityId = await _dbContext.Customers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => x.Id).FirstAsync(ct);
+            var entityId = await _dbContext.Customers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+            if (entityId is null)
+            {
+                await Send.ForbiddenAsync();
+                return;
+            }
             var userOrders = await _dbContext.Orders.AsNoTracking()
-                .Where(o => o.CustomerId == entityId)
+                .Where(o => o.CustomerId == entityId.Value)
                 .Select(o => new OrderResponseDto
 
                 {
@@ -36,14 +41,15 @@ namespace OrderService.src.Deal.Customer
                     // CustomerName = o.Customer != null && o.Customer.Profile != null ? o.Customer.Profile.Name : "Неизвестно",
                     // CustomerSurname = o.Customer != null && o.Customer.Profile != null ? o.Customer.Profile.Surname : "Неизвестно",
                     
-                    CustomerName = o.ClientName!, // Assuming o.Customer and o.Customer.Profile are not null and we know that user is active here.
-                    CustomerSurname = o.ClientSurname!,
+                    CustomerName = o.ClientName, // Assuming o.Customer and o.Customer.Profile are not null and we know that user is active here.
+                    CustomerSurname = o.ClientSurname,
                     CreatedAt = o.CreatedAt,
                     CompletedAt = o.CompletedAt,
-
+                    OrderDispNumber = o.DisplayOrderNumber,
 
                     Items = o.Items.Select(oi => new GetOrderResponseItems
                     {
+                        
                         ProductName = oi.Details.ProductName,
                         Quantity = oi.Details.Quantity,
                         TotalPrice = oi.Details.TotalPrice,
@@ -51,6 +57,7 @@ namespace OrderService.src.Deal.Customer
                     }).ToList()
                 })
                 .ToListAsync(ct);
+            
 
             await Send.OkAsync(new GetMyOrdersResponse { Orders = userOrders });
 
@@ -71,7 +78,7 @@ namespace OrderService.src.Deal.Customer
     public sealed record GetOrderResponseItems
     {
 
-       
+     
         public string ProductName { get; init; } = null!;
         public int Quantity { get; init ; }
         public decimal TotalPrice { get; init; } // ?
@@ -92,6 +99,7 @@ namespace OrderService.src.Deal.Customer
         public DateTimeOffset? CompletedAt { get; init; }
         public required string CustomerSurname { get; init; }
         public required string CustomerName { get; init; }
+        public string OrderDispNumber { get; init; } = null!;
         public List<GetOrderResponseItems> Items { get; init; } = [];
     }
     public sealed record GetMyOrdersRequest

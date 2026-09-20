@@ -24,9 +24,9 @@ namespace OrderService.Infrastructure.Entities.Deal
         public Guid? WorkerId { get; set; }
         public Customer? Customer { get; set; }
         public Worker? Worker { get; set; }
-        public string? ClientName { get; set; }  // safe thing
-        public string? ClientSurname { get; set; } 
-        public int DisplayOrderNumber { get; set; } // This is a number that will be displayed to the customer.
+        public required string ClientName { get; set; }  // safe thing
+        public required string ClientSurname { get; set; } 
+        public required string  DisplayOrderNumber { get; set; } // This is a number that will be displayed to the customer.
         public string? CustomerPhoneNumber { get; set; } 
         public List<OrderItem> Items { get; } = [];
         public DateTimeOffset CreatedAt { get; set; } 

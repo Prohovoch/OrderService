@@ -16,7 +16,7 @@ namespace OrderService.src.Deal.Customer
 
         public override void Configure()
         {
-            Post("api/customer/order");
+            Post("api/customer/{telegramId}/order");
             Roles("customer");
             Validator<AddAnItemToOrderValidator>();
 
@@ -25,11 +25,17 @@ namespace OrderService.src.Deal.Customer
 
         public override async Task HandleAsync(AddAnItemToOrderRequest req, CancellationToken ct)
         {
-            var entityId = await _dbContext.Customers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => x.Id).FirstAsync(ct);
+            var entityId = await _dbContext.Customers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+            if (entityId is null)
+            {
+                AddError("CustomerId:", $"Customer with TelegramId {req.TelegramId} not found.");
+                await Send.ForbiddenAsync();
+                return;
+            }
             var uniqueCartItemsIds = req.CartItemIds.ToHashSet();
             var selectedBucketItems = await _dbContext.CartItems.Where(ci => uniqueCartItemsIds.Contains(ci.Id) && ci.Bucket!.CustomerId == entityId).ToListAsync(ct);
-            
-            if(selectedBucketItems.Count != uniqueCartItemsIds.Count)
+
+            if (selectedBucketItems.Count != uniqueCartItemsIds.Count)
             {
                 AddError("Count: ", " Possible that it is not ur cart, or an item was deleted");
                 await Send.ErrorsAsync();
@@ -49,26 +55,20 @@ namespace OrderService.src.Deal.Customer
                 return;
             }
 
-         
-
-            // Creating an Order object.
-            var customerPhoneNumber = await _dbContext.CustomerProfiles.Where(cp => cp.CustomerId == entityId).Select(p => p.PhoneNumber).FirstAsync(ct);
-
-
             var order = new DomainOrder // Fast endpoint somehow have a defitnition for order???????
             {
                 Id = Guid.CreateVersion7(),
 
                 CustomerId = entityId,
 
-                CustomerPhoneNumber = customerPhoneNumber,
+                CustomerPhoneNumber = req.CustomerPhoneNumber,
                 Status = OrderStatus.Created,
                 CreatedAt = DateTimeOffset.UtcNow,
                 ClientName = req.ClientName,
                 ClientSurname = req.ClientSurname,
-                DisplayOrderNumber =  Random.Shared.Next(1000, 9999), 
+                DisplayOrderNumber = Random.Shared.Next(1000, 9999).ToString(), // remove
             };
-        
+
             foreach (var item in selectedBucketItems)
             {
                 var product = products[item.ProductId];
@@ -88,21 +88,22 @@ namespace OrderService.src.Deal.Customer
             }
             _dbContext.Orders.Add(order);
             await _dbContext.SaveChangesAsync(ct);
-            await Send.OkAsync(new OrderResponse { Id = order.Id});
+            await Send.OkAsync(new OrderResponse { Id = order.Id });
         }
     }
     public class AddAnItemToOrderValidator : Validator<AddAnItemToOrderRequest>
     {
         public AddAnItemToOrderValidator()
         {
-            RuleFor(x => x.TelegramId).NotEmpty().WithMessage("UserId required!");
+            RuleFor(x => x.TelegramId).NotEmpty().WithMessage("TelegramId is required!");
             RuleFor(x => x.CartItemIds).NotEmpty().WithMessage("An Empty order cannot be created!");
             RuleFor(x => x.ClientName).NotEmpty().WithMessage("Client name is required.");
             RuleFor(x => x.ClientSurname).NotEmpty().WithMessage("Client surname is required.");
+            RuleFor(x => x.CustomerPhoneNumber).Matches(@"^(\+?7|8)\d{10}$").NotEmpty().WithMessage("Invalid phone number format.");
         }
     }
 
-   
+
 
     public sealed record OrderResponse
     {
@@ -113,16 +114,16 @@ namespace OrderService.src.Deal.Customer
     {
         // return a list of calatog items.
         // use a flattenned dto without heritance.
-        
+        [BindFrom("telegramId")]
         public long TelegramId { get; init; }
         public required List<Guid> CartItemIds { get; init; }
-        public required string ClientName {  get; init; }
+        public required string ClientName { get; init; }
         public required string ClientSurname { get; init; }
-        public required string DeliveryAddress {  get; init; }
+        public required string CustomerPhoneNumber { get; init; }
 
     }
-
-
-
 }
+
+
+
 
