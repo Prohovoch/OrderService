@@ -5,7 +5,7 @@ using OrderService.Infrastructure.Entities.Buyer;
 using OrderService.Infrastructure.Entities.Employee;
 using OrderService.Infrastructure.Persistence;
 
-namespace OrderService.src.Worker.Profile
+namespace OrderService.src.Profile.Worker
 {
     public class UpdateProfile(ApplicationDbContext dbContext) : Endpoint<UpdateProfileRequest>
     {

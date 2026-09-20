@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using OrderService.Infrastructure.Entities.Buyer;
 using OrderService.Infrastructure.Persistence;
 
-namespace OrderService.src.Customer.Profile
+namespace OrderService.src.Profile.Customer
 {
     public class UpdateProfile(ApplicationDbContext dbContext) : Endpoint<UpdateProfileRequest>
     {
@@ -27,7 +27,7 @@ namespace OrderService.src.Customer.Profile
            
             if (entityId is null)
             {
-                await Send.NotFoundAsync();
+                await Send.ForbiddenAsync();
                 return;
             
             }

@@ -5,7 +5,7 @@ using OrderService.Infrastructure.Entities.Buyer;
 using OrderService.Infrastructure.Persistence;
 
 
-namespace OrderService.src.Customer.Profile
+namespace OrderService.src.Profile.Customer
 {
     // REPR endpoint
     public class ReadProfile(ApplicationDbContext dbContext) : Endpoint<ReadCustomerProfileRequest, ReadCustomerProfileResponse>
@@ -31,7 +31,7 @@ namespace OrderService.src.Customer.Profile
                 .FirstOrDefaultAsync(ct);
             if (entityId is null)
             {
-                await Send.NotFoundAsync();
+                await Send.ForbiddenAsync();
                 return;
             }
 

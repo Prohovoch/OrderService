@@ -5,7 +5,7 @@ using OrderService.Infrastructure.Entities.Administrator;
 using OrderService.Infrastructure.Entities.Catalog;
 using OrderService.Infrastructure.Persistence;
 
-namespace OrderService.src.Admin.Profile
+namespace OrderService.src.Profile.Admin
 {
     public class UpdateProfile(ApplicationDbContext dbContext) : Endpoint<UpdateProfileRequest>
     {

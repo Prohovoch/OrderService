@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 
 
-namespace OrderService.src.Admin.Profile
+namespace OrderService.src.Profile.Admin
 {
     // REPR endpoint
     public class CreateProfile(ApplicationDbContext dbContext) : Endpoint<CreateProfileRequest>
