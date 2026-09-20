@@ -28,7 +28,7 @@ namespace OrderService.src.Deal.Worker
             var entityId = await _dbContext.Workers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             if (entityId is null)
             {
-                await Send.NotFoundAsync();
+                await Send.ForbiddenAsync();
                 return;
             }
             var specOrder = await _dbContext.Orders.Where(x => x.Id == req.OrderId).FirstOrDefaultAsync(ct);
@@ -39,6 +39,13 @@ namespace OrderService.src.Deal.Worker
                 return;
             }
 
+            int activeOrdersCount =  await _dbContext.Orders.Where(x => x.WorkerId == entityId.Value && x.Status == OrderStatus.Processing).CountAsync(ct);
+            if (activeOrdersCount >= 3)
+            {
+                AddError("You have reached the maximum number of active orders (3). Please complete or close existing orders before picking up new ones.");
+                await Send.ErrorsAsync();
+                return;
+            }
             if (specOrder.WorkerId is not null)
             {
                 await Send.ForbiddenAsync();
