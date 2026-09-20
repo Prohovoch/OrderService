@@ -26,6 +26,8 @@ namespace OrderService.Infrastructure.Entities.Deal
         public Worker? Worker { get; set; }
         public required string ClientName { get; set; }  // safe thing
         public required string ClientSurname { get; set; } 
+        public string? WorkerName { get; set; }
+        public string? WorkerSurname { get; set; }
         public required string  DisplayOrderNumber { get; set; } // This is a number that will be displayed to the customer.
         public string? CustomerPhoneNumber { get; set; } 
         public List<OrderItem> Items { get; } = [];

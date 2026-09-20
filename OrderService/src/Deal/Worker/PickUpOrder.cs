@@ -25,7 +25,7 @@ namespace OrderService.src.Deal.Worker
         public override async Task HandleAsync(PickUpOrderRequest req, CancellationToken ct)
         {
             // Get all orders which connects with the user.
-            var entityId = await _dbContext.Workers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => new {x.Id}).FirstOrDefaultAsync(ct);
+            var entityId = await _dbContext.Workers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             if (entityId is null)
             {
                 await Send.NotFoundAsync();
@@ -45,7 +45,7 @@ namespace OrderService.src.Deal.Worker
                 return;
             }
 
-            specOrder.WorkerId = entityId.Id;
+            specOrder.WorkerId = entityId.Value;
             specOrder.Status = OrderStatus.Processing;
 
             await _dbContext.SaveChangesAsync(ct);

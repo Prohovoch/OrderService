@@ -28,14 +28,14 @@ namespace OrderService.src.Deal.Worker
             var workerId = await _dbContext.Workers.Where(x => x.TgId == req.TelegramId).Select(x => new {x.Id}).FirstOrDefaultAsync(ct);
             if (workerId is null)
             {
-                await Send.NotFoundAsync();
+                await Send.ForbiddenAsync();
                 return;
             }
             var specOrder = await _dbContext.Orders.Where(x => x.Id == req.OrderId && x.WorkerId == workerId.Id).FirstOrDefaultAsync(ct);
 
             if (specOrder is null)
             {
-                await Send.ForbiddenAsync();
+                await Send.NotFoundAsync();
                 return;
             }
 

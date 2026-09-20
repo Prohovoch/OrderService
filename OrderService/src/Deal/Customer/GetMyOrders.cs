@@ -89,7 +89,7 @@ namespace OrderService.src.Deal.Customer
     public sealed record GetMyOrdersResponse
     {
 
-        public required List<OrderResponseDto> Orders{ get; init; }
+        public List<OrderResponseDto> Orders { get; init; } = [];
        
     }
 

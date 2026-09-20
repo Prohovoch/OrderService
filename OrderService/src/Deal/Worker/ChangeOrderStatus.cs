@@ -35,14 +35,14 @@ namespace OrderService.src.Deal.Worker
         {
 
 
-            var workerId = await _dbContext.Workers.Where(x => x.TgId == req.TelegramId).Select(x => new { x.Id }).FirstOrDefaultAsync(ct);
-            if (workerId is null)
+            var entityId = await _dbContext.Workers.Where(x => x.TgId == req.TelegramId).Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+            if (entityId is null)
             {
                 await Send.NotFoundAsync();
                 return;
             }
 
-            var specOrder = await _dbContext.Orders.Where(x => x.Id == req.OrderId && x.WorkerId == workerId.Id).FirstOrDefaultAsync(ct);
+            var specOrder = await _dbContext.Orders.Where(x => x.Id == req.OrderId && x.WorkerId == entityId.Value).FirstOrDefaultAsync(ct);
             if (specOrder is null)
             {
                 AddError("OrderId:", "Order not found or does not belong to the worker.");
