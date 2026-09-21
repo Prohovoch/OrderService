@@ -101,7 +101,7 @@ namespace OrderService.src.Catalog.Admin
     {
         // return a list of calatog items.
         // use a flattenned dto without heritance.
-       
+        [FromHeader("Admin-Telegram-Id")]
         public long TelegramId { get; init; }
         [BindFrom("productId")]
         public Guid ProductId { get; init; }

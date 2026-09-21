@@ -31,7 +31,7 @@ namespace OrderService.src.Catalog.Admin
             }
             bool isOwned = await _dbContext.Products.AnyAsync(p => p.Id == req.ProductId && p.AdminId == entityId.Value, ct); // same as in patch thing.
             // i dont want to think about concurrency right now cause i guess there will be only 1 instance of app.
-            if (!isOwned)
+            if (isOwned is false)
             {
                 await Send.ForbiddenAsync();
                 return;
@@ -69,6 +69,7 @@ namespace OrderService.src.Catalog.Admin
     {
         // return a list of calatog items.
         // use a flattenned dto without heritance.
+        [FromHeader("Admin-Telegram-Id")]
         public long TelegramId { get; init; }
 
         [BindFrom("productId")]

@@ -1,29 +1,35 @@
 ﻿using FastEndpoints;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using OrderService.Infrastructure.Persistence;
-using OrderService.Infrastructure.Entities.Catalog;
 using Microsoft.EntityFrameworkCore.Storage;
+using OrderService.Infrastructure.Entities.Catalog;
+using OrderService.Infrastructure.Persistence;
 
 namespace OrderService.src.Catalog.Admin
 {
-    public class GetCatalogAdInfo(ApplicationDbContext dbContext) : EndpointWithoutRequest
+    public class GetCatalogAdInfo(ApplicationDbContext dbContext) : Endpoint<GetCatalogAdInfoRequest, List<CatalogResponse>>
     {
 
         private readonly ApplicationDbContext _dbContext = dbContext;
 
         public override void Configure()
         {
-            Get("api/catalog");
+            Get("api/admin/catalog");
             AllowAnonymous();
-
+            Validator<GetCatalogAdInfoValidator>();
 
         }
 
 
-        public override async Task HandleAsync(CancellationToken ct)
+        public override async Task HandleAsync(GetCatalogAdInfoRequest req, CancellationToken ct)
         {
             // checks if the product exists in the database on CATALOG page
-
+            bool isAdminExists = await _dbContext.Admins.AnyAsync(x => x.TgId == req.TelegramId, ct);
+            if (isAdminExists is false)
+            {
+                await Send.ForbiddenAsync();
+                return;
+            }
             var catalogResult = await _dbContext.Products.AsNoTracking().Select(r => new CatalogResponse
             {
                 ItemId = r.Id,
@@ -40,7 +46,7 @@ namespace OrderService.src.Catalog.Admin
                 : r.Type == ProductType.Soup ? GetProductType.Soup
                 : r.Type == ProductType.Salad ? GetProductType.Salad
                 : r.Type == ProductType.Sushi ? GetProductType.Sushi
-                : GetProductType.Drinks,
+                : GetProductType.Drinks, // i want to vommit lol
                 Ingredients = r.Details.Ingredients,
                 Volume = r.Details.Volume,
                 Weight = r.Details.Weight
@@ -50,6 +56,14 @@ namespace OrderService.src.Catalog.Admin
             }).ToListAsync(ct);
 
             await Send.OkAsync(catalogResult);
+        }
+    }
+    public class GetCatalogAdInfoValidator : Validator<GetCatalogAdInfoRequest>
+    {
+        public GetCatalogAdInfoValidator()
+        {
+            RuleFor(x => x.TelegramId).NotEmpty().WithMessage("Telegram ID is required.");
+
         }
     }
 
@@ -84,7 +98,13 @@ namespace OrderService.src.Catalog.Admin
 
     }
 
-
+    public sealed record GetCatalogAdInfoRequest
+    {
+        // return a list of calatog items.
+        // use a flattenned dto without heritance.
+        [FromHeader("Admin-Telegram-Id")]
+        public long TelegramId { get; init; }
+    }
 
 }
 

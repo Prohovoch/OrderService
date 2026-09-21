@@ -28,7 +28,7 @@ namespace OrderService.src.Catalog.Admin {
             
             if(entityId is null)
             {
-                await Send.NotFoundAsync();
+                await Send.ForbiddenAsync();
                 return;
             }
             
@@ -50,13 +50,13 @@ namespace OrderService.src.Catalog.Admin {
                     AddProductType.Salad => ProductType.Salad,
                     AddProductType.Sushi => ProductType.Sushi,
                     AddProductType.Drinks => ProductType.Drinks,
-                    _ => throw new ArgumentOutOfRangeException()
+                    _ => ProductType.Drinks,
                 },
                 AvailabilityStatus = req.AvailabilityStatus switch
                 {
                     AddProductAvailabilityStatus.Available => ProductAvailabilityStatus.Available,
-                    AddProductAvailabilityStatus.OutOfStock => ProductAvailabilityStatus.OutOfStock,
-                    _ => throw new ArgumentOutOfRangeException()
+                    _ => ProductAvailabilityStatus.OutOfStock,
+             
                   
                 },
                 Details = new ProductDetails
@@ -116,7 +116,7 @@ namespace OrderService.src.Catalog.Admin {
     {
         // return a list of calatog items.
         // use a flattenned dto without heritance.
-        
+        [FromHeader("Admin-Telegram-Id")]
         public long TelegramId { get; init; }
         public required string ProductName { get; init; }
         public required string CreatorName { get; init; }
