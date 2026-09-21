@@ -16,7 +16,7 @@ namespace OrderService.src.Deal.Customer
 
         public override void Configure()
         {
-            Post("api/customer/{telegramId}/order");
+            Post("api/customer/order");
             Roles("customer");
             Validator<AddAnItemToOrderValidator>();
 
@@ -114,7 +114,7 @@ namespace OrderService.src.Deal.Customer
     {
         // return a list of calatog items.
         // use a flattenned dto without heritance.
-        [BindFrom("telegramId")]
+        [FromHeader("Customer-Telegram-Id")]
         public long TelegramId { get; init; }
         public required List<Guid> CartItemIds { get; init; }
         public required string ClientName { get; init; }

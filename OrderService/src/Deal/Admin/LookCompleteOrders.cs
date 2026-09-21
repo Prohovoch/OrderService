@@ -16,7 +16,7 @@ namespace OrderService.src.Deal.Admin
 
         public override void Configure()
         {
-            Get("api/admin/{telegramId}/orders");
+            Get("api/admin/orders");
             AllowAnonymous();
             Validator<LookCompleteOrdersValidator>();
         }
@@ -69,7 +69,7 @@ namespace OrderService.src.Deal.Admin
     }
     public sealed record LookCompleteOrdersRequest
     {
-        [BindFrom("telegramId")]
+        [FromHeader("Admin-Telegram-Id")]
         public long TelegramId { get; init; }
            
     }

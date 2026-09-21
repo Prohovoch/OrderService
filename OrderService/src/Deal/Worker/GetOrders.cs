@@ -16,7 +16,7 @@ namespace OrderService.src.Deal.Worker
 
         public override void Configure()
         {
-            Get("api/worker/{telegramId}/orders/pool");
+            Get("api/worker/orders/pool");
             AllowAnonymous();
             Validator<GetOrdersValidator>();
         }
@@ -70,7 +70,7 @@ namespace OrderService.src.Deal.Worker
     }
     public sealed record GetOrdersRequest
     {
-        [BindFrom("telegramId")]
+        [FromHeader("Worker-Telegram-Id")]
         public long TelegramId { get; init; }
 
     }

@@ -15,7 +15,7 @@ namespace OrderService.src.Deal.Worker
 
         public override void Configure()
         {
-            Patch("api/worker/{telegramId}/order/{orderId}");
+            Patch("api/worker/order/{orderId}");
             AllowAnonymous();
             Validator<ChangeOrderStatusValidator>();
         }
@@ -114,7 +114,7 @@ namespace OrderService.src.Deal.Worker
 
         public sealed record ChangeOrderStatusRequest
         {
-            [BindFrom("telegramId")]
+            [FromHeader("Worker-Telegram-Id")]
             public long TelegramId { get; init; }
             [BindFrom("orderId")]
             public Guid OrderId { get; init; }
@@ -124,7 +124,7 @@ namespace OrderService.src.Deal.Worker
         }
         public sealed record OrderCompletedEventObj
         {
-            public int OrderNumber { get; init; }
+            public string OrderNumber { get; init; } = null!;
             public long TelegramId { get; init; }
             
         }

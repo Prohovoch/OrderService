@@ -15,7 +15,7 @@ namespace OrderService.src.Deal.Worker
 
         public override void Configure()
         {
-            Patch("api/worker/{telegramId}/order/{orderId}/pickup");
+            Patch("api/worker/order/{orderId}/pickup");
             AllowAnonymous();
             Validator<PickUpOrderValidator>();
 
@@ -78,7 +78,7 @@ namespace OrderService.src.Deal.Worker
 
     public sealed record PickUpOrderRequest
     {
-        [BindFrom("telegramId")]
+        [FromHeader("Worker-Telegram-Id")]
         public long TelegramId { get; init; }
         [BindFrom("orderId")]
         public Guid OrderId { get; init; }

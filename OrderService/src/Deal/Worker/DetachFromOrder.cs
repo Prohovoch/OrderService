@@ -15,7 +15,7 @@ namespace OrderService.src.Deal.Worker
 
         public override void Configure()
         {
-            Patch("api/worker/{telegramId}/order/{orderId}");
+            Patch("api/worker/order/{orderId}");
             AllowAnonymous();
             Validator<DetachFromOrderValidator>();
 
@@ -66,7 +66,7 @@ namespace OrderService.src.Deal.Worker
 
     public sealed record DetachFromOrderRequest
     {
-        [BindFrom("telegramId")]
+        [FromHeader("Worker-Telegram-Id")]
         public long TelegramId { get; init; }
         [BindFrom("orderId")]
         public Guid OrderId { get; init; }
