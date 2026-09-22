@@ -1,8 +1,6 @@
 ﻿using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using OrderService.Infrastructure.Entities.Cart;
-using OrderService.Infrastructure.Entities.Catalog;
 using OrderService.Infrastructure.Persistence;
 
 
@@ -71,7 +69,7 @@ namespace OrderService.src.Cart.Customer
 
     public sealed record DeleteItemRequest
     {
- 
+        [FromHeader("Customer-Telegram-Id")]
         public long TelegramId{ get; init; }
 
         [BindFrom("bucketItemId")]

@@ -104,7 +104,7 @@ namespace OrderService.src.Cart.Customer
 
     public sealed record AddItemToCartRequest
     {
-        
+        [FromHeader("Customer-Telegram-Id")]
         public long TelegramId { get; init; }
         public Guid ProductId { get; init; }
       

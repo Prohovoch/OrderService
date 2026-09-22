@@ -66,7 +66,7 @@ namespace OrderService.src.Profile.Admin
 }
     public sealed record ReadProfileRequest
     {
-        
+         [FromHeader("Admin-Telegram-Id")]
          public long TelegramId{ get; init; }
     
     }

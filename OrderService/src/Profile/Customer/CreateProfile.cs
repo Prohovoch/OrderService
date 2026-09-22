@@ -81,7 +81,7 @@ namespace OrderService.src.Profile.Customer
     public enum CreateRequestGender { Male, Female }
     public sealed record CreateCustomerProfileRequest
     {
-        
+        [FromHeader("Customer-Telegram-Id")]
         public long TelegramId { get; init; }
         public required string Name { get; init; } 
         public required string Surname { get; init; } 

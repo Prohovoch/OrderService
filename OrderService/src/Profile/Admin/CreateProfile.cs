@@ -82,7 +82,7 @@ namespace OrderService.src.Profile.Admin
     
     public sealed record CreateProfileRequest
     {
-    
+         [FromHeader("Admin-Telegram-Id")] 
          public long TelegramId { get; init; }
          public required string Name { get; init; } 
          public required string Surname { get; init; } 

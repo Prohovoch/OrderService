@@ -64,7 +64,7 @@ namespace OrderService.src.Profile.Worker
     public enum UpdateGender { Male, Female }
     public sealed record UpdateProfileRequest
     {
-        
+        [FromHeader("Worker-Telegram-Id")]
         public long TelegramId { get; init; }
         public Guid ProfileId { get; init; }
         public string? Name { get; init; } 

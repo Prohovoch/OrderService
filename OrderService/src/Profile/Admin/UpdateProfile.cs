@@ -60,8 +60,8 @@ public class UpdateProfileValidator : Validator<UpdateProfileRequest>
 public enum UpdateGender { Male, Female }
 public sealed record UpdateProfileRequest
 {
-    
 
+    [FromHeader("Admin-Telegram-Id")]
     public long TelegramId { get; init; }
     public string? Name { get; init; }
     public string? Surname { get; init; }

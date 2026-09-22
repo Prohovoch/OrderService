@@ -3,7 +3,7 @@ using OrderService.Infrastructure.Entities.Deal;
 
 namespace OrderService.Infrastructure.Entities.Buyer;
 
-public class Customer
+public class Customer 
 {
     public Guid Id { get; set; } = Guid.CreateVersion7();
     public long TgId { get; set; }

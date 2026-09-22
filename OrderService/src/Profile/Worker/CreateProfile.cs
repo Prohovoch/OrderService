@@ -66,7 +66,7 @@ namespace OrderService.src.Profile.Worker
         public CreateProfileValidator()
         {
             RuleFor(x => x.TelegramId).NotEmpty().WithMessage("TelegramId is required.");
-        RuleFor(x => x.Name).MinimumLength(3).WithMessage("Name must be at least 3 characters long.")
+            RuleFor(x => x.Name).MinimumLength(3).WithMessage("Name must be at least 3 characters long.")
                 .NotEmpty().WithMessage("Name is required.");
             RuleFor(x => x.Surname).MinimumLength(3).WithMessage("Surname must be at least 3 characters long.")
                 .NotEmpty().WithMessage("Surname is required.");
@@ -81,7 +81,7 @@ namespace OrderService.src.Profile.Worker
     public enum CreateReqGender { Male, Female }
     public sealed record CreateWorkerProfileRequest
     {
-
+        [FromHeader("Worker-Telegram-Id")]
         public long TelegramId { get; init; }
         public required string Name { get; init; } 
         public required string Surname { get; init; } 

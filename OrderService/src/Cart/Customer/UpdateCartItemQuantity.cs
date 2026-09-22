@@ -85,7 +85,7 @@ namespace OrderService.src.Cart.Customer
 
     public sealed record UpdateItemQuantityRequest
     {
-        
+        [FromHeader("Customer-Telegram-Id")]
         public long TelegramId { get; init; }
 
         [BindFrom("bucketId")]

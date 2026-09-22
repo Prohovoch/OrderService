@@ -79,6 +79,7 @@ namespace OrderService.src.Profile.Customer
 
     public sealed record ReadCustomerProfileRequest
     {
+        [FromHeader("Customer-Telegram-Id")]
         public long TelegramId { get; init; }
         
     }
