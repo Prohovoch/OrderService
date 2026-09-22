@@ -3,6 +3,7 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using OrderService.Infrastructure.Entities.Buyer;
 using OrderService.Infrastructure.Persistence;
+using System.Runtime.InteropServices;
 
 namespace OrderService.src.Auth.Buyer
 {
@@ -36,6 +37,8 @@ namespace OrderService.src.Auth.Buyer
                 TgId = req.TelegramId
             };
             _dbContext.Customers.Add(customer);
+            await _dbContext.SaveChangesAsync(ct);
+            await Send.OkAsync(new { Message = "Customer registered successfully." });
 
 
 
