@@ -13,6 +13,8 @@ namespace OrderService
             // Add services to the container.
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console()
+                .WriteTo.File("logs/my-logs.txt", rollingInterval: RollingInterval.Day)
+                .Enrich.FromLogContext()
                 .CreateLogger();
 
             try
