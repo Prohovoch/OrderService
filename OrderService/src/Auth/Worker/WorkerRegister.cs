@@ -27,6 +27,7 @@ namespace OrderService.src.Auth.Worker
             var isCustomerExists = await _dbContext.Customers.AnyAsync(x => x.TgId == req.TelegramId, ct);
             if (isCustomerExists is true)
             {
+                Logger.LogWarning("Canceled. User is already registered in a system");
                 await Send.ErrorsAsync();
                 return;
             }
@@ -38,6 +39,7 @@ namespace OrderService.src.Auth.Worker
             };
             _dbContext.Customers.Add(customer);
             await _dbContext.SaveChangesAsync(ct);
+            Logger.LogInformation("User is succesfully registered");
             await Send.OkAsync(new { Message = "Customer registered successfully." });
 
 
