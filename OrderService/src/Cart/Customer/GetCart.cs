@@ -29,6 +29,7 @@ namespace OrderService.src.Cart.Customer
             var entityId = await _dbContext.Customers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             if (entityId is null)
             {
+                Logger.LogWarning("entity not found");
                 await Send.NotFoundAsync();
                 return;
             }
@@ -62,6 +63,7 @@ namespace OrderService.src.Cart.Customer
                 // This shit is made by me :-)
                 if (cartResponse is null)
                 {
+                    Logger.LogWarning("{CustomerId} didnt have any cart whatsoever", entityId.Value);
                     var bucket = new Bucket
                     {
                         Id = Guid.CreateVersion7(),
@@ -73,7 +75,7 @@ namespace OrderService.src.Cart.Customer
                     await Send.NoContentAsync();
                     return;
                 }
-              
+                Logger.LogInformation("Operation successful");
                 await Send.OkAsync(cartResponse);
                
         }

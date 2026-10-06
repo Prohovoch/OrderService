@@ -33,6 +33,7 @@ namespace OrderService.src.Cart.Customer
             var entityId = await _dbContext.Customers.AsNoTracking().Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             if (entityId is null)
             {
+                Logger.LogWarning("Entity not found");
                 await Send.NotFoundAsync();
                 return;
             }
@@ -40,7 +41,7 @@ namespace OrderService.src.Cart.Customer
 
             if (productInfo is null) //  guarantees not existing
             {
-              
+                Logger.LogWarning("No item were found for {CustomerId} ", entityId.Value);
                 await Send.NotFoundAsync(); // or 404?
                 return;
             }
@@ -50,6 +51,7 @@ namespace OrderService.src.Cart.Customer
             var affectedRows = await _dbContext.CartItems.Where(p => p.Id == req.BucketItemId && p.BucketId == req.BucketId && p.Bucket!.CustomerId == entityId.Value).ExecuteUpdateAsync(p => p.SetProperty(x => x.BucketItemQuantity, req.Quantity), ct);
             if (affectedRows == 0)
             {
+                Logger.LogWarning("No item were found for {customerId}", entityId.Value);
                 AddError("UpdateFailed", "Failed to update the item quantity.");
                 await Send.ErrorsAsync();
                 return;

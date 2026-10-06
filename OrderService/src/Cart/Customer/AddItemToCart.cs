@@ -32,6 +32,7 @@ namespace OrderService.src.Cart.Customer
             
             if (entityId is null)
             {
+                Logger.LogWarning("User is not found in a system");
                 await Send.NotFoundAsync();
                 return;
             }
@@ -40,6 +41,7 @@ namespace OrderService.src.Cart.Customer
 
             if (!productExists)
             {
+                Logger.LogWarning("No item was foound in a cart");
                 AddError("ProductId", "The specified product does not exist. Reload page to see what changed");
                 await Send.ErrorsAsync(); //?
                 return;
@@ -57,7 +59,9 @@ namespace OrderService.src.Cart.Customer
 
                     // we creating in db v7 guid, 
                 };
+                
                 _dbContext.Carts.Add(bucket);
+                Logger.LogInformation("Cart item were  successfully added to the db");
             }
             var existingCartItem = bucket.Items.FirstOrDefault(i => i.ProductId == req.ProductId);
             if (existingCartItem is null) 
@@ -68,19 +72,21 @@ namespace OrderService.src.Cart.Customer
                     BucketItemQuantity = 1,
                     BucketId = bucket.Id
                 };
+                
                 _dbContext.CartItems.Add(newCartItem);
-
+                Logger.LogInformation("Cart item were  successfully added to the db");
             }
             else
             {
                 existingCartItem.BucketItemQuantity++;
+                
             }
             // i hate this code but VSA AND REPR told me to do so,
             var productName = await _dbContext.Products.AsNoTracking().Where(i => i.Id == req.ProductId) 
                 .Select(i => i.ProductName).FirstAsync(ct);
             
             await _dbContext.SaveChangesAsync(ct);
-            
+            Logger.LogInformation("An item were successfully added to the cart");           
             await Send.OkAsync(new AddItemToCartResponse { Message = "Item added to cart successfully.", ProductName = productName  }); 
 
 

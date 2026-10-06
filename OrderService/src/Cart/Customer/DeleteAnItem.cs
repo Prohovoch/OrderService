@@ -2,6 +2,7 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using OrderService.Infrastructure.Persistence;
+using System.Net;
 
 
 
@@ -9,10 +10,10 @@ using OrderService.Infrastructure.Persistence;
 namespace OrderService.src.Cart.Customer
 {
     // REPR endpoint
-    public class DeleteAnItem(ApplicationDbContext dbContext) : Endpoint<DeleteItemRequest, DeleteItemResponse> // this is bad.
+    public class DeleteAnItem(ApplicationDbContext dbContext) : Endpoint<DeleteItemRequest> // this is bad.
     {
 
-        private readonly ApplicationDbContext _dbContext = dbContext;
+        private readonly ApplicationDbContext _dbContext = dbContext; 
 
         public override void Configure()
         {
@@ -29,6 +30,7 @@ namespace OrderService.src.Cart.Customer
             // check if user has it
             if (entityId is null)
             {
+                Logger.LogWarning("Excpected user is not found in a system");
                 await Send.NotFoundAsync();
                 return;
             }
@@ -36,6 +38,7 @@ namespace OrderService.src.Cart.Customer
 
             if (!isOwned)
             {
+                Logger.LogWarning("{CustomerId} cart not found", entityId.Value);
                 AddError("Some of credentials are invalid! ");
                 await Send.ErrorsAsync();
             }
@@ -44,22 +47,24 @@ namespace OrderService.src.Cart.Customer
                 .Where(bi => bi.Id == req.BucketItemId && bi.Bucket!.CustomerId == entityId.Value) //  hack. mocking warnings. we already have created cart at this point.
                 .ExecuteDeleteAsync(ct);
             
-            // if wifi is baddie :(
+            
             if (affectedRows == 0)
             {
                 AddError("Item not found.");
+                Logger.LogWarning("No {CustomerId} item were found", entityId.Value);
                 await Send.ErrorsAsync();
                 return;
             }
-            await Send.StringAsync(new DeleteItemResponse { message = "Item deleted successfully." }.ToString(), 204); // idk what a fuck did i do here, but i guess it could work.
+         
+            await Send.NoContentAsync(); // idk what a fuck did i do here, but i guess it could work.
+            Logger.LogInformation("Operation completed");
 
         }
     }
 
     public class DeleteAnItemValidator : Validator<DeleteItemRequest>
     {
-        public DeleteAnItemValidator()
-            
+        public DeleteAnItemValidator()   
         {
             RuleFor(x => x.TelegramId).NotNull().WithMessage("UserId is required.");
             RuleFor(x => x.BucketItemId).NotNull().WithMessage("BucketItemId is required.");
@@ -77,14 +82,8 @@ namespace OrderService.src.Cart.Customer
 
     }
 
-    public sealed record DeleteItemResponse // i fought a framework and i won.
-    {
-        public string message
-        {
-            get; init;
-        } = null!;
 
 
     }
-}
+
     
