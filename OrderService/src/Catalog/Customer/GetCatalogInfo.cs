@@ -26,6 +26,8 @@ namespace OrderService.src.Catalog.Customer
             bool isCustomerExists = await _dbContext.Customers.AnyAsync(c => c.TgId == req.TelegramId, ct);
             if(isCustomerExists is false)
             {
+                Logger.LogWarning("No entity were found");
+
                 await Send.ForbiddenAsync();
                 return;
             }
@@ -52,6 +54,8 @@ namespace OrderService.src.Catalog.Customer
 
                 
             }).ToListAsync(ct);
+            Logger.LogInformation("Operation completed");
+
 
             await Send.OkAsync(catalogResult);
         }

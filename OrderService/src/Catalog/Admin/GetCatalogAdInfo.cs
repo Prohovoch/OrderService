@@ -27,6 +27,8 @@ namespace OrderService.src.Catalog.Admin
             bool isAdminExists = await _dbContext.Admins.AnyAsync(x => x.TgId == req.TelegramId, ct);
             if (isAdminExists is false)
             {
+                Logger.LogWarning("No entity were found");
+
                 await Send.ForbiddenAsync();
                 return;
             }
@@ -54,6 +56,7 @@ namespace OrderService.src.Catalog.Admin
 
 
             }).ToListAsync(ct);
+            Logger.LogInformation("Operation completed");
 
             await Send.OkAsync(catalogResult);
         }

@@ -28,6 +28,7 @@ namespace OrderService.src.Catalog.Admin
             
             if (entityId is null)
             {
+                Logger.LogWarning("No entity were found");
                 await Send.ForbiddenAsync();
                 return;
             }
@@ -36,6 +37,8 @@ namespace OrderService.src.Catalog.Admin
             var product = await _dbContext.Products.FirstOrDefaultAsync(x => x.Id == req.ProductId, ct); // protection from concurrent requests, shit -  no solution.
             if (product is null)
             {
+                Logger.LogWarning("No entity were found");
+
                 AddError("ProductID:", "Product not found.");
                 await Send.ErrorsAsync();
                 return;
@@ -43,6 +46,8 @@ namespace OrderService.src.Catalog.Admin
 
             if (product.AdminId is not null && product.AdminId != entityId.Value) // if orphanic dependency
             {
+                Logger.LogWarning("No access for {entityId}, ", entityId.Value);
+
                 await Send.ForbiddenAsync();
                 return;
             }
@@ -64,11 +69,12 @@ namespace OrderService.src.Catalog.Admin
             product.Details.Ingredients = req.Ingredients ?? product.Details.Ingredients;
             product.Details.Volume = req.Volume ?? product.Details.Volume;
             product.Details.Weight = req.Weight ?? product.Details.Weight;
-            
 
 
 
 
+
+            Logger.LogInformation("Saving information");
 
             await _dbContext.SaveChangesAsync(ct);
             await Send.OkAsync();

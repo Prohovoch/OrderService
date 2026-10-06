@@ -5,7 +5,8 @@ using OrderService.Infrastructure.Entities.Catalog;
 using OrderService.Infrastructure.Persistence;
 
 
-namespace OrderService.src.Catalog.Admin { 
+namespace OrderService.src.Catalog.Admin 
+{ 
     public class AddAnItemToCatalog(ApplicationDbContext dbContext) : Endpoint<AddAnItemToCatalogRequest>
     {
 
@@ -28,6 +29,7 @@ namespace OrderService.src.Catalog.Admin {
             
             if(entityId is null)
             {
+                Logger.LogWarning("No entity was found");
                 await Send.ForbiddenAsync();
                 return;
             }
@@ -72,7 +74,7 @@ namespace OrderService.src.Catalog.Admin {
             {
                 Id = catalogItem.Id,
             };
-
+            Logger.LogInformation("Mapping completed {entityId}", entityId.Value);
             _dbContext.Products.Add(catalogItem);
             await _dbContext.SaveChangesAsync(ct);
 

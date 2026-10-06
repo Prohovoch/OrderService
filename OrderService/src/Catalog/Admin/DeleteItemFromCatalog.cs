@@ -26,6 +26,8 @@ namespace OrderService.src.Catalog.Admin
             var entityId = await _dbContext.Admins.AsNoTracking().Where(a => a.TgId == req.TelegramId).Select(a => (Guid?)a.Id).FirstOrDefaultAsync(ct); // XDDDDDDDDDDDDDDDDD
             if (entityId is null)
             {
+                Logger.LogWarning("No entity were found");
+
                 await Send.ForbiddenAsync();
                 return;
             }
@@ -33,6 +35,8 @@ namespace OrderService.src.Catalog.Admin
             // i dont want to think about concurrency right now cause i guess there will be only 1 instance of app.
             if (isOwned is false)
             {
+                Logger.LogWarning("No access for {EntityId},", entityId.Value);
+
                 await Send.ForbiddenAsync();
                 return;
             }
@@ -40,12 +44,15 @@ namespace OrderService.src.Catalog.Admin
             var affectedRows = await _dbContext.Products.Where(p => p.Id == req.ProductId).ExecuteDeleteAsync(ct);
             if (affectedRows == 0)
             {
+                Logger.LogWarning("No entity  item were found {EntityId}", entityId.Value);
+
                 AddError("Something went wrong during execution. No object found.");
                 await Send.ErrorsAsync();
                 return;
 
             }
 
+            Logger.LogInformation("Operation completed");
 
             await Send.NoContentAsync();
             
