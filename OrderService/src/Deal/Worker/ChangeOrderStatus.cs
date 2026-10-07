@@ -38,6 +38,8 @@ namespace OrderService.src.Deal.Worker
             var entityId = await _dbContext.Workers.Where(x => x.TgId == req.TelegramId).Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             if (entityId is null)
             {
+                Logger.LogWarning("Worker with TelegramId {TelegramId} not found.", req.TelegramId);
+
                 await Send.NotFoundAsync();
                 return;
             }
@@ -45,6 +47,7 @@ namespace OrderService.src.Deal.Worker
             var specOrder = await _dbContext.Orders.Where(x => x.Id == req.OrderId && x.WorkerId == entityId.Value).FirstOrDefaultAsync(ct);
             if (specOrder is null)
             {
+                Logger.LogWarning("Order with Id {OrderId} not found or does not belong to the worker with TelegramId {TelegramId}.", req.OrderId, req.TelegramId);
                 AddError("OrderId:", "Order not found or does not belong to the worker.");
                 await Send.ForbiddenAsync();
                 return;
@@ -52,6 +55,7 @@ namespace OrderService.src.Deal.Worker
 
             if (!Enum.TryParse<OrderStatus>(req.Status.ToString(), out var newStatus))
             {
+                Logger.LogWarning("Invalid status value {Status} provided for order with Id {OrderId}.", req.Status, req.OrderId);
                 AddError("Status", "Invalid status value.");
                 await Send.ErrorsAsync(400, ct);
                 return;
@@ -61,6 +65,7 @@ namespace OrderService.src.Deal.Worker
             var isValid = AllowedTransitions.Contains((specOrder.Status, newStatus));
             if (!isValid)
             {
+                Logger.LogWarning("Invalid status transition from {CurrentStatus} to {NewStatus} for order with Id {OrderId}.", specOrder.Status, newStatus, req.OrderId);
                 AddError("Transition:", "Cannot convert transition");
                 await Send.ErrorsAsync(statusCode: 422);
                 return;
@@ -70,12 +75,13 @@ namespace OrderService.src.Deal.Worker
 
             if (newStatus == OrderStatus.Cooked)
             {
-
+                Logger.LogInformation("Order with Id {OrderId} has been marked as Cooked.", req.OrderId);
                 specOrder.CompletedAt = DateTimeOffset.UtcNow;
 
                 var customerTgId = await _dbContext.Customers.Where(x => x.Id == specOrder.CustomerId).Select(x => (long?)x.TgId).FirstOrDefaultAsync(ct);
                 if(customerTgId is not null)
                 {
+                    Logger.LogInformation("Publishing OrderCompletedEvent for order with Id {OrderId} to customer with TelegramId {CustomerTgId}.", req.OrderId, customerTgId.Value);
                     await PublishAsync(new OrderCompletedEventObj
                     {
                         OrderNumber = specOrder.DisplayOrderNumber,
@@ -86,7 +92,7 @@ namespace OrderService.src.Deal.Worker
 
                 }
               
-                
+                Logger.LogInformation("Saving changes to the database for order with Id {OrderId}.", req.OrderId);
                 await _dbContext.SaveChangesAsync(ct);
                 await Send.NoContentAsync();
 

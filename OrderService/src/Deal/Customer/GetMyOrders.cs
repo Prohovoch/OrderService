@@ -1,8 +1,6 @@
 ﻿using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using OrderService.Infrastructure.Entities.Catalog;
-using OrderService.Infrastructure.Entities.Deal;
 using OrderService.Infrastructure.Persistence;
 
 

@@ -28,6 +28,7 @@ namespace OrderService.src.Deal.Worker
             var entityId = await _dbContext.Workers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             if (entityId is null)
             {
+                Logger.LogWarning("No entity were found for TelegramId: {TelegramId}", req.TelegramId);
                 await Send.ForbiddenAsync();
                 return;
             }

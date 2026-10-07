@@ -4,7 +4,7 @@ using Telegram.Bot.Exceptions;
 
 namespace OrderService.src.Deal.Worker.EventHandler
 {
-    public class OrderCompleteHandler(ITelegramBotClient botClient) : IEventHandler<OrderCompletedEventObj>
+    public class OrderCompleteHandler(ITelegramBotClient botClient,  ILogger<OrderCompleteHandler> Logger) : IEventHandler<OrderCompletedEventObj>
     {
        // TODO: complete this. Send an message through Telegram.Bot to user. mock this with potential integrational test.
         
@@ -14,6 +14,7 @@ namespace OrderService.src.Deal.Worker.EventHandler
             // For example, send a notification to the user via Telegram.Bot.
             try
             {
+                Logger.LogInformation($"Sending order completion message to user {eventObj.TelegramId} for order {eventObj.OrderNumber}.");
                 // http client lol.
                 await botClient.SendMessage
 
@@ -28,11 +29,13 @@ namespace OrderService.src.Deal.Worker.EventHandler
 
             catch (ApiRequestException ex) when (ex.ErrorCode == 403)
             {
+                Logger.LogError("Failed to send message to user {TelegramId}: Bot was blocked.", eventObj.TelegramId);
                 // Handle the case where the bot is blocked by the user.
                 Console.WriteLine($"Failed to send message to user {eventObj.TelegramId}: Bot was blocked.");
             }
             catch (Exception ex)
             {
+                Logger.LogError(ex, "An error occurred while sending message to user {TelegramId}.", eventObj.TelegramId);
                 // Handle other exceptions that may occur during message sending.
                 Console.WriteLine($"An error occurred while sending message to user {eventObj.TelegramId}: {ex.Message}");
             } 

@@ -28,6 +28,7 @@ namespace OrderService.src.Deal.Admin
             var entityId = await _dbContext.Admins.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             if (entityId is null)
             {
+                Logger.LogWarning("No entity were found");
                 await Send.ForbiddenAsync();
                 return;
             }
@@ -53,7 +54,7 @@ namespace OrderService.src.Deal.Admin
                     }).ToList()
                 })
                 .ToListAsync(ct);
-
+            Logger.LogInformation("Complete orders were found: {Count}", completeOrders.Count);
             await Send.OkAsync(new GetOrdersResponse { Orders = completeOrders });
 
 

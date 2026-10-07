@@ -28,6 +28,7 @@ namespace OrderService.src.Deal.Worker
             var entityId = await _dbContext.Admins.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             if (entityId is null)
             {
+                Logger.LogWarning("Unauthorized access attempt by TelegramId: {TelegramId}", req.TelegramId);
                 await Send.ForbiddenAsync();
                 return;
             }
@@ -53,7 +54,7 @@ namespace OrderService.src.Deal.Worker
                     }).ToList()
                 })
                 .ToListAsync(ct);
-
+            Logger.LogInformation("Retrieved {Count} orders for worker with TelegramId: {TelegramId}", workerOrders.Count, req.TelegramId);
             await Send.OkAsync(new GetWorkerOrdersResponse { WorkerOrders = workerOrders });
 
 

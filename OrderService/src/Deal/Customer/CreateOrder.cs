@@ -50,6 +50,7 @@ namespace OrderService.src.Deal.Customer
 
             if (productsIds.Count != products.Count)
             {
+                Logger.LogWarning("Some of the products were deleted from a catalog");
                 AddError("ProductId:", $"An Item  was deleted");
                 await Send.ErrorsAsync();
                 return;
@@ -86,6 +87,7 @@ namespace OrderService.src.Deal.Customer
                 });
 
             }
+            Logger.LogInformation("Order created with {Count} items", order.Items.Count);
             _dbContext.Orders.Add(order);
             await _dbContext.SaveChangesAsync(ct);
             await Send.OkAsync(new OrderResponse { Id = order.Id });

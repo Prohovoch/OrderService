@@ -28,6 +28,7 @@ namespace OrderService.src.Deal.Worker
             bool entityExists = await _dbContext.Admins.AnyAsync(x => x.TgId == req.TelegramId, ct);
             if (!entityExists)
             {
+                Logger.LogWarning("Entity with TelegramId {TelegramId} not found in Admins table.", req.TelegramId);
                 await Send.ForbiddenAsync();
                 return;
             }
@@ -54,7 +55,7 @@ namespace OrderService.src.Deal.Worker
                     }).ToList()
                 })
                 .ToListAsync(ct);
-
+            Logger.LogInformation("Retrieved {Count} created orders for TelegramId {TelegramId}.", createdOrders.Count, req.TelegramId);
             await Send.OkAsync(new GetOrdersResponse { OrdersDto = createdOrders });
 
 

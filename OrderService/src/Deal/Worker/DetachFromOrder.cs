@@ -28,6 +28,7 @@ namespace OrderService.src.Deal.Worker
             var workerId = await _dbContext.Workers.Where(x => x.TgId == req.TelegramId).Select(x => new {x.Id}).FirstOrDefaultAsync(ct);
             if (workerId is null)
             {
+                Logger.LogWarning("Worker with TelegramId {TelegramId} not found.", req.TelegramId);
                 await Send.ForbiddenAsync();
                 return;
             }
@@ -35,6 +36,7 @@ namespace OrderService.src.Deal.Worker
 
             if (specOrder is null)
             {
+                Logger.LogWarning("Order with Id {OrderId} not found or does not belong to the worker with TelegramId {TelegramId}.", req.OrderId, req.TelegramId);
                 await Send.NotFoundAsync();
                 return;
             }
@@ -43,6 +45,7 @@ namespace OrderService.src.Deal.Worker
             specOrder.WorkerId = null;
             specOrder.Status = OrderStatus.Stopped;
 
+            Logger.LogInformation("Worker with TelegramId {TelegramId} detached from order with Id {OrderId}.", req.TelegramId, req.OrderId);
             await _dbContext.SaveChangesAsync(ct);
             await Send.OkAsync();
 
