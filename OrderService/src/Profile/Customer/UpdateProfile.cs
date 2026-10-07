@@ -27,6 +27,7 @@ namespace OrderService.src.Profile.Customer
            
             if (entityId is null)
             {
+                Logger.LogWarning("Customer with TelegramId {TelegramId} not found.", req.TelegramId);
                 await Send.ForbiddenAsync();
                 return;
             
@@ -34,7 +35,7 @@ namespace OrderService.src.Profile.Customer
             var profile = await _dbContext.CustomerProfiles.FirstOrDefaultAsync(p => p.CustomerId == entityId.Value, ct);
             if (profile is null)
             {
-               
+                Logger.LogWarning("Profile for Customer with TelegramId {TelegramId} not found.", req.TelegramId);
                 await Send.NotFoundAsync();
                 return;
             }
@@ -44,6 +45,10 @@ namespace OrderService.src.Profile.Customer
             profile.Age = req.Age ?? profile.Age;
             profile.Gender = req.Gender.HasValue ? (BuyerGender)req.Gender.Value : profile.Gender;
             profile.PhoneNumber = req.PhoneNumber ?? profile.PhoneNumber;
+
+            Logger.LogInformation("Updating profile for Customer with TelegramId {TelegramId}.", req.TelegramId);
+            
+            await _dbContext.SaveChangesAsync(ct);
             await Send.NoContentAsync();
         }
 

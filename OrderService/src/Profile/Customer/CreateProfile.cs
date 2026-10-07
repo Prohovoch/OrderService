@@ -28,6 +28,7 @@ namespace OrderService.src.Profile.Customer
             var entityId = await _dbContext.Customers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             if (entityId is null)
             {
+                Logger.LogWarning("Customer with TelegramId {TelegramId} not found.", req.TelegramId);
                 await Send.ForbiddenAsync();
                 return;
             }
@@ -52,7 +53,9 @@ namespace OrderService.src.Profile.Customer
 
 
             };
+
             _dbContext.Add(customerProfile);
+            Logger.LogInformation("Creating profile for CustomerId {CustomerId} with Name {Name} and Surname {Surname}.", customerProfile.CustomerId, customerProfile.Name, customerProfile.Surname);
             await _dbContext.SaveChangesAsync(ct);
             await Send.OkAsync();
         }

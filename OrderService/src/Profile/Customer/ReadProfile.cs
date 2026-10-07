@@ -31,6 +31,7 @@ namespace OrderService.src.Profile.Customer
                 .FirstOrDefaultAsync(ct);
             if (entityId is null)
             {
+                Logger.LogWarning("Customer with TelegramId {TelegramId} not found.", req.TelegramId);
                 await Send.ForbiddenAsync();
                 return;
             }
@@ -40,6 +41,7 @@ namespace OrderService.src.Profile.Customer
                 
             if (customerProfileEntity is null)
             {
+                Logger.LogWarning("Customer profile for CustomerId {CustomerId} not found.", entityId.Value);
                 await Send.NotFoundAsync();
                 return;
             }
@@ -62,6 +64,7 @@ namespace OrderService.src.Profile.Customer
                 }
 
             };
+            Logger.LogInformation("Reading profile for CustomerId {CustomerId}", customerProfileEntity.CustomerId);
             await Send.OkAsync(response);
             
         }

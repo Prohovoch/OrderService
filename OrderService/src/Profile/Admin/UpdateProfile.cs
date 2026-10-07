@@ -22,6 +22,7 @@ namespace OrderService.src.Profile.Admin
             var entityId = await _dbContext.Admins.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             if (entityId is null)
             {
+                Logger.LogWarning("Admin with TelegramId {TelegramId} not found", req.TelegramId);
                 await Send.NotFoundAsync();
                 return;
             }
@@ -29,7 +30,7 @@ namespace OrderService.src.Profile.Admin
 
             if (profile is null)
             {
-               
+                Logger.LogWarning("Profile for AdminId {AdminId} not found", entityId.Value);
                 await Send.NotFoundAsync();
                 return;
             }
@@ -38,7 +39,8 @@ namespace OrderService.src.Profile.Admin
             profile.Surname = req.Surname ?? profile.Surname;
             profile.Age = req.Age ?? profile.Age;
             profile.Gender = req.Gender.HasValue ? (AdminGender)req.Gender.Value : profile.Gender ;
-
+            
+            Logger.LogInformation("Profile updated for AdminId {AdminId}", entityId.Value); 
             await Send.NoContentAsync();
         }
 

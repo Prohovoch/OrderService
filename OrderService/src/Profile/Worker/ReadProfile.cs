@@ -26,6 +26,7 @@ namespace OrderService.src.Profile.Worker
             var entityId = await _dbContext.Workers.AsNoTracking().Where(x => x.TgId == req.TelegramId).Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             if (entityId is null)
             {
+                Logger.LogWarning("No entity were found for Worker with TelegramId {TelegramId}.", req.TelegramId);
                 await Send.NotFoundAsync();
                 return;
             }
@@ -34,6 +35,7 @@ namespace OrderService.src.Profile.Worker
 
             if (workerProfileEntity is null)
             {
+                Logger.LogWarning("Profile for Worker with WorkerId {WorkerId} not found.", entityId.Value);    
                 await Send.NotFoundAsync();
                 return;
             }
@@ -51,6 +53,7 @@ namespace OrderService.src.Profile.Worker
 
                 }
             };
+            Logger.LogInformation("Profile for Worker with WorkerId {WorkerId} found.", entityId.Value);
             await Send.OkAsync(resp);
         }
 

@@ -23,6 +23,7 @@ namespace OrderService.src.Profile.Worker
          
             if (entityId is null)
             {
+                Logger.LogWarning("No entity were found for Worker with TelegramId {TelegramId}.", req.TelegramId);
                 await Send.NotFoundAsync();
                 return;
             }
@@ -31,6 +32,7 @@ namespace OrderService.src.Profile.Worker
             var profile = await _dbContext.WorkerProfiles.FirstOrDefaultAsync(p => p.WorkerId == entityId.Value, ct);
             if (profile is null)
             {
+                Logger.LogWarning("Profile for Worker with WorkerId {WorkerId} not found.", entityId.Value);
                 await Send.NotFoundAsync();
                 return;
             }
@@ -40,7 +42,9 @@ namespace OrderService.src.Profile.Worker
             profile.Age = req.Age ?? profile.Age;
             profile.Gender = req.Gender.HasValue ? (WorkerGender)req.Gender.Value : profile.Gender;
             profile.PhoneNumber = req.PhoneNumber ?? profile.PhoneNumber;
-         
+            
+            Logger.LogInformation("Updating profile for Worker with WorkerId {WorkerId}.", entityId.Value);
+            await _dbContext.SaveChangesAsync(ct);
             await Send.NoContentAsync();
         }
 
