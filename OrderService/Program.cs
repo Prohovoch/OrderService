@@ -26,22 +26,22 @@ namespace OrderService
                 var app = builder.Build();
                 // TODO: tg client or http factory client impl here.
 
+                app.UseDefaultExceptionHandler(useProblemDetails: true)
+                    .UseFastEndpoints(c => c.Serializer.Options.Converters.Add(new JsonStringEnumConverter()));
                 // Configure the HTTP request pipeline.
-                app.UseFastEndpoints(c =>
-                c.Serializer.Options.Converters.Add(new JsonStringEnumConverter())
-                );
+                 
                 app.UseHttpsRedirection();
 
-                // middleware;
+              
 
-                // app.MapControllers();
+              
 
                 app.Run();
 
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, "App shut down without nornal condition");
+                Log.Fatal(ex, "App shut down without nornal condition. Exception occurred {Exception}.", ex);
             }
             finally
             {
