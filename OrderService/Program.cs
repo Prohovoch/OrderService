@@ -2,13 +2,15 @@ using FastEndpoints;
 using System.Text.Json.Serialization;
 using Telegram.Bot;
 using Serilog;
+using DotNetEnv;
 namespace OrderService
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            
+            Env.Load();
+            var teletgamBotToken = Env.GetString("TELEGRAM_BOT_TOKEN");
             // when i implement env vars.
             // Add services to the container.
             Log.Logger = new LoggerConfiguration()
@@ -22,7 +24,7 @@ namespace OrderService
                 Log.Information("Starting web app");
                 var builder = WebApplication.CreateBuilder(args);
                 builder.Services.AddFastEndpoints();
-                builder.Services.AddSingleton<ITelegramBotClient>(new TelegramBotClient("YOUR_TELEGRAM_BOT_TOKEN")); //mock. gonna change it 
+                builder.Services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(teletgamBotToken)); //mock. gonna change it 
                 var app = builder.Build();
                 // TODO: tg client or http factory client impl here.
 
