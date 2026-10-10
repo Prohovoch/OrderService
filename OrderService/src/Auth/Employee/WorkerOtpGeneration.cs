@@ -7,7 +7,7 @@ using OrderService.src.Deal.Worker;
 using OrderService.src.Security.Helpers;
 
 
-namespace OrderService.src.Auth.Worker
+namespace OrderService.src.Auth.Employee
 {
     public class WorkerOtpGeneration(ApplicationDbContext dbContext, OtpGenerate otpService) : Endpoint<WorkerOtpGenerationRequest>
     {
