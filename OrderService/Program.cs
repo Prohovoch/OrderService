@@ -23,6 +23,7 @@ namespace OrderService
             {
                 Log.Information("Starting web app");
                 var builder = WebApplication.CreateBuilder(args);
+                builder.Services.AddMemoryCache();
                 builder.Services.AddFastEndpoints();
                 builder.Services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(teletgamBotToken)); //mock. gonna change it 
                 var app = builder.Build();

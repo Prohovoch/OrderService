@@ -31,14 +31,18 @@ namespace OrderService.src.Deal.Worker.EventHandler
             {
                 Logger.LogError("Failed to send message to user {TelegramId}: Bot was blocked.", eventObj.TelegramId);
                 // Handle the case where the bot is blocked by the user.
-                Console.WriteLine($"Failed to send message to user {eventObj.TelegramId}: Bot was blocked.");
+               
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "An error occurred while sending message to user {TelegramId}.", eventObj.TelegramId);
                 // Handle other exceptions that may occur during message sending.
-                Console.WriteLine($"An error occurred while sending message to user {eventObj.TelegramId}: {ex.Message}");
-            } 
+               
+            }
+            finally
+            {
+                Logger.LogInformation($"Finished handling order completion event for user {eventObj.TelegramId}.");
+            }
         }
 
     }
