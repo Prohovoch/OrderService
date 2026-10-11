@@ -3,9 +3,6 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using OrderService.Infrastructure.Persistence;
 
-
-
-
 namespace OrderService.src.Admin
 {
     public class DeleteWorker(ApplicationDbContext dbContext) : Endpoint<DeleteWorkerRequest>
