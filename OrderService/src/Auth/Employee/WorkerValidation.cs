@@ -8,8 +8,6 @@ namespace OrderService.src.Auth.Employee
 {
     public class WorkerValidation(ApplicationDbContext dbContext, OtpGenerate otpService) : Endpoint<WorkerOtpValidationRequest>
     {
-
-        private readonly ApplicationDbContext _dbContext = dbContext;
         private readonly OtpGenerate _otpService = otpService;
 
         public override void Configure()
@@ -26,7 +24,7 @@ namespace OrderService.src.Auth.Employee
 
 
 
-            var isAlreadRegistered = await _dbContext.Workers.AnyAsync(w => w.TgId == req.TelegramId, ct);
+            var isAlreadRegistered = await dbContext.Workers.AnyAsync(w => w.TgId == req.TelegramId, ct);
             if (isAlreadRegistered)
             {
                 AddError($"Worker with TelegramId { req.TelegramId} is already registered.");
@@ -49,8 +47,8 @@ namespace OrderService.src.Auth.Employee
 
             };
 
-            _dbContext.Workers.Add(worker);
-            await _dbContext.SaveChangesAsync(ct);
+            dbContext.Workers.Add(worker);
+            await dbContext.SaveChangesAsync(ct);
 
 
             await Send.OkAsync(new { Message = "Worker registered successfully." });

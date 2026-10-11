@@ -12,8 +12,6 @@ namespace OrderService.src.Deal.Worker
     public class GetWorkerOrders(ApplicationDbContext dbContext) : Endpoint<GetWorkerOrdersRequest, GetWorkerOrdersResponse>
     {
 
-        private readonly ApplicationDbContext _dbContext = dbContext;
-
         public override void Configure()
         {
             Get("api/admin/orders/picked");
@@ -25,7 +23,7 @@ namespace OrderService.src.Deal.Worker
         {
 
 
-            var entityId = await _dbContext.Admins.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+            var entityId = await dbContext.Admins.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             if (entityId is null)
             {
                 Logger.LogWarning("Unauthorized access attempt by TelegramId: {TelegramId}", req.TelegramId);
@@ -33,7 +31,7 @@ namespace OrderService.src.Deal.Worker
                 return;
             }
 
-            var workerOrders = await _dbContext.Orders
+            var workerOrders = await dbContext.Orders
                 .Where(o => o.Status == OrderStatus.Processing && o.WorkerId == entityId.Value).AsNoTracking().Select(x => new WorkerOrdersResponse
                 {
                     OrderId = x.Id,

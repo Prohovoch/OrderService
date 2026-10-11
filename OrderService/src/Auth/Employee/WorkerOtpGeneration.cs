@@ -11,8 +11,6 @@ namespace OrderService.src.Auth.Employee
 {
     public class WorkerOtpGeneration(ApplicationDbContext dbContext, OtpGenerate otpService) : Endpoint<WorkerOtpGenerationRequest>
     {
-
-        private readonly ApplicationDbContext _dbContext = dbContext;
         private readonly OtpGenerate _otpService = otpService;
 
         public override void Configure()
@@ -27,7 +25,7 @@ namespace OrderService.src.Auth.Employee
         public override async Task HandleAsync(WorkerOtpGenerationRequest req, CancellationToken ct)
         {
             // checks if the product exists in the database on a CATALOG page
-            var isWorkerExists = await _dbContext.Customers.AnyAsync(x => x.TgId == req.TelegramId, ct);
+            var isWorkerExists = await dbContext.Customers.AnyAsync(x => x.TgId == req.TelegramId, ct);
             if (isWorkerExists)
             {
                 Logger.LogWarning("Canceled. User is already registered in a system");

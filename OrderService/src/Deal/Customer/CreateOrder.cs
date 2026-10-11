@@ -12,8 +12,6 @@ namespace OrderService.src.Deal.Customer
     public class AddAnItemToOrder(ApplicationDbContext dbContext) : Endpoint<AddAnItemToOrderRequest>
     {
 
-        private readonly ApplicationDbContext _dbContext = dbContext;
-
         public override void Configure()
         {
             Post("api/customer/order");
@@ -25,7 +23,7 @@ namespace OrderService.src.Deal.Customer
 
         public override async Task HandleAsync(AddAnItemToOrderRequest req, CancellationToken ct)
         {
-            var entityId = await _dbContext.Customers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+            var entityId = await dbContext.Customers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             if (entityId is null)
             {
                 AddError("CustomerId:", $"Customer with TelegramId {req.TelegramId} not found.");
@@ -33,7 +31,7 @@ namespace OrderService.src.Deal.Customer
                 return;
             }
             var uniqueCartItemsIds = req.CartItemIds.ToHashSet();
-            var selectedBucketItems = await _dbContext.CartItems.Where(ci => uniqueCartItemsIds.Contains(ci.Id) && ci.Bucket!.CustomerId == entityId).ToListAsync(ct);
+            var selectedBucketItems = await dbContext.CartItems.Where(ci => uniqueCartItemsIds.Contains(ci.Id) && ci.Bucket!.CustomerId == entityId).ToListAsync(ct);
 
             if (selectedBucketItems.Count != uniqueCartItemsIds.Count)
             {
@@ -46,7 +44,7 @@ namespace OrderService.src.Deal.Customer
 
             // take out products ids from selected  items;
             var productsIds = selectedBucketItems.Select(ci => ci.ProductId).ToHashSet();
-            var products = await _dbContext.Products.Where(p => productsIds.Contains(p.Id)).ToDictionaryAsync(p => p.Id, ct); // o(1)
+            var products = await dbContext.Products.Where(p => productsIds.Contains(p.Id)).ToDictionaryAsync(p => p.Id, ct); // o(1)
 
             if (productsIds.Count != products.Count)
             {
@@ -88,8 +86,8 @@ namespace OrderService.src.Deal.Customer
 
             }
             Logger.LogInformation("Order created with {Count} items", order.Items.Count);
-            _dbContext.Orders.Add(order);
-            await _dbContext.SaveChangesAsync(ct);
+            dbContext.Orders.Add(order);
+            await dbContext.SaveChangesAsync(ct);
             await Send.OkAsync(new OrderResponse { Id = order.Id });
         }
     }

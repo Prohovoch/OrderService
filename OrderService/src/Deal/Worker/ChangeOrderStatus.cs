@@ -11,8 +11,6 @@ namespace OrderService.src.Deal.Worker
     public class ChangeOrderStatus(ApplicationDbContext dbContext) : Endpoint<ChangeOrderStatusRequest>
     {
 
-        private readonly ApplicationDbContext _dbContext = dbContext;
-
         public override void Configure()
         {
             Patch("api/worker/order/{orderId}");
@@ -35,7 +33,7 @@ namespace OrderService.src.Deal.Worker
         {
 
 
-            var entityId = await _dbContext.Workers.Where(x => x.TgId == req.TelegramId).Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+            var entityId = await dbContext.Workers.Where(x => x.TgId == req.TelegramId).Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             if (entityId is null)
             {
                 Logger.LogWarning("Worker with TelegramId {TelegramId} not found.", req.TelegramId);
@@ -44,7 +42,7 @@ namespace OrderService.src.Deal.Worker
                 return;
             }
 
-            var specOrder = await _dbContext.Orders.Where(x => x.Id == req.OrderId && x.WorkerId == entityId.Value).FirstOrDefaultAsync(ct);
+            var specOrder = await dbContext.Orders.Where(x => x.Id == req.OrderId && x.WorkerId == entityId.Value).FirstOrDefaultAsync(ct);
             if (specOrder is null)
             {
                 Logger.LogWarning("Order with Id {OrderId} not found or does not belong to the worker with TelegramId {TelegramId}.", req.OrderId, req.TelegramId);
@@ -78,7 +76,7 @@ namespace OrderService.src.Deal.Worker
                 Logger.LogInformation("Order with Id {OrderId} has been marked as Cooked.", req.OrderId);
                 specOrder.CompletedAt = DateTimeOffset.UtcNow;
 
-                var customerTgId = await _dbContext.Customers.Where(x => x.Id == specOrder.CustomerId).Select(x => (long?)x.TgId).FirstOrDefaultAsync(ct);
+                var customerTgId = await dbContext.Customers.Where(x => x.Id == specOrder.CustomerId).Select(x => (long?)x.TgId).FirstOrDefaultAsync(ct);
                 if(customerTgId is not null)
                 {
                     Logger.LogInformation("Publishing OrderCompletedEvent for order with Id {OrderId} to customer with TelegramId {CustomerTgId}.", req.OrderId, customerTgId.Value);
@@ -93,7 +91,7 @@ namespace OrderService.src.Deal.Worker
                 }
               
                 Logger.LogInformation("Saving changes to the database for order with Id {OrderId}.", req.OrderId);
-                await _dbContext.SaveChangesAsync(ct);
+                await dbContext.SaveChangesAsync(ct);
                 await Send.NoContentAsync();
 
 

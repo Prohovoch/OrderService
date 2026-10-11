@@ -13,8 +13,6 @@ namespace OrderService.src.Cart.Customer
     public class DeleteAnItem(ApplicationDbContext dbContext) : Endpoint<DeleteItemRequest> // this is bad.
     {
 
-        private readonly ApplicationDbContext _dbContext = dbContext; 
-
         public override void Configure()
         {
             Delete("api/customer/cart/items/{bucketItemId}");
@@ -26,7 +24,7 @@ namespace OrderService.src.Cart.Customer
         public override async Task HandleAsync(DeleteItemRequest req, CancellationToken ct)
         {
 
-            var entityId = await _dbContext.Customers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+            var entityId = await dbContext.Customers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             // check if user has it
             if (entityId is null)
             {
@@ -34,7 +32,7 @@ namespace OrderService.src.Cart.Customer
                 await Send.NotFoundAsync();
                 return;
             }
-            bool isOwned = await _dbContext.Carts.AnyAsync(c => c.CustomerId == entityId.Value, ct);
+            bool isOwned = await dbContext.Carts.AnyAsync(c => c.CustomerId == entityId.Value, ct);
 
             if (!isOwned)
             {
@@ -43,7 +41,7 @@ namespace OrderService.src.Cart.Customer
                 await Send.ErrorsAsync();
             }
 
-            var affectedRows = await _dbContext.CartItems
+            var affectedRows = await dbContext.CartItems
                 .Where(bi => bi.Id == req.BucketItemId && bi.Bucket!.CustomerId == entityId.Value) //  hack. mocking warnings. we already have created cart at this point.
                 .ExecuteDeleteAsync(ct);
             

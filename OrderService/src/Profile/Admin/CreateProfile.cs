@@ -12,7 +12,7 @@ namespace OrderService.src.Profile.Admin
     public class CreateProfile(ApplicationDbContext dbContext) : Endpoint<CreateProfileRequest>
     {
 
-        private readonly ApplicationDbContext _dbContext = dbContext;
+        
 
         public override void Configure()
         {
@@ -26,7 +26,7 @@ namespace OrderService.src.Profile.Admin
         public override async Task HandleAsync(CreateProfileRequest req, CancellationToken ct)
         {
 
-            var entityId = await _dbContext.Admins.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+            var entityId = await dbContext.Admins.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             if(entityId is null)
             {
                 Logger.LogWarning("Admin with TelegramId {TelegramId} not found.", req.TelegramId);
@@ -50,8 +50,8 @@ namespace OrderService.src.Profile.Admin
                 }
             };
             Logger.LogInformation("Creating profile for AdminId {AdminId} with Name {Name} and Surname {Surname}.", profile.AdminId, profile.Name, profile.Surname);
-            _dbContext.Add(profile);
-            await _dbContext.SaveChangesAsync(ct);
+            dbContext.Add(profile);
+            await dbContext.SaveChangesAsync(ct);
             await Send.OkAsync();
 
                 

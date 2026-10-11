@@ -32,7 +32,7 @@ namespace OrderService.src.Deal.Worker
                 await Send.ForbiddenAsync();
                 return;
             }
-            var specOrder = await _dbContext.Orders.Where(x => x.Id == req.OrderId).FirstOrDefaultAsync(ct);
+            var specOrder = await dbContext.Orders.Where(x => x.Id == req.OrderId).FirstOrDefaultAsync(ct);
 
             if (specOrder is null)
             {
@@ -40,7 +40,7 @@ namespace OrderService.src.Deal.Worker
                 return;
             }
 
-            int activeOrdersCount =  await _dbContext.Orders.Where(x => x.WorkerId == entityId.Value && x.Status == OrderStatus.Processing).CountAsync(ct);
+            int activeOrdersCount =  await dbContext.Orders.Where(x => x.WorkerId == entityId.Value && x.Status == OrderStatus.Processing).CountAsync(ct);
             if (activeOrdersCount >= 3)
             {
                 AddError("You have reached the maximum number of active orders (3). Please complete or close existing orders before picking up new ones.");

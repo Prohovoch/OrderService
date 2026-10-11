@@ -9,7 +9,7 @@ namespace OrderService.src.Profile.Admin
 {
     public class UpdateProfile(ApplicationDbContext dbContext) : Endpoint<UpdateProfileRequest>
     {
-        private readonly ApplicationDbContext _dbContext = dbContext;
+        
 
         public override void Configure()
         {
@@ -19,14 +19,14 @@ namespace OrderService.src.Profile.Admin
         }
         public override async Task HandleAsync(UpdateProfileRequest req, CancellationToken ct)
         {
-            var entityId = await _dbContext.Admins.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+            var entityId = await dbContext.Admins.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             if (entityId is null)
             {
                 Logger.LogWarning("Admin with TelegramId {TelegramId} not found", req.TelegramId);
                 await Send.NotFoundAsync();
                 return;
             }
-            var profile = await _dbContext.AdminProfiles.FirstOrDefaultAsync(p => p.AdminId == entityId.Value, ct);
+            var profile = await dbContext.AdminProfiles.FirstOrDefaultAsync(p => p.AdminId == entityId.Value, ct);
 
             if (profile is null)
             {

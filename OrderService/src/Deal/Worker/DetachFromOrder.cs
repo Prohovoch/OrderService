@@ -10,9 +10,6 @@ namespace OrderService.src.Deal.Worker
 {
     public class DetachFromOrder(ApplicationDbContext dbContext) : Endpoint<DetachFromOrderRequest>
     {
-
-        private readonly ApplicationDbContext _dbContext = dbContext;
-
         public override void Configure()
         {
             Patch("api/worker/order/{orderId}");
@@ -25,14 +22,14 @@ namespace OrderService.src.Deal.Worker
         public override async Task HandleAsync(DetachFromOrderRequest req, CancellationToken ct)
         {
             // Get all orders which connects with the user.
-            var workerId = await _dbContext.Workers.Where(x => x.TgId == req.TelegramId).Select(x => new {x.Id}).FirstOrDefaultAsync(ct);
+            var workerId = await dbContext.Workers.Where(x => x.TgId == req.TelegramId).Select(x => new {x.Id}).FirstOrDefaultAsync(ct);
             if (workerId is null)
             {
                 Logger.LogWarning("Worker with TelegramId {TelegramId} not found.", req.TelegramId);
                 await Send.ForbiddenAsync();
                 return;
             }
-            var specOrder = await _dbContext.Orders.Where(x => x.Id == req.OrderId && x.WorkerId == workerId.Id).FirstOrDefaultAsync(ct);
+            var specOrder = await dbContext.Orders.Where(x => x.Id == req.OrderId && x.WorkerId == workerId.Id).FirstOrDefaultAsync(ct);
 
             if (specOrder is null)
             {
@@ -46,7 +43,7 @@ namespace OrderService.src.Deal.Worker
             specOrder.Status = OrderStatus.Stopped;
 
             Logger.LogInformation("Worker with TelegramId {TelegramId} detached from order with Id {OrderId}.", req.TelegramId, req.OrderId);
-            await _dbContext.SaveChangesAsync(ct);
+            await dbContext.SaveChangesAsync(ct);
             await Send.OkAsync();
 
 

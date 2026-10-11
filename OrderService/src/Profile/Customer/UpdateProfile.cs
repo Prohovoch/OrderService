@@ -8,7 +8,7 @@ namespace OrderService.src.Profile.Customer
 {
     public class UpdateProfile(ApplicationDbContext dbContext) : Endpoint<UpdateProfileRequest>
     {
-        private readonly ApplicationDbContext _dbContext = dbContext;
+       
 
         public override void Configure()
         {
@@ -20,7 +20,7 @@ namespace OrderService.src.Profile.Customer
         {
 
 
-            var entityId = await _dbContext.Customers
+            var entityId = await dbContext.Customers
                 .Where(p => p.TgId == req.TelegramId).AsNoTracking()
                 .Select(p => (Guid?)p.Id)
                 .FirstOrDefaultAsync(ct);
@@ -32,7 +32,7 @@ namespace OrderService.src.Profile.Customer
                 return;
             
             }
-            var profile = await _dbContext.CustomerProfiles.FirstOrDefaultAsync(p => p.CustomerId == entityId.Value, ct);
+            var profile = await dbContext.CustomerProfiles.FirstOrDefaultAsync(p => p.CustomerId == entityId.Value, ct);
             if (profile is null)
             {
                 Logger.LogWarning("Profile for Customer with TelegramId {TelegramId} not found.", req.TelegramId);
@@ -48,7 +48,7 @@ namespace OrderService.src.Profile.Customer
 
             Logger.LogInformation("Updating profile for Customer with TelegramId {TelegramId}.", req.TelegramId);
             
-            await _dbContext.SaveChangesAsync(ct);
+            await dbContext.SaveChangesAsync(ct);
             await Send.NoContentAsync();
         }
 

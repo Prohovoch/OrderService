@@ -13,8 +13,6 @@ namespace OrderService.src.Profile.Admin
     public class ReadProfile(ApplicationDbContext dbContext) : Endpoint<ReadProfileRequest, ReadProfileResponse>
     {
 
-        private readonly ApplicationDbContext _dbContext = dbContext;
-
         public override void Configure()
         {
             Get("api/admin/profile/me");
@@ -24,14 +22,14 @@ namespace OrderService.src.Profile.Admin
         }
         public override async Task HandleAsync(ReadProfileRequest req, CancellationToken ct)
         {
-            var entityId = await _dbContext.Admins.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+            var entityId = await dbContext.Admins.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             if(entityId is null)
             {
                 Logger.LogWarning("No entity were found for TelegramId: {TelegramId}", req.TelegramId);
                 await Send.NotFoundAsync();
                 return;
             }
-            var adminProfileEntity = await _dbContext.AdminProfiles.AsNoTracking()
+            var adminProfileEntity = await dbContext.AdminProfiles.AsNoTracking()
                 .FirstOrDefaultAsync(r => r.AdminId == entityId.Value, ct);
 
             if (adminProfileEntity is null)

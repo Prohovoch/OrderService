@@ -9,8 +9,6 @@ namespace OrderService.src.Catalog.Admin
     public class DeleteItemFromCatalog(ApplicationDbContext dbContext) : Endpoint<DeleteItemRequest>
     {
 
-        private readonly ApplicationDbContext _dbContext = dbContext;
-
         public override void Configure()
         {
             Delete("api/catalog/item/{productId}");
@@ -23,7 +21,7 @@ namespace OrderService.src.Catalog.Admin
         public override async Task HandleAsync(DeleteItemRequest req, CancellationToken ct)
         {
 
-            var entityId = await _dbContext.Admins.AsNoTracking().Where(a => a.TgId == req.TelegramId).Select(a => (Guid?)a.Id).FirstOrDefaultAsync(ct); // XDDDDDDDDDDDDDDDDD
+            var entityId = await dbContext.Admins.AsNoTracking().Where(a => a.TgId == req.TelegramId).Select(a => (Guid?)a.Id).FirstOrDefaultAsync(ct); // XDDDDDDDDDDDDDDDDD
             if (entityId is null)
             {
                 Logger.LogWarning("No entity were found");
@@ -31,7 +29,7 @@ namespace OrderService.src.Catalog.Admin
                 await Send.ForbiddenAsync();
                 return;
             }
-            bool isOwned = await _dbContext.Products.AnyAsync(p => p.Id == req.ProductId && p.AdminId == entityId.Value, ct); // same as in patch thing.
+            bool isOwned = await dbContext.Products.AnyAsync(p => p.Id == req.ProductId && p.AdminId == entityId.Value, ct); // same as in patch thing.
             // i dont want to think about concurrency right now cause i guess there will be only 1 instance of app.
             if (isOwned is false)
             {
@@ -41,7 +39,7 @@ namespace OrderService.src.Catalog.Admin
                 return;
             }
 
-            var affectedRows = await _dbContext.Products.Where(p => p.Id == req.ProductId).ExecuteDeleteAsync(ct);
+            var affectedRows = await dbContext.Products.Where(p => p.Id == req.ProductId).ExecuteDeleteAsync(ct);
             if (affectedRows == 0)
             {
                 Logger.LogWarning("No entity  item were found {EntityId}", entityId.Value);

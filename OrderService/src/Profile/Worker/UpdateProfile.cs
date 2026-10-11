@@ -9,7 +9,7 @@ namespace OrderService.src.Profile.Worker
 {
     public class UpdateProfile(ApplicationDbContext dbContext) : Endpoint<UpdateProfileRequest>
     {
-        private readonly ApplicationDbContext _dbContext = dbContext;
+       
 
         public override void Configure()
         {
@@ -19,7 +19,7 @@ namespace OrderService.src.Profile.Worker
         }
         public override async Task HandleAsync(UpdateProfileRequest req, CancellationToken ct)
         {
-            var entityId = await _dbContext.Workers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+            var entityId = await dbContext.Workers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
          
             if (entityId is null)
             {
@@ -29,7 +29,7 @@ namespace OrderService.src.Profile.Worker
             }
             
 
-            var profile = await _dbContext.WorkerProfiles.FirstOrDefaultAsync(p => p.WorkerId == entityId.Value, ct);
+            var profile = await dbContext.WorkerProfiles.FirstOrDefaultAsync(p => p.WorkerId == entityId.Value, ct);
             if (profile is null)
             {
                 Logger.LogWarning("Profile for Worker with WorkerId {WorkerId} not found.", entityId.Value);
@@ -44,7 +44,7 @@ namespace OrderService.src.Profile.Worker
             profile.PhoneNumber = req.PhoneNumber ?? profile.PhoneNumber;
             
             Logger.LogInformation("Updating profile for Worker with WorkerId {WorkerId}.", entityId.Value);
-            await _dbContext.SaveChangesAsync(ct);
+            await dbContext.SaveChangesAsync(ct);
             await Send.NoContentAsync();
         }
 

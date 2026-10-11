@@ -12,7 +12,6 @@ namespace OrderService.src.Profile.Worker
     public class ReadProfile(ApplicationDbContext dbContext) : Endpoint<ReadProfileRequest, ReadProfileResponse>
     {
 
-        private readonly ApplicationDbContext _dbContext = dbContext;
 
         public override void Configure()
         {
@@ -23,14 +22,14 @@ namespace OrderService.src.Profile.Worker
         }
         public override async Task HandleAsync(ReadProfileRequest req, CancellationToken ct)
         {
-            var entityId = await _dbContext.Workers.AsNoTracking().Where(x => x.TgId == req.TelegramId).Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+            var entityId = await dbContext.Workers.AsNoTracking().Where(x => x.TgId == req.TelegramId).Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             if (entityId is null)
             {
                 Logger.LogWarning("No entity were found for Worker with TelegramId {TelegramId}.", req.TelegramId);
                 await Send.NotFoundAsync();
                 return;
             }
-            var workerProfileEntity = await _dbContext.WorkerProfiles.AsNoTracking()
+            var workerProfileEntity = await dbContext.WorkerProfiles.AsNoTracking()
                 .FirstOrDefaultAsync(r => r.WorkerId == entityId.Value, ct);
 
             if (workerProfileEntity is null)

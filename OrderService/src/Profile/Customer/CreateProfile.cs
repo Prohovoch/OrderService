@@ -11,7 +11,7 @@ namespace OrderService.src.Profile.Customer
     public class CreateProfile(ApplicationDbContext dbContext) : Endpoint<CreateCustomerProfileRequest>
     {
 
-        private readonly ApplicationDbContext _dbContext = dbContext;
+       
 
         public override void Configure()
         {
@@ -25,7 +25,7 @@ namespace OrderService.src.Profile.Customer
         public override async Task HandleAsync(CreateCustomerProfileRequest req, CancellationToken ct)
         {
 
-            var entityId = await _dbContext.Customers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+            var entityId = await dbContext.Customers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             if (entityId is null)
             {
                 Logger.LogWarning("Customer with TelegramId {TelegramId} not found.", req.TelegramId);
@@ -54,9 +54,9 @@ namespace OrderService.src.Profile.Customer
 
             };
 
-            _dbContext.Add(customerProfile);
+            dbContext.Add(customerProfile);
             Logger.LogInformation("Creating profile for CustomerId {CustomerId} with Name {Name} and Surname {Surname}.", customerProfile.CustomerId, customerProfile.Name, customerProfile.Surname);
-            await _dbContext.SaveChangesAsync(ct);
+            await dbContext.SaveChangesAsync(ct);
             await Send.OkAsync();
         }
 

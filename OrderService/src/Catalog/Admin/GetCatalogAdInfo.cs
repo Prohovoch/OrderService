@@ -10,8 +10,6 @@ namespace OrderService.src.Catalog.Admin
     public class GetCatalogAdInfo(ApplicationDbContext dbContext) : Endpoint<GetCatalogAdInfoRequest, List<CatalogResponse>>
     {
 
-        private readonly ApplicationDbContext _dbContext = dbContext;
-
         public override void Configure()
         {
             Get("api/admin/catalog");
@@ -24,7 +22,7 @@ namespace OrderService.src.Catalog.Admin
         public override async Task HandleAsync(GetCatalogAdInfoRequest req, CancellationToken ct)
         {
             // checks if the product exists in the database on CATALOG page
-            bool isAdminExists = await _dbContext.Admins.AnyAsync(x => x.TgId == req.TelegramId, ct);
+            bool isAdminExists = await dbContext.Admins.AnyAsync(x => x.TgId == req.TelegramId, ct);
             if (isAdminExists is false)
             {
                 Logger.LogWarning("No entity were found");
@@ -32,7 +30,7 @@ namespace OrderService.src.Catalog.Admin
                 await Send.ForbiddenAsync();
                 return;
             }
-            var catalogResult = await _dbContext.Products.AsNoTracking().Select(r => new CatalogResponse
+            var catalogResult = await dbContext.Products.AsNoTracking().Select(r => new CatalogResponse
             {
                 ItemId = r.Id,
                 CreatorName = r.CreatorName,

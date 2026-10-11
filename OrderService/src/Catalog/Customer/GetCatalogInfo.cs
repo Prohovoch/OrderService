@@ -8,9 +8,6 @@ namespace OrderService.src.Catalog.Customer
 {
     public class GetCatalogInfo(ApplicationDbContext dbContext) : Endpoint<GetCatalogCustomerInfoRequest, List<CatalogResponse>>
     {
-
-        private readonly ApplicationDbContext _dbContext = dbContext;
-
         public override void Configure()
         {
             Get("api/customer/catalog");
@@ -23,7 +20,7 @@ namespace OrderService.src.Catalog.Customer
         public override async Task HandleAsync(GetCatalogCustomerInfoRequest req, CancellationToken ct)
         {
             // checks if the product exists in the database on CATALOG page
-            bool isCustomerExists = await _dbContext.Customers.AnyAsync(c => c.TgId == req.TelegramId, ct);
+            bool isCustomerExists = await dbContext.Customers.AnyAsync(c => c.TgId == req.TelegramId, ct);
             if(isCustomerExists is false)
             {
                 Logger.LogWarning("No entity were found");
@@ -32,7 +29,7 @@ namespace OrderService.src.Catalog.Customer
                 return;
             }
 
-            var catalogResult = await _dbContext.Products.Select(r => new CatalogResponse
+            var catalogResult = await dbContext.Products.Select(r => new CatalogResponse
             {
                 ItemId = r.Id,
                 ProductName = r.ProductName,

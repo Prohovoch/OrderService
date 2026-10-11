@@ -8,8 +8,6 @@ namespace OrderService.src.Admin
     public class DeleteWorker(ApplicationDbContext dbContext) : Endpoint<DeleteWorkerRequest>
     {
 
-        private readonly ApplicationDbContext _dbContext = dbContext;
-
         public override void Configure()
         {
             Delete("api/admin/workers/{workerId}");
@@ -20,7 +18,7 @@ namespace OrderService.src.Admin
         public override async Task HandleAsync(DeleteWorkerRequest req, CancellationToken ct)
         {
 
-            bool isAdminExists = await _dbContext.Admins.AnyAsync(x => x.TgId == req.TelegramId, ct);
+            bool isAdminExists = await dbContext.Admins.AnyAsync(x => x.TgId == req.TelegramId, ct);
 
             if (!isAdminExists)
             {
@@ -28,7 +26,7 @@ namespace OrderService.src.Admin
                 return;
             }
 
-            var affectedRows = await _dbContext.Workers
+            var affectedRows = await dbContext.Workers
                 .Where(x => x.Id == req.WorkerId)
                 .ExecuteDeleteAsync(ct);
             if (affectedRows == 0)

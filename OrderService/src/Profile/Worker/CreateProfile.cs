@@ -13,7 +13,7 @@ namespace OrderService.src.Profile.Worker
     public class CreateProfile(ApplicationDbContext dbContext) : Endpoint<CreateWorkerProfileRequest>
     {
 
-        private readonly ApplicationDbContext _dbContext = dbContext;
+       
 
         public override void Configure()
         {
@@ -28,7 +28,7 @@ namespace OrderService.src.Profile.Worker
         {
 
 
-            var entityId = await _dbContext.Workers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+            var entityId = await dbContext.Workers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             if (entityId is null)
             {
                 Logger.LogWarning("Worker with TelegramId {TelegramId} not found.", req.TelegramId);
@@ -57,8 +57,8 @@ namespace OrderService.src.Profile.Worker
             };
             
             Logger.LogInformation("Creating profile for WorkerId {WorkerId} with Name {Name} and Surname {Surname}.", workerProfile.WorkerId, workerProfile.Name, workerProfile.Surname);
-            _dbContext.Add(workerProfile);
-            await _dbContext.SaveChangesAsync(ct);
+            dbContext.Add(workerProfile);
+            await dbContext.SaveChangesAsync(ct);
             await Send.OkAsync();
         }
 

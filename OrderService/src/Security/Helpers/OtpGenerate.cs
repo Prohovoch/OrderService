@@ -12,7 +12,7 @@ namespace OrderService.src.Security.Helpers
     public class OtpGenerate(IMemoryCache memoryCache)
     {
 
-        private readonly IMemoryCache _cache = memoryCache;
+     
         // private const int maxAttempts = 3; -> attempts before blocking the user
         private static readonly TimeSpan timeDuration = TimeSpan.FromMinutes(3); // duration of the code valid state
         private record OtpEntry(string Code, int Attempts);
@@ -24,21 +24,21 @@ namespace OrderService.src.Security.Helpers
         {
             var code = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
             var entry = new OtpEntry(code, 0);
-            _cache.Set(telegramId.ToString(), entry, timeDuration);
+            memoryCache.Set(telegramId.ToString(), entry, timeDuration);
             return code;
         }
         
         public bool ValidateOtp(long telegramId, string code)
         {
             var cacheKey = telegramId.ToString();
-            if (!_cache.TryGetValue(cacheKey, out OtpEntry? entry) || entry == null)
+            if (!memoryCache.TryGetValue(cacheKey, out OtpEntry? entry) || entry == null)
             {
                 return false;
             }
             var isCodeValid = CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(entry.Code), Encoding.UTF8.GetBytes(code));
             if (isCodeValid)
             {
-                _cache.Remove(cacheKey);
+                memoryCache.Remove(cacheKey);
                 return true;
             }
             return false;

@@ -6,7 +6,7 @@ namespace OrderService.src.Security.Middleware
 {
     public class BotApiKeyMiddleware(RequestDelegate next)
     {
-        private readonly RequestDelegate _next = next;
+       
         private readonly string _expectedKey = Env.GetString("TGBOT_API") ?? string.Empty;
         private const string HeaderName = "X-Bot-Api-Key";
 
@@ -35,7 +35,7 @@ namespace OrderService.src.Security.Middleware
                 return;
             }
 
-            await _next(context);
+            await next(context);
         }
         private static async Task SendUnauthorizedResponse(HttpContext context)
         {

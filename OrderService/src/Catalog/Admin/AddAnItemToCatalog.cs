@@ -10,8 +10,6 @@ namespace OrderService.src.Catalog.Admin
     public class AddAnItemToCatalog(ApplicationDbContext dbContext) : Endpoint<AddAnItemToCatalogRequest>
     {
 
-        private readonly ApplicationDbContext _dbContext = dbContext;
-
         public override void Configure()
         {
             Post("api/catalog/item");
@@ -23,7 +21,7 @@ namespace OrderService.src.Catalog.Admin
 
         public override async Task HandleAsync(AddAnItemToCatalogRequest req, CancellationToken ct)
         {
-            var entityId = await _dbContext.Admins
+            var entityId = await dbContext.Admins
                 .Where(x => x.TgId == req.TelegramId)
                 .Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             
@@ -75,8 +73,8 @@ namespace OrderService.src.Catalog.Admin
                 Id = catalogItem.Id,
             };
             Logger.LogInformation("Mapping completed {entityId}", entityId.Value);
-            _dbContext.Products.Add(catalogItem);
-            await _dbContext.SaveChangesAsync(ct);
+            dbContext.Products.Add(catalogItem);
+            await dbContext.SaveChangesAsync(ct);
 
             await Send.OkAsync(response);
 

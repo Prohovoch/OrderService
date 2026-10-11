@@ -10,8 +10,6 @@ namespace OrderService.src.Auth.Buyer
     public class RegisterCustomer(ApplicationDbContext dbContext) : Endpoint<RegisterCustomerRequest>
     {
 
-        private readonly ApplicationDbContext _dbContext = dbContext;
-
         public override void Configure()
         {
             Post("api/register/cutomer");
@@ -24,7 +22,7 @@ namespace OrderService.src.Auth.Buyer
         public override async Task HandleAsync(RegisterCustomerRequest req, CancellationToken ct)
         {
             // checks if the product exists in the database on a CATALOG page
-            var isCustomerExists = await _dbContext.Customers.AnyAsync(x => x.TgId == req.TelegramId, ct);
+            var isCustomerExists = await dbContext.Customers.AnyAsync(x => x.TgId == req.TelegramId, ct);
            
             if (isCustomerExists is true)
             {
@@ -38,8 +36,8 @@ namespace OrderService.src.Auth.Buyer
                 Id = Guid.CreateVersion7(),
                 TgId = req.TelegramId
             };
-            _dbContext.Customers.Add(customer);
-            await _dbContext.SaveChangesAsync(ct);
+            dbContext.Customers.Add(customer);
+            await dbContext.SaveChangesAsync(ct);
             Logger.LogInformation("User is succesfully registered");
             await Send.OkAsync(new { Message = "Customer registered successfully." });
 

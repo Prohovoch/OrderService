@@ -12,8 +12,6 @@ namespace OrderService.src.Deal.Admin
     public class LookCompleteOrders(ApplicationDbContext dbContext) : Endpoint<LookCompleteOrdersRequest, GetOrdersResponse>
     {
 
-        private readonly ApplicationDbContext _dbContext = dbContext;
-
         public override void Configure()
         {
             Get("api/admin/orders");
@@ -25,7 +23,7 @@ namespace OrderService.src.Deal.Admin
         {
 
 
-            var entityId = await _dbContext.Admins.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+            var entityId = await dbContext.Admins.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             if (entityId is null)
             {
                 Logger.LogWarning("No entity were found");
@@ -33,7 +31,7 @@ namespace OrderService.src.Deal.Admin
                 return;
             }
 
-            var completeOrders = await _dbContext.Orders
+            var completeOrders = await dbContext.Orders
                 .Where(o => o.Status == OrderStatus.Closed).AsNoTracking().Select(x => new LookCompleteOrdersResponse
                 {
                     OrderId = x.Id,

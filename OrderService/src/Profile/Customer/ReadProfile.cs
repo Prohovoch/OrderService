@@ -11,7 +11,7 @@ namespace OrderService.src.Profile.Customer
     public class ReadProfile(ApplicationDbContext dbContext) : Endpoint<ReadCustomerProfileRequest, ReadCustomerProfileResponse>
     {
 
-        private readonly ApplicationDbContext _dbContext = dbContext;
+        
 
         public override void Configure()
         {
@@ -25,7 +25,7 @@ namespace OrderService.src.Profile.Customer
 
         public override async Task HandleAsync(ReadCustomerProfileRequest req, CancellationToken ct)
         {
-            var entityId = await _dbContext.Customers.AsNoTracking()
+            var entityId = await dbContext.Customers.AsNoTracking()
                 .Where(r => r.TgId == req.TelegramId)
                 .Select(r => (Guid?)r.Id)
                 .FirstOrDefaultAsync(ct);
@@ -36,7 +36,7 @@ namespace OrderService.src.Profile.Customer
                 return;
             }
 
-            var customerProfileEntity = await _dbContext.CustomerProfiles.AsNoTracking()
+            var customerProfileEntity = await dbContext.CustomerProfiles.AsNoTracking()
                 .Where(r => r.CustomerId == entityId.Value).FirstOrDefaultAsync(ct);
                 
             if (customerProfileEntity is null)

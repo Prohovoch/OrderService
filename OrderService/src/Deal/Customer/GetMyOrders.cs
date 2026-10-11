@@ -10,8 +10,6 @@ namespace OrderService.src.Deal.Customer
     public class CheckMyOrders(ApplicationDbContext dbContext) : Endpoint<GetMyOrdersRequest, GetMyOrdersResponse>
     {
 
-        private readonly ApplicationDbContext _dbContext = dbContext;
-
         public override void Configure()
         {
             Get("api/customer/orders");
@@ -24,13 +22,13 @@ namespace OrderService.src.Deal.Customer
         public override async Task HandleAsync(GetMyOrdersRequest req, CancellationToken ct)
         {
             // Get all orders which connects with the user.
-            var entityId = await _dbContext.Customers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+            var entityId = await dbContext.Customers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             if (entityId is null)
             {
                 await Send.ForbiddenAsync();
                 return;
             }
-            var userOrders = await _dbContext.Orders.AsNoTracking()
+            var userOrders = await dbContext.Orders.AsNoTracking()
                 .Where(o => o.CustomerId == entityId.Value)
                 .Select(o => new OrderResponseDto
 

@@ -15,8 +15,6 @@ namespace OrderService.src.Cart.Customer
     public class UpdateCartItemQuantity(ApplicationDbContext dbContext) : Endpoint<UpdateItemQuantityRequest, UpdateItemQuantityResponse>
     {
 
-        private readonly ApplicationDbContext _dbContext = dbContext;
-
         public override void Configure()
         {
             Patch("api/customer/cart/{bucketId}/items/{bucketItemId}");
@@ -30,14 +28,14 @@ namespace OrderService.src.Cart.Customer
         {
             // checks if the product exists in the database
 
-            var entityId = await _dbContext.Customers.AsNoTracking().Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+            var entityId = await dbContext.Customers.AsNoTracking().Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             if (entityId is null)
             {
                 Logger.LogWarning("Entity not found");
                 await Send.NotFoundAsync();
                 return;
             }
-            var productInfo = await _dbContext.CartItems.Where(p => p.Id == req.BucketItemId && p.BucketId == req.BucketId && p.Bucket!.CustomerId == entityId.Value).AsNoTracking().Select(p =>  new { p.Product.Price}).FirstOrDefaultAsync(ct);
+            var productInfo = await dbContext.CartItems.Where(p => p.Id == req.BucketItemId && p.BucketId == req.BucketId && p.Bucket!.CustomerId == entityId.Value).AsNoTracking().Select(p =>  new { p.Product.Price}).FirstOrDefaultAsync(ct);
 
             if (productInfo is null) //  guarantees not existing
             {
@@ -48,7 +46,7 @@ namespace OrderService.src.Cart.Customer
 
           
        
-            var affectedRows = await _dbContext.CartItems.Where(p => p.Id == req.BucketItemId && p.BucketId == req.BucketId && p.Bucket!.CustomerId == entityId.Value).ExecuteUpdateAsync(p => p.SetProperty(x => x.BucketItemQuantity, req.Quantity), ct);
+            var affectedRows = await dbContext.CartItems.Where(p => p.Id == req.BucketItemId && p.BucketId == req.BucketId && p.Bucket!.CustomerId == entityId.Value).ExecuteUpdateAsync(p => p.SetProperty(x => x.BucketItemQuantity, req.Quantity), ct);
             if (affectedRows == 0)
             {
                 Logger.LogWarning("No item were found for {customerId}", entityId.Value);

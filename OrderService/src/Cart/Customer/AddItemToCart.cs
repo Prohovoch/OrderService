@@ -14,8 +14,6 @@ namespace OrderService.src.Cart.Customer
     public class AddItemToCart(ApplicationDbContext dbContext) : Endpoint<AddItemToCartRequest, AddItemToCartResponse>
     {
 
-        private readonly ApplicationDbContext _dbContext = dbContext;
-
         public override void Configure()
         {
             Post("api/customer/cart/items");
@@ -28,7 +26,7 @@ namespace OrderService.src.Cart.Customer
         public override async Task HandleAsync(AddItemToCartRequest req, CancellationToken ct)
         {
             // checks if the product exists in the database on a CATALOG page
-            var entityId = await _dbContext.Customers.AsNoTracking().Where(x => x.TgId == req.TelegramId).Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+            var entityId = await dbContext.Customers.AsNoTracking().Where(x => x.TgId == req.TelegramId).Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             
             if (entityId is null)
             {
@@ -37,7 +35,7 @@ namespace OrderService.src.Cart.Customer
                 return;
             }
             
-            var productExists = await _dbContext.Products.AnyAsync(p => p.Id == req.ProductId, ct);
+            var productExists = await dbContext.Products.AnyAsync(p => p.Id == req.ProductId, ct);
 
             if (!productExists)
             {
@@ -47,7 +45,7 @@ namespace OrderService.src.Cart.Customer
                 return;
             }
             // checks if the cart exists for the user, if not creates a new cart (1 of 2 possibilities)
-            var bucket = await _dbContext.Carts.Include(c => c.Items).FirstOrDefaultAsync(c => c.CustomerId == entityId.Value, ct);
+            var bucket = await dbContext.Carts.Include(c => c.Items).FirstOrDefaultAsync(c => c.CustomerId == entityId.Value, ct);
 
             if (bucket is null)
             {
@@ -60,7 +58,7 @@ namespace OrderService.src.Cart.Customer
                     // we creating in db v7 guid, 
                 };
                 
-                _dbContext.Carts.Add(bucket);
+                dbContext.Carts.Add(bucket);
                 Logger.LogInformation("Cart item were  successfully added to the db");
             }
             var existingCartItem = bucket.Items.FirstOrDefault(i => i.ProductId == req.ProductId);
@@ -73,7 +71,7 @@ namespace OrderService.src.Cart.Customer
                     BucketId = bucket.Id
                 };
                 
-                _dbContext.CartItems.Add(newCartItem);
+                dbContext.CartItems.Add(newCartItem);
                 Logger.LogInformation("Cart item were  successfully added to the db");
             }
             else
@@ -82,10 +80,10 @@ namespace OrderService.src.Cart.Customer
                 
             }
             // i hate this code but VSA AND REPR told me to do so,
-            var productName = await _dbContext.Products.AsNoTracking().Where(i => i.Id == req.ProductId) 
+            var productName = await dbContext.Products.AsNoTracking().Where(i => i.Id == req.ProductId) 
                 .Select(i => i.ProductName).FirstAsync(ct);
             
-            await _dbContext.SaveChangesAsync(ct);
+            await dbContext.SaveChangesAsync(ct);
             Logger.LogInformation("An item were successfully added to the cart");           
             await Send.OkAsync(new AddItemToCartResponse { Message = "Item added to cart successfully.", ProductName = productName  }); 
 

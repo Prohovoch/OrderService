@@ -10,8 +10,6 @@ namespace OrderService.src.Catalog.Admin
     public class ChangeStatusToItem(ApplicationDbContext dbContext) : Endpoint<ChangeStatsCatalogRequest>
     {
 
-        private readonly ApplicationDbContext _dbContext = dbContext;
-
         public override void Configure()
         {
             Patch("api/catalog/item/{productId}");
@@ -24,7 +22,7 @@ namespace OrderService.src.Catalog.Admin
         public override async Task HandleAsync(ChangeStatsCatalogRequest req, CancellationToken ct)
         {
 
-            var entityId = await _dbContext.Admins.AsNoTracking().Where(x => x.TgId == req.TelegramId).Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+            var entityId = await dbContext.Admins.AsNoTracking().Where(x => x.TgId == req.TelegramId).Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             
             if (entityId is null)
             {
@@ -34,7 +32,7 @@ namespace OrderService.src.Catalog.Admin
             }
             
             // taking up product which we want to change.      
-            var product = await _dbContext.Products.FirstOrDefaultAsync(x => x.Id == req.ProductId, ct); // protection from concurrent requests, shit -  no solution.
+            var product = await dbContext.Products.FirstOrDefaultAsync(x => x.Id == req.ProductId, ct); // protection from concurrent requests, shit -  no solution.
             if (product is null)
             {
                 Logger.LogWarning("No entity were found");
@@ -76,7 +74,7 @@ namespace OrderService.src.Catalog.Admin
 
             Logger.LogInformation("Saving information");
 
-            await _dbContext.SaveChangesAsync(ct);
+            await dbContext.SaveChangesAsync(ct);
             await Send.OkAsync();
   }
 

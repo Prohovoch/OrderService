@@ -12,8 +12,6 @@ namespace OrderService.src.Deal.Worker
     public class GetOrders(ApplicationDbContext dbContext) : Endpoint<GetOrdersRequest, GetOrdersResponse>
     {
 
-        private readonly ApplicationDbContext _dbContext = dbContext;
-
         public override void Configure()
         {
             Get("api/worker/orders/pool");
@@ -25,7 +23,7 @@ namespace OrderService.src.Deal.Worker
         {
 
 
-            bool entityExists = await _dbContext.Admins.AnyAsync(x => x.TgId == req.TelegramId, ct);
+            bool entityExists = await dbContext.Admins.AnyAsync(x => x.TgId == req.TelegramId, ct);
             if (!entityExists)
             {
                 Logger.LogWarning("Entity with TelegramId {TelegramId} not found in Admins table.", req.TelegramId);
@@ -33,7 +31,7 @@ namespace OrderService.src.Deal.Worker
                 return;
             }
 
-            var createdOrders = await _dbContext.Orders.Where(x => x.Status == OrderStatus.Created)
+            var createdOrders = await dbContext.Orders.Where(x => x.Status == OrderStatus.Created)
                 .AsNoTracking().Select(x => new LookOrdersResponse
                 {
                     OrderId = x.Id,
