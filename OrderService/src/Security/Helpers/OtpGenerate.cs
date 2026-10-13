@@ -14,8 +14,8 @@ namespace OrderService.src.Security.Helpers
 
      
         // private const int maxAttempts = 3; -> attempts before blocking the user
-        private static readonly TimeSpan timeDuration = TimeSpan.FromMinutes(3); // duration of the code valid state
-        private record OtpEntry(string Code, int Attempts);
+        private static readonly TimeSpan timeDuration = TimeSpan.FromMinutes(1); // duration of the code valid state
+        private record OtpEntry(string Code);
 
         // <summary>
         // Generates a new OTP code for the given Telegram ID and stores it in the cache with an expiration time.
@@ -23,7 +23,7 @@ namespace OrderService.src.Security.Helpers
         public string GenerateOtp(long telegramId)
         {
             var code = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
-            var entry = new OtpEntry(code, 0);
+            var entry = new OtpEntry(code);
             memoryCache.Set(telegramId.ToString(), entry, timeDuration);
             return code;
         }
