@@ -63,7 +63,7 @@ namespace OrderService.src.Catalog.Admin
                 };
             }
 
-           
+            product.Details ??= new ProductDetails();
             product.Details.Ingredients = req.Ingredients ?? product.Details.Ingredients;
             product.Details.Volume = req.Volume ?? product.Details.Volume;
             product.Details.Weight = req.Weight ?? product.Details.Weight;
