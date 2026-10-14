@@ -40,7 +40,6 @@ namespace OrderService.src.Security.Middleware
         private static async Task SendUnauthorizedResponse(HttpContext context)
         {
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            context.Response.ContentType = "application/json";
             await context.Response.WriteAsJsonAsync(new { error = "Invalid or missing bot API key." });
         }
     }
