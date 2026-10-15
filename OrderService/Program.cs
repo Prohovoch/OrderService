@@ -25,7 +25,7 @@ namespace OrderService
                 var builder = WebApplication.CreateBuilder(args);
                 builder.Services.AddMemoryCache();
                 builder.Services.AddFastEndpoints();
-                builder.Services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(teletgamBotToken)); //mock. gonna change it 
+               
                 var app = builder.Build();
                 // TODO: tg client or http factory client impl here.
 

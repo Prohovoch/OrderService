@@ -1,4 +1,12 @@
-﻿using FastEndpoints;
+﻿// Due the fact that the project is an api for telegram bot. testing cant be done with this chunk of code, because we dont have a completed
+// client app.
+// This function will be converted to a proper endpoint logic.
+/* 
+
+
+
+
+using FastEndpoints;
 using OrderService.src.Deal.Worker;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
@@ -49,3 +57,4 @@ namespace OrderService.src.Auth.Worker.EventHandler
     }
 }
 
+*/

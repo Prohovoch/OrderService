@@ -69,34 +69,21 @@ namespace OrderService.src.Deal.Worker
                 return;
             }
             specOrder.Status = newStatus;
-        
+
 
             if (newStatus == OrderStatus.Cooked)
             {
                 Logger.LogInformation("Order with Id {OrderId} has been marked as Cooked.", req.OrderId);
                 specOrder.CompletedAt = DateTimeOffset.UtcNow;
-
-                var customerTgId = await dbContext.Customers.Where(x => x.Id == specOrder.CustomerId).Select(x => (long?)x.TgId).FirstOrDefaultAsync(ct);
-                if(customerTgId is not null)
-                {
-                    Logger.LogInformation("Publishing OrderCompletedEvent for order with Id {OrderId} to customer with TelegramId {CustomerTgId}.", req.OrderId, customerTgId.Value);
-                    await PublishAsync(new OrderCompletedEventObj
-                    {
-                        OrderNumber = specOrder.DisplayOrderNumber,
-                        TelegramId = customerTgId.Value,
-                    }, Mode.WaitForNone); // we need to log this somehow and test it.
-
-                };    
-
-                }
-              
-                Logger.LogInformation("Saving changes to the database for order with Id {OrderId}.", req.OrderId);
-                await dbContext.SaveChangesAsync(ct);
-                await Send.NoContentAsync();
-
-
+                // potentical event should accured here.
             }
+
+            Logger.LogInformation("Saving changes to the database for order with Id {OrderId}.", req.OrderId);
+            await dbContext.SaveChangesAsync(ct);
+            await Send.NoContentAsync();
+
         }
+    }
 
         public class ChangeOrderStatusValidator : Validator<ChangeOrderStatusRequest>
         {

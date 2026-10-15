@@ -9,7 +9,7 @@ using OrderService.src.Security.Helpers;
 
 namespace OrderService.src.Auth.Employee
 {
-    public class WorkerOtpGeneration(ApplicationDbContext dbContext, OtpGenerate otpService) : Endpoint<WorkerOtpGenerationRequest>
+    public class WorkerOtpGeneration(ApplicationDbContext dbContext, OtpGenerate otpService) : Endpoint<WorkerOtpGenerationRequest, WorkerOtpGenerationResponse>
     {
         private readonly OtpGenerate _otpService = otpService;
 
@@ -35,15 +35,13 @@ namespace OrderService.src.Auth.Employee
 
 
             var code = _otpService.GenerateOtp(req.TelegramId);
-            await PublishAsync(new CodeGeneratedEventObj
+            var response = new WorkerOtpGenerationResponse
             {
-                code = code,
-                telegramId = req.TelegramId,
-            }, Mode.WaitForNone); // we need to log this somehow and test it.
+                GeneratedCode = code
+            };
 
-        
 
-            await Send.OkAsync(new { Message = "Worker registered successfully." });
+            await Send.OkAsync(response);
 
 
 
@@ -72,11 +70,9 @@ namespace OrderService.src.Auth.Employee
 
     }
 
-    public sealed record CodeGeneratedEventObj
+    public sealed record WorkerOtpGenerationResponse
     {
-        public string code { get; init; } = null!;
-        public long telegramId { get; init; }
-
+        public required string GeneratedCode { get; init; }
     }
 
 
