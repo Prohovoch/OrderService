@@ -40,7 +40,7 @@ namespace OrderService.src.Profile.Worker
             profile.Name = req.Name ?? profile.Name;
             profile.Surname = req.Surname ?? profile.Surname;
             profile.Age = req.Age ?? profile.Age;
-            profile.Gender = req.Gender.HasValue ? (WorkerGender)req.Gender.Value : profile.Gender;
+            profile.Gender = req.Gender.HasValue ? (WorkerGender)req.Gender.Value : throw new ArgumentOutOfRangeException(nameof(req), "out of range");
             profile.PhoneNumber = req.PhoneNumber ?? profile.PhoneNumber;
             
             Logger.LogInformation("Updating profile for Worker with WorkerId {WorkerId}.", entityId.Value);
@@ -60,7 +60,7 @@ namespace OrderService.src.Profile.Worker
             RuleFor(x => x.TelegramId).NotEmpty().WithMessage("UserId required");
             RuleFor(x => x.Surname).MinimumLength(3).WithMessage("Surname must be at least 3 characters long.").When(x => x.Surname != null);
             RuleFor(x => x.Age).InclusiveBetween(18, 120).WithMessage("Age must be between 18 and 120.").When(x => x.Age != null);
-            RuleFor(x => x.Gender).IsInEnum().When(x => x.Gender != null);
+            RuleFor(x => x.Gender).IsInEnum().NotNull();
             RuleFor(x => x.PhoneNumber).NotEmpty().When(x => x.PhoneNumber != null).WithMessage("Phone number must not be null!");
         }
     }

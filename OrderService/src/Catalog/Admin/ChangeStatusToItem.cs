@@ -52,16 +52,18 @@ namespace OrderService.src.Catalog.Admin
             product.AdminId = entityId.Value;
             product.ProductName = req.ProductName ?? product.ProductName;
             product.Price = req.Price ?? product.Price;
-            
+
+            // seems like something profile.Gender = req.Gender.HasValue ? (WorkerGender)req.Gender.Value : profile.Gender;
             if (req.AvailabilityStatus.HasValue)
             {
                 product.AvailabilityStatus = req.AvailabilityStatus.Value switch
                 {
                     ChangeProductAvStatus.Available => ProductAvailabilityStatus.Available,
                     ChangeProductAvStatus.OutOfStock => ProductAvailabilityStatus.OutOfStock,
-                    _ => product.AvailabilityStatus
+                    _ => default,
                 };
             }
+
 
             product.Details ??= new ProductDetails();
             product.Details.Ingredients = req.Ingredients ?? product.Details.Ingredients;
