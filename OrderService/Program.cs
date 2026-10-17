@@ -10,7 +10,7 @@ namespace OrderService
         public static void Main(string[] args)
         {
             Env.Load();
-            var teletgamBotToken = Env.GetString("TELEGRAM_BOT_TOKEN");
+            // var teletgamBotToken = Env.GetString("TELEGRAM_BOT_TOKEN");
             // when i implement env vars.
             // Add services to the container.
             Log.Logger = new LoggerConfiguration()
@@ -25,16 +25,21 @@ namespace OrderService
                 var builder = WebApplication.CreateBuilder(args);
                 builder.Services.AddMemoryCache();
                 builder.Services.AddFastEndpoints();
+
                
                 var app = builder.Build();
                 // TODO: tg client or http factory client impl here.
 
-                app.UseDefaultExceptionHandler(useProblemDetails: true,)
+
+                app.UseRouting();
+                app.UseRequestTimeouts();
+
+                app.UseDefaultExceptionHandler(useProblemDetails: true)
                     .UseFastEndpoints(c => c.Serializer.Options.Converters.Add(new JsonStringEnumConverter()));
                 // Configure the HTTP request pipeline.
                  
                 app.UseHttpsRedirection();
-
+                
               
 
               
