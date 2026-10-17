@@ -55,7 +55,7 @@ namespace OrderService.src.Deal.Customer
             if (productsIds.Count != products.Count)
             {
                 Logger.LogWarning("Some of the products were deleted from a catalog");
-                AddError("ProductId:", $"An Item  was deleted");
+                AddError("ProductId:", "An Item  was deleted");
                 await Send.ErrorsAsync();
                 return;
             }
@@ -71,7 +71,7 @@ namespace OrderService.src.Deal.Customer
                 CreatedAt = DateTimeOffset.UtcNow,
                 ClientName = customerData.Name,
                 ClientSurname = customerData.Surname,
-                DisplayOrderNumber = (1000, 9999).ToString(), // remove
+                DisplayOrderNumber = Random.Shared.Next(1000, 9999).ToString(), // remove
             };
 
             foreach (var item in selectedBucketItems)
