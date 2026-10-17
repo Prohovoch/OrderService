@@ -1,7 +1,7 @@
 ﻿using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using OrderService.Infrastructure.Entities.Catalog;
+
 using OrderService.Infrastructure.Entities.Deal;
 using OrderService.Infrastructure.Persistence;
 
@@ -41,7 +41,13 @@ namespace OrderService.src.Deal.Customer
             }
 
 
-
+            var customerData = await dbContext.CustomerProfiles.Where(c => c.Id == entityId).AsNoTracking().Select(c => new { c.Name, c.Surname, c.PhoneNumber }).FirstOrDefaultAsync(ct);
+            if(customerData is null)
+            {
+                AddError("CustomerProfile:", $"Customer profile with Id {entityId} not found.");
+                await Send.NotFoundAsync();
+                return;
+            }   
             // take out products ids from selected  items;
             var productsIds = selectedBucketItems.Select(ci => ci.ProductId).ToHashSet();
             var products = await dbContext.Products.Where(p => productsIds.Contains(p.Id)).ToDictionaryAsync(p => p.Id, ct); // o(1)
@@ -60,12 +66,12 @@ namespace OrderService.src.Deal.Customer
 
                 CustomerId = entityId,
 
-                CustomerPhoneNumber = req.CustomerPhoneNumber,
+                CustomerPhoneNumber = customerData.PhoneNumber,
                 Status = OrderStatus.Created,
                 CreatedAt = DateTimeOffset.UtcNow,
-                ClientName = req.ClientName,
-                ClientSurname = req.ClientSurname,
-                DisplayOrderNumber = Random.Shared.Next(1000, 9999).ToString(), // remove
+                ClientName = customerData.Name,
+                ClientSurname = customerData.Surname,
+                DisplayOrderNumber = (1000, 9999).ToString(), // remove
             };
 
             foreach (var item in selectedBucketItems)
@@ -97,9 +103,7 @@ namespace OrderService.src.Deal.Customer
         {
             RuleFor(x => x.TelegramId).NotEmpty().WithMessage("TelegramId is required!");
             RuleFor(x => x.CartItemIds).NotEmpty().WithMessage("An Empty order cannot be created!");
-            RuleFor(x => x.ClientName).NotEmpty().WithMessage("Client name is required.");
-            RuleFor(x => x.ClientSurname).NotEmpty().WithMessage("Client surname is required.");
-            RuleFor(x => x.CustomerPhoneNumber).Matches(@"^(\+?7|8)\d{10}$").NotEmpty().WithMessage("Invalid phone number format.");
+           
         }
     }
 
@@ -117,9 +121,7 @@ namespace OrderService.src.Deal.Customer
         [FromHeader("Customer-Telegram-Id")]
         public long TelegramId { get; init; }
         public required List<Guid> CartItemIds { get; init; }
-        public required string ClientName { get; init; }
-        public required string ClientSurname { get; init; }
-        public required string CustomerPhoneNumber { get; init; }
+
 
     }
 }

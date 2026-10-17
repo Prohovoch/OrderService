@@ -48,11 +48,11 @@ namespace OrderService.src.Profile.Worker
                 {
                     WorkerGender.Male => ReadRequestGender.Male,
                     WorkerGender.Female => ReadRequestGender.Female,
-                    _ => default
+                    _ => 
 
                 }
             };
-            Logger.LogInformation("Profile for Worker with WorkerId {WorkerId} found.", entityId.Value);
+            Logger.LogInformation("Profile for Worker with WorkerId found");
             await Send.OkAsync(resp);
         }
 

@@ -30,30 +30,46 @@ namespace OrderService.src.Catalog.Admin
                 await Send.ForbiddenAsync();
                 return;
             }
-            var catalogResult = await dbContext.Products.AsNoTracking().Select(r => new CatalogResponse
+            var catalogResult = (await dbContext.Products.AsNoTracking().Select(r => new
+            {
+                r.Id,
+                r.CreatorName,
+                r.CreatorSurname,
+                r.ProductName,
+                r.Price,
+                r.AvailabilityStatus,
+                // This is unbearable to watch. but it is not a dynamic, it is a static. and i dont want to bother using this Expression stuff frow now.
+                // and yeah. C# cannot translate switch expression so...
+                r.Type,
+                r.Details.Ingredients,
+                r.Details.Volume,
+                r.Details.Weight,
+            })
+            .ToListAsync(ct)) // 2. Выполнили запрос, данные в памяти
+            .Select(r => new CatalogResponse
             {
                 ItemId = r.Id,
                 CreatorName = r.CreatorName,
                 CreatorSurname = r.CreatorSurname,
                 ProductName = r.ProductName,
                 Price = r.Price,
-                AvailabilityStatus = r.AvailabilityStatus == ProductAvailabilityStatus.Available ? GetProductAvailabilityStatus.Available : GetProductAvailabilityStatus.OutOfStock,
-                // This is unbearable to watch. but it is not a dynamic, it is a static. and i dont want to bother using this Expression stuff frow now.
-                // and yeah. C# cannot translate switch expression so...
-                ProductType = r.Type
-                == ProductType.Pizza ? GetProductType.Pizza
-                : r.Type == ProductType.Burger ? GetProductType.Burger
-                : r.Type == ProductType.Soup ? GetProductType.Soup
-                : r.Type == ProductType.Salad ? GetProductType.Salad
-                : r.Type == ProductType.Sushi ? GetProductType.Sushi
-                : GetProductType.Drinks, // i want to vommit lol
-                Ingredients = r.Details.Ingredients,
-                Volume = r.Details.Volume,
-                Weight = r.Details.Weight
-
-
-
-            }).ToListAsync(ct);
+                AvailabilityStatus = r.AvailabilityStatus == ProductAvailabilityStatus.Available
+                ? GetProductAvailabilityStatus.Available
+                :  GetProductAvailabilityStatus.OutOfStock,
+            
+                ProductType = r.Type switch
+                {
+                    ProductType.Pizza => GetProductType.Pizza,
+                    ProductType.Burger => GetProductType.Burger,
+                    ProductType.Soup => GetProductType.Soup,
+                    ProductType.Salad => GetProductType.Salad,
+                    ProductType.Sushi => GetProductType.Sushi,
+                    _ => GetProductType.Drinks
+                },
+                Ingredients = r.Ingredients,
+                Volume = r.Volume,
+                Weight = r.Weight
+                }).ToList();
             Logger.LogInformation("Operation completed");
 
             await Send.OkAsync(catalogResult);
@@ -89,7 +105,7 @@ namespace OrderService.src.Catalog.Admin
         public required string ProductName { get; init; }
         public decimal Price { get; init; }
 
-        public GetProductType ProductType { get; init; }
+        public GetProductType? ProductType { get; init; }
 
         public GetProductAvailabilityStatus AvailabilityStatus { get; init; }
         // this is from JsonB part

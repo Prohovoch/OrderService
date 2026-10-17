@@ -30,7 +30,7 @@ namespace OrderService.src.Profile.Admin
                 return;
             }
             var adminProfileEntity = await dbContext.AdminProfiles.AsNoTracking()
-                .FirstOrDefaultAsync(r => r.AdminId == entityId.Value, ct);
+                .FirstOrDefaultAsync(r => entityId.Value == r.AdminId, ct);
 
             if (adminProfileEntity is null)
             {
@@ -48,7 +48,7 @@ namespace OrderService.src.Profile.Admin
                 {
                     AdminGender.Male => ReadReqGender.Male,
                     AdminGender.Female => ReadReqGender.Female,
-                    _ => default
+                    _ => null // means somethin 
                 }
             };
             Logger.LogInformation("Profile read successfully for AdminId: {AdminId}", entityId.Value);

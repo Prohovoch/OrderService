@@ -29,7 +29,7 @@ namespace OrderService
                 var app = builder.Build();
                 // TODO: tg client or http factory client impl here.
 
-                app.UseDefaultExceptionHandler(useProblemDetails: true)
+                app.UseDefaultExceptionHandler(useProblemDetails: true,)
                     .UseFastEndpoints(c => c.Serializer.Options.Converters.Add(new JsonStringEnumConverter()));
                 // Configure the HTTP request pipeline.
                  

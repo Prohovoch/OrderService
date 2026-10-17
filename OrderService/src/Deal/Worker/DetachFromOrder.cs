@@ -22,27 +22,28 @@ namespace OrderService.src.Deal.Worker
         public override async Task HandleAsync(DetachFromOrderRequest req, CancellationToken ct)
         {
             // Get all orders which connects with the user.
-            var workerId = await dbContext.Workers.Where(x => x.TgId == req.TelegramId).Select(x => new {x.Id}).FirstOrDefaultAsync(ct);
+            var workerId = await dbContext.Workers.Where(x => x.TgId == req.TelegramId).Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             if (workerId is null)
             {
                 Logger.LogWarning("Worker with TelegramId {TelegramId} not found.", req.TelegramId);
                 await Send.ForbiddenAsync();
                 return;
             }
-            var specOrder = await dbContext.Orders.Where(x => x.Id == req.OrderId && x.WorkerId == workerId.Id).FirstOrDefaultAsync(ct);
+            var specOrder = await dbContext.Orders.Where(x => x.Id == req.OrderId && x.WorkerId == workerId.Value).FirstOrDefaultAsync(ct);
 
             if (specOrder is null)
             {
-                Logger.LogWarning("Order with Id {OrderId} not found or does not belong to the worker with TelegramId {TelegramId}.", req.OrderId, req.TelegramId);
+                Logger.LogWarning("Order with Id {OrderId} not found or does not belong to the worker with Id {WorkerId}.", req.OrderId, workerId.Value);
                 await Send.NotFoundAsync();
                 return;
             }
 
-
+            specOrder.WorkerSurname = null;
+            specOrder.WorkerName = null;
             specOrder.WorkerId = null;
             specOrder.Status = OrderStatus.Stopped;
 
-            Logger.LogInformation("Worker with TelegramId {TelegramId} detached from order with Id {OrderId}.", req.TelegramId, req.OrderId);
+            Logger.LogInformation("Worker with Id {WorkerId} detached from order with Id {OrderId}.", workerId.Value, req.OrderId);
             await dbContext.SaveChangesAsync(ct);
             await Send.OkAsync();
 

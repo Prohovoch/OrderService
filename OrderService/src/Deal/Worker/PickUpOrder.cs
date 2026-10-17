@@ -11,8 +11,6 @@ namespace OrderService.src.Deal.Worker
     public class PickUpOrder(ApplicationDbContext dbContext) : Endpoint<PickUpOrderRequest>
     {
 
-        private readonly ApplicationDbContext _dbContext = dbContext;
-
         public override void Configure()
         {
             Patch("api/worker/order/{orderId}/pickup");
@@ -25,13 +23,20 @@ namespace OrderService.src.Deal.Worker
         public override async Task HandleAsync(PickUpOrderRequest req, CancellationToken ct)
         {
             // Get all orders which connects with the user.
-            var entityId = await _dbContext.Workers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+            var entityId = await dbContext.Workers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
             if (entityId is null)
             {
                 Logger.LogWarning("No entity were found for TelegramId: {TelegramId}", req.TelegramId);
                 await Send.ForbiddenAsync();
                 return;
             }
+            var workerData = await dbContext.WorkerProfiles.Where(x => x.WorkerId == entityId.Value).AsNoTracking().Select(x => new { x.Name, x.Surname }).FirstOrDefaultAsync(ct);
+            if (workerData is null)
+            {
+                Logger.LogWarning("No profile were found for Worker with Id: {WorkerId}", entityId.Value);
+                await Send.NotFoundAsync();
+                return;
+            }   
             var specOrder = await dbContext.Orders.Where(x => x.Id == req.OrderId).FirstOrDefaultAsync(ct);
 
             if (specOrder is null)
@@ -55,8 +60,9 @@ namespace OrderService.src.Deal.Worker
 
             specOrder.WorkerId = entityId.Value;
             specOrder.Status = OrderStatus.Processing;
-
-            await _dbContext.SaveChangesAsync(ct);
+            specOrder.WorkerName = workerData.Name;
+            specOrder.WorkerSurname = workerData.Surname;
+            await dbContext.SaveChangesAsync(ct);
             await Send.NoContentAsync();
 
 

@@ -55,12 +55,12 @@ namespace OrderService.src.Profile.Customer
                 PhoneNumber = customerProfileEntity.PhoneNumber,
                 Age = customerProfileEntity.Age,
 
-                // Маппинг Enum (если в БД null,, иначе проверит на Male)
+                
                 Gender = customerProfileEntity.Gender switch
                 {
                     BuyerGender.Male => GetRequestGender.Male,
                     BuyerGender.Female => GetRequestGender.Female,
-                    _ => default,
+                    _ => null // something is off,
                 }
 
             };
@@ -87,7 +87,7 @@ namespace OrderService.src.Profile.Customer
         
     }
 
-    public enum GetRequestGender { Male, Female, Unknown }
+    public enum GetRequestGender { Male, Female}
     public sealed record ReadCustomerProfileResponse
     {
         public required string Name { get; init; }

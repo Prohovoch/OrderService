@@ -64,12 +64,12 @@ namespace OrderService.src.Profile.Customer
             RuleFor(x => x.TelegramId).NotEmpty().WithMessage("TelegramId required");
             RuleFor(x => x.Surname).MinimumLength(3).WithMessage("Surname must be at least 3 characters long.").When(x => x.Surname != null);
             RuleFor(x => x.Age).InclusiveBetween(18, 120).WithMessage("Age must be between 18 and 120.").When(x => x.Age != null);
-            RuleFor(x => x.Gender).IsInEnum().NotNull();
+            RuleFor(x => x.Gender).IsInEnum().When(x => x.Gender != null);
             RuleFor(x => x.PhoneNumber).NotEmpty().When(x => x.PhoneNumber != null).WithMessage("PhoneNumber cannot be null!");
         }
     }
    
-    public enum UpdateRequestGender { Male, Female, Unknown }
+    public enum UpdateRequestGender { Male, Female }
     public sealed record UpdateProfileRequest
     {
         [FromHeader("Customer-Telegram-Id")]
