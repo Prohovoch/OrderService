@@ -48,7 +48,7 @@ namespace OrderService.src.Profile.Worker
                 {
                     WorkerGender.Male => ReadRequestGender.Male,
                     WorkerGender.Female => ReadRequestGender.Female,
-                    _ => null
+                    _ => default
 
                 }
             };

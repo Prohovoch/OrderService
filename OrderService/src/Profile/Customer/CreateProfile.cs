@@ -48,7 +48,7 @@ namespace OrderService.src.Profile.Customer
                     CreateRequestGender.Male => BuyerGender.Male,
                     CreateRequestGender.Female => BuyerGender.Female,
                    
-                    _ => null,
+                    _ => throw new ArgumentOutOfRangeException(nameof(req), "Out of possible values"),
                 },
 
 

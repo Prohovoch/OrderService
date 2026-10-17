@@ -46,7 +46,7 @@ namespace OrderService.src.Profile.Admin
                 {
                     CreateReqGender.Male => AdminGender.Male,
                     CreateReqGender.Female => AdminGender.Female,
-                    _ => null
+                    _ => throw new ArgumentOutOfRangeException(nameof(req), "out of range")
                 }
             };
             Logger.LogInformation("Creating profile for AdminId {AdminId} with Name {Name} and Surname {Surname}.", profile.AdminId, profile.Name, profile.Surname);

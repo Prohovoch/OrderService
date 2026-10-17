@@ -50,7 +50,7 @@ namespace OrderService.src.Profile.Worker
                     CreateReqGender.Male => WorkerGender.Male,
                     CreateReqGender.Female => WorkerGender.Female,
 
-                    _ => null,
+                    _ => throw new ArgumentOutOfRangeException(nameof(req), "out of range ex"),
                 },
 
 

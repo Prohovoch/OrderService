@@ -55,12 +55,12 @@ namespace OrderService.src.Profile.Customer
                 PhoneNumber = customerProfileEntity.PhoneNumber,
                 Age = customerProfileEntity.Age,
 
-                // Маппинг Enum (если в БД null, то в ДТО запишется null, иначе проверит на Male)
+                // Маппинг Enum (если в БД null,, иначе проверит на Male)
                 Gender = customerProfileEntity.Gender switch
                 {
                     BuyerGender.Male => GetRequestGender.Male,
                     BuyerGender.Female => GetRequestGender.Female,
-                    _ => null,
+                    _ => default,
                 }
 
             };

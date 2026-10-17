@@ -48,7 +48,7 @@ namespace OrderService.src.Profile.Admin
                 {
                     AdminGender.Male => ReadReqGender.Male,
                     AdminGender.Female => ReadReqGender.Female,
-                    _ => null
+                    _ => default
                 }
             };
             Logger.LogInformation("Profile read successfully for AdminId: {AdminId}", entityId.Value);
