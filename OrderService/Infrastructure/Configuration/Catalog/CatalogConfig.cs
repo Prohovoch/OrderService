@@ -13,7 +13,7 @@ namespace OrderService.Infrastructure.Configuration.Catalog
             builder.HasMany(c => c.BucketItems)
                 .WithOne(b => b.Product)
                 .HasForeignKey(b => b.ProductId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.SetNull);
                 
 
             builder.ComplexProperty(c => c.Details, d => d.ToJson());
