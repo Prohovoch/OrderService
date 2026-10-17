@@ -1,8 +1,6 @@
 ﻿using FastEndpoints;
 using FluentValidation;
 using OrderService.Infrastructure.Persistence;
-using DotNetEnv;
-using OrderService.Infrastructure.Entities.Administrator;
 
 // hack
 using Supervisor = OrderService.Infrastructure.Entities.Administrator.Admin;

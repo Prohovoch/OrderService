@@ -8,18 +8,25 @@ namespace OrderService.src.Security.Middleware
     {
        
         private readonly string _expectedKey = Env.GetString("TGBOT_API") ?? string.Empty;
-        private const string HeaderName = "X-Bot-Api-Key";
+        private readonly string _headerName = Env.GetString("BOTAPIHEADER") ?? string.Empty;
 
         public async Task InvokeAsync(HttpContext context)
         {
+
+            if(string.IsNullOrEmpty(_headerName))
+            {
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                await context.Response.WriteAsync("Invalid bot API header name.");
+                return;
+            }
             if (string.IsNullOrEmpty(_expectedKey))
             {
                 
-                context.Response.StatusCode = 500;
-                await context.Response.WriteAsync("Server missconfiguration. Tg Bot api has not been set");
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                await context.Response.WriteAsync("Server missconfiguration. Invalid bot API key.");
                 return;
             }
-            if (!context.Request.Headers.TryGetValue(HeaderName, out var providedResult) || string.IsNullOrEmpty(providedResult))
+            if (!context.Request.Headers.TryGetValue(_headerName, out var providedResult) || string.IsNullOrEmpty(providedResult))
             {
                 await SendUnauthorizedResponse(context);
                 return;
