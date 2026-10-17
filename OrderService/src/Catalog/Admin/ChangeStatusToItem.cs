@@ -60,12 +60,12 @@ namespace OrderService.src.Catalog.Admin
                 {
                     ChangeProductAvStatus.Available => ProductAvailabilityStatus.Available,
                     ChangeProductAvStatus.OutOfStock => ProductAvailabilityStatus.OutOfStock,
-                    _ => default,
+                    _ => throw new ArgumentOutOfRangeException(nameof(req), "out of range"),
                 };
             }
 
 
-            product.Details ??= new ProductDetails();
+           
             product.Details.Ingredients = req.Ingredients ?? product.Details.Ingredients;
             product.Details.Volume = req.Volume ?? product.Details.Volume;
             product.Details.Weight = req.Weight ?? product.Details.Weight;
