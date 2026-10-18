@@ -2,7 +2,6 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using OrderService.Infrastructure.Entities.Administrator;
-using OrderService.Infrastructure.Entities.Catalog;
 using OrderService.Infrastructure.Persistence;
 
 namespace OrderService.src.Profile.Admin
@@ -38,8 +37,17 @@ namespace OrderService.src.Profile.Admin
             profile.Name = req.Name ?? profile.Name;
             profile.Surname = req.Surname ?? profile.Surname;
             profile.Age = req.Age ?? profile.Age;
-            profile.Gender = req.Gender.HasValue ? (AdminGender)req.Gender.Value : profile.Gender ;
-            
+            if (req.Gender.HasValue)
+            {
+                profile.Gender = req.Gender.Value switch
+                {
+                    UpdateGender.Male => AdminGender.Male,
+                    UpdateGender.Female => AdminGender.Female,
+                    _ => throw new ArgumentOutOfRangeException(nameof(req), $"out of range {req.Gender}"),
+                };
+            }
+
+
             Logger.LogInformation("Profile updated for AdminId {AdminId}", entityId.Value); 
             await Send.NoContentAsync();
         }

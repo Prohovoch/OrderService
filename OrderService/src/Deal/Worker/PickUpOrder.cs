@@ -44,9 +44,9 @@ namespace OrderService.src.Deal.Worker
                     await Send.NotFoundAsync();
                     return;
                 }
-                var specOrder = await dbContext.Orders.FromSqlInterpolated($@"SELECT * FROM ""Orders"" WHERE ""Id"" == {req.OrderId} )
+                var specOrder = await dbContext.Orders.FromSqlInterpolated($@"SELECT * FROM ""order"" WHERE ""id"" = {req.OrderId} FOR UPDATE NO WAIT").FirstOrDefaultAsync(ct);
                     
-                    // Where(x => x.Id == req.OrderId).FirstOrDefaultAsync(ct);
+                    // Where(x => x.Id == req.OrderId).FirstOrDefaultAsync(ct);  status, worker_name, worker_surname order
 
                 if (specOrder is null)
                 {
@@ -72,11 +72,19 @@ namespace OrderService.src.Deal.Worker
                 specOrder.WorkerName = workerData.Name;
                 specOrder.WorkerSurname = workerData.Surname;
                 await dbContext.SaveChangesAsync(ct);
+                await transaction.CommitAsync(ct);
                 await Send.NoContentAsync();
-                
+            }
+            catch (Npgsql.PostgresException ex) when (ex.SqlState == "55P03")
+            {
+                Logger.LogWarning("Order is already locked by another process.");
+                await Send.StatusCodeAsync(StatusCodes.Status409Conflict);
             }
             catch (Exception ex)
             {
+                Logger.LogError(ex, "An error occurred while picking up the order.");
+                await transaction.RollbackAsync(ct);
+                await Send.StatusCodeAsync(StatusCodes.Status500InternalServerError);
 
             }
             }

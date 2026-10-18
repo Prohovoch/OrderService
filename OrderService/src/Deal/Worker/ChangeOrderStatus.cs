@@ -78,9 +78,10 @@ namespace OrderService.src.Deal.Worker
                 // potentical event should accured here.
             }
 
-            Logger.LogInformation("Saving changes to the database for order with Id {OrderId}.", req.OrderId);
+
             await dbContext.SaveChangesAsync(ct);
-            await Send.NoContentAsync();
+            await Send.NoContentAsync();            
+            Logger.LogInformation("Saving changes to the database for order with Id {OrderId}.", req.OrderId);
 
         }
     }
@@ -116,7 +117,7 @@ namespace OrderService.src.Deal.Worker
   
 
 
-    
+    }
 }
 
 

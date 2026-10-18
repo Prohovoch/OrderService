@@ -74,9 +74,10 @@ namespace OrderService.src.Catalog.Admin
 
 
 
-            Logger.LogInformation("Saving information");
+          
 
-            await dbContext.SaveChangesAsync(ct);
+            await dbContext.SaveChangesAsync(ct);  
+            Logger.LogInformation("Saving information");
             await Send.OkAsync();
   }
 

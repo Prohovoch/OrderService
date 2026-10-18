@@ -43,8 +43,16 @@ namespace OrderService.src.Profile.Customer
             profile.Name = req.Name ?? profile.Name;
             profile.Surname = req.Surname ?? profile.Surname;
             profile.Age = req.Age ?? profile.Age;
-            profile.Gender = req.Gender.HasValue ? (BuyerGender)req.Gender.Value : profile.Gender;
             profile.PhoneNumber = req.PhoneNumber ?? profile.PhoneNumber;
+            if (req.Gender.HasValue)
+            {
+                profile.Gender = req.Gender.Value switch
+                {
+                    UpdateRequestGender.Male => BuyerGender.Male,
+                    UpdateRequestGender.Female => BuyerGender.Female,
+                    _ => throw new ArgumentOutOfRangeException(nameof(req), $"out of range {req.Gender}"),
+                };
+            }
 
             Logger.LogInformation("Updating profile for Customer with TelegramId {TelegramId}.", req.TelegramId);
             

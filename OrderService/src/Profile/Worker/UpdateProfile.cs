@@ -1,7 +1,6 @@
 ﻿using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using OrderService.Infrastructure.Entities.Buyer;
 using OrderService.Infrastructure.Entities.Employee;
 using OrderService.Infrastructure.Persistence;
 
@@ -40,12 +39,21 @@ namespace OrderService.src.Profile.Worker
             profile.Name = req.Name ?? profile.Name;
             profile.Surname = req.Surname ?? profile.Surname;
             profile.Age = req.Age ?? profile.Age;
-            profile.Gender = req.Gender.HasValue ? (WorkerGender)req.Gender.Value : profile.Gender;
             profile.PhoneNumber = req.PhoneNumber ?? profile.PhoneNumber;
+            if (req.Gender.HasValue)
+            {
+                profile.Gender = req.Gender.Value switch
+                {
+                    UpdateGender.Male => WorkerGender.Male,
+                    UpdateGender.Female => WorkerGender.Female,
+                    _ => throw new ArgumentOutOfRangeException(nameof(req), $"out of range {req.Gender}"),
+                };
+            }
+
             
-            Logger.LogInformation("Updating profile for Worker");
             await dbContext.SaveChangesAsync(ct);
             await Send.NoContentAsync();
+            Logger.LogInformation("Updating profile for Worker");
         }
 
 
