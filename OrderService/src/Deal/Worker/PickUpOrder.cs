@@ -22,51 +22,64 @@ namespace OrderService.src.Deal.Worker
 
         public override async Task HandleAsync(PickUpOrderRequest req, CancellationToken ct)
         {
-            // Get all orders which connects with the user.
-            var entityId = await dbContext.Workers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
-            if (entityId is null)
+            // using pessimistic locking
+
+            using var transaction = await dbContext.Database.BeginTransactionAsync(ct);
+            try
             {
-                Logger.LogWarning("No entity were found for TelegramId: {TelegramId}", req.TelegramId);
-                await Send.ForbiddenAsync();
-                return;
+
+
+                // Get all orders which connects with the user.
+                var entityId = await dbContext.Workers.Where(x => x.TgId == req.TelegramId).AsNoTracking().Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
+                if (entityId is null)
+                {
+                    Logger.LogWarning("No entity were found for TelegramId: {TelegramId}", req.TelegramId);
+                    await Send.ForbiddenAsync();
+                    return;
+                }
+                var workerData = await dbContext.WorkerProfiles.Where(x => x.WorkerId == entityId.Value).AsNoTracking().Select(x => new { x.Name, x.Surname }).FirstOrDefaultAsync(ct);
+                if (workerData is null)
+                {
+                    Logger.LogWarning("No profile were found for Worker with Id: {WorkerId}", entityId.Value);
+                    await Send.NotFoundAsync();
+                    return;
+                }
+                var specOrder = await dbContext.Orders.FromSqlInterpolated($@"SELECT * FROM ""Orders"" WHERE ""Id"" == {req.OrderId} )
+                    
+                    // Where(x => x.Id == req.OrderId).FirstOrDefaultAsync(ct);
+
+                if (specOrder is null)
+                {
+                    await Send.ForbiddenAsync();
+                    return;
+                }
+
+                int activeOrdersCount = await dbContext.Orders.Where(x => x.WorkerId == entityId.Value && x.Status == OrderStatus.Processing).CountAsync(ct);
+                if (activeOrdersCount >= 3)
+                {
+                    AddError("You have reached the maximum number of active orders (3). Please complete or close existing orders before picking up the new ones.");
+                    await Send.ErrorsAsync();
+                    return;
+                }
+                if (specOrder.WorkerId is not null)
+                {
+                    await Send.ForbiddenAsync();
+                    return;
+                }
+
+                specOrder.WorkerId = entityId.Value;
+                specOrder.Status = OrderStatus.Processing;
+                specOrder.WorkerName = workerData.Name;
+                specOrder.WorkerSurname = workerData.Surname;
+                await dbContext.SaveChangesAsync(ct);
+                await Send.NoContentAsync();
+                
             }
-            var workerData = await dbContext.WorkerProfiles.Where(x => x.WorkerId == entityId.Value).AsNoTracking().Select(x => new { x.Name, x.Surname }).FirstOrDefaultAsync(ct);
-            if (workerData is null)
+            catch (Exception ex)
             {
-                Logger.LogWarning("No profile were found for Worker with Id: {WorkerId}", entityId.Value);
-                await Send.NotFoundAsync();
-                return;
-            }   
-            var specOrder = await dbContext.Orders.Where(x => x.Id == req.OrderId).FirstOrDefaultAsync(ct);
 
-            if (specOrder is null)
-            {
-                await Send.ForbiddenAsync();
-                return;
             }
-
-            int activeOrdersCount =  await dbContext.Orders.Where(x => x.WorkerId == entityId.Value && x.Status == OrderStatus.Processing).CountAsync(ct);
-            if (activeOrdersCount >= 3)
-            {
-                AddError("You have reached the maximum number of active orders (3). Please complete or close existing orders before picking up new ones.");
-                await Send.ErrorsAsync();
-                return;
             }
-            if (specOrder.WorkerId is not null)
-            {
-                await Send.ForbiddenAsync();
-                return;
-            }
-
-            specOrder.WorkerId = entityId.Value;
-            specOrder.Status = OrderStatus.Processing;
-            specOrder.WorkerName = workerData.Name;
-            specOrder.WorkerSurname = workerData.Surname;
-            await dbContext.SaveChangesAsync(ct);
-            await Send.NoContentAsync();
-
-
-        }
     }
 
     public class PickUpOrderValidator : Validator<PickUpOrderRequest>

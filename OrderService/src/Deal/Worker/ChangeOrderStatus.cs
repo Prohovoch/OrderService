@@ -113,15 +113,10 @@ namespace OrderService.src.Deal.Worker
             public StatusType Status { get; init; }
 
         }
-        public sealed record OrderCompletedEventObj
-        {
-            public string OrderNumber { get; init; } = null!;
-            public long TelegramId { get; init; }
-            
-        }
+  
 
 
-    }
+    
 }
 
 
