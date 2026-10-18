@@ -51,13 +51,13 @@ namespace OrderService.src.Catalog.Admin
                     AddProductType.Sushi => ProductType.Sushi,
                     AddProductType.Drinks => ProductType.Drinks,
                     
-                    _ => throw new ArgumentOutOfRangeException(nameof(req), "out of range"),
+                    _ => throw new ArgumentOutOfRangeException(nameof(req.ProductType), "out of range"),
                 },
                 AvailabilityStatus = req.AvailabilityStatus switch
                 {
                     AddProductAvailabilityStatus.Available => ProductAvailabilityStatus.Available,
                     AddProductAvailabilityStatus.OutOfStock => ProductAvailabilityStatus.OutOfStock,
-                    _ => throw new ArgumentOutOfRangeException(nameof(req), "out of range"),
+                    _ => throw new ArgumentOutOfRangeException(nameof(req.AvailabilityStatus), "out of range"),
                   
                 },
                 Details = new ProductDetails

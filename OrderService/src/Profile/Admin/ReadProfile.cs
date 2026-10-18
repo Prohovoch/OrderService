@@ -48,7 +48,7 @@ namespace OrderService.src.Profile.Admin
                 {
                     AdminGender.Male => ReadReqGender.Male,
                     AdminGender.Female => ReadReqGender.Female,
-                    _ => null // means somethin 
+                    _ => throw new InvalidOperationException($"out of range of valid data: {adminProfileEntity.Gender}") // means somethin 
                 }
             };
             Logger.LogInformation("Profile read successfully for AdminId: {AdminId}", entityId.Value);

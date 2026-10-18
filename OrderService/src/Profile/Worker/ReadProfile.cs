@@ -43,12 +43,12 @@ namespace OrderService.src.Profile.Worker
             {
                 Name = workerProfileEntity.Name,
                 Surname = workerProfileEntity.Surname,
-                Age = workerProfileEntity.Age,   
+                Age = workerProfileEntity.Age,
                 Gender = workerProfileEntity.Gender switch
                 {
                     WorkerGender.Male => ReadRequestGender.Male,
                     WorkerGender.Female => ReadRequestGender.Female,
-                    _ => 
+                    _ => throw new InvalidOperationException($"out of range of valid data: {workerProfileEntity.Gender}")
 
                 }
             };

@@ -64,7 +64,7 @@ namespace OrderService.src.Catalog.Admin
                     ProductType.Soup => GetProductType.Soup,
                     ProductType.Salad => GetProductType.Salad,
                     ProductType.Sushi => GetProductType.Sushi,
-                    _ => GetProductType.Drinks
+                    _ => throw new InvalidOperationException($"Inconsistent data state: Product '{r.ProductName}' (ID: {r.Id}) has an unsupported type {r.Type}.")
                 },
                 Ingredients = r.Ingredients,
                 Volume = r.Volume,

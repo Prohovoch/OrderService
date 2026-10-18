@@ -60,7 +60,7 @@ namespace OrderService.src.Catalog.Admin
                 {
                     ChangeProductAvStatus.Available => ProductAvailabilityStatus.Available,
                     ChangeProductAvStatus.OutOfStock => ProductAvailabilityStatus.OutOfStock,
-                    _ => throw new ArgumentOutOfRangeException(nameof(req), "out of range"),
+                    _ => throw new ArgumentOutOfRangeException(nameof(req), $"out of range {req.AvailabilityStatus}"),
                 };
             }
 

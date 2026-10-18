@@ -60,7 +60,7 @@ namespace OrderService.src.Profile.Customer
                 {
                     BuyerGender.Male => GetRequestGender.Male,
                     BuyerGender.Female => GetRequestGender.Female,
-                    _ => null // something is off,
+                    _ => throw new InvalidOperationException($"out of range of valid data: {customerProfileEntity.Gender}") // something is off,
                 }
 
             };
