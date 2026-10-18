@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Telegram.Bot;
 using Serilog;
 using DotNetEnv;
+using Microsoft.AspNetCore.Http.Timeouts;
 namespace OrderService
 {
     public class Program
@@ -25,7 +26,38 @@ namespace OrderService
                 var builder = WebApplication.CreateBuilder(args);
                 builder.Services.AddMemoryCache();
                 builder.Services.AddFastEndpoints();
-
+                builder.Services.AddRequestTimeouts(options =>
+                {
+                    options.DefaultPolicy = new RequestTimeoutPolicy
+                    {
+                        Timeout = TimeSpan.FromSeconds(5), // as an example.
+                        TimeoutStatusCode = StatusCodes.Status504GatewayTimeout,
+                        WriteTimeoutResponse = async (HttpContext context) =>
+                        {
+                            context.Response.ContentType = "application/json";
+                            await context.Response.WriteAsJsonAsync(new { error = "Default time request timed out." });
+                        }
+                    };
+                    options.AddPolicy("MediumTimeRequesstPolicy", new RequestTimeoutPolicy
+                    { 
+                        Timeout = TimeSpan.FromSeconds(10), // as an example.
+                        TimeoutStatusCode = StatusCodes.Status504GatewayTimeout,
+                        WriteTimeoutResponse = async (HttpContext context) =>
+                        {
+                            context.Response.ContentType = "application/json";
+                            await context.Response.WriteAsJsonAsync(new { error = "Medium request time (10s) out." });
+                        }
+                    });
+                    options.AddPolicy("LongTimeRequestPolicy", new RequestTimeoutPolicy
+                    {
+                        Timeout = TimeSpan.FromSeconds(15), // as an example.
+                        TimeoutStatusCode = StatusCodes.Status504GatewayTimeout,
+                        WriteTimeoutResponse = async (HttpContext context) =>
+                        {
+                            context.Response.ContentType = "application/json";
+                            await context.Response.WriteAsJsonAsync(new { error = "Long request time (15s) out." });
+                        }
+                    });
                
                 var app = builder.Build();
                 // TODO: tg client or http factory client impl here.

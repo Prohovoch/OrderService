@@ -31,7 +31,7 @@ namespace OrderService.src.Catalog.Admin
                 return;
             }
             
-            // taking up product which we want to change.      
+            // taking up product which we want to change.    // when we gonna have more than 1 admin + pessimistic lock.  
             var product = await dbContext.Products.FirstOrDefaultAsync(x => x.Id == req.ProductId, ct); // protection from concurrent requests, shit -  no solution.
             if (product is null)
             {
