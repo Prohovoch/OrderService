@@ -18,6 +18,7 @@ namespace OrderService.src.Deal.Worker
             Get("api/admin/orders/picked");
             AllowAnonymous();
             Validator<GetWorkerOrdersValidator>();
+          
         }
 
         public override async Task HandleAsync(GetWorkerOrdersRequest req, CancellationToken ct)

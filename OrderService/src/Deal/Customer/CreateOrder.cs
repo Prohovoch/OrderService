@@ -17,7 +17,7 @@ namespace OrderService.src.Deal.Customer
             Post("api/customer/order");
             Roles("customer");
             Validator<AddAnItemToOrderValidator>();
-
+            Options(x => x.WithRequestTimeout("Medium"));
         }
 
 

@@ -38,8 +38,8 @@ namespace OrderService
                             await context.Response.WriteAsJsonAsync(new { error = "Default time request timed out." });
                         }
                     };
-                    options.AddPolicy("MediumTimeRequesstPolicy", new RequestTimeoutPolicy
-                    { 
+                    options.AddPolicy("Medium", new RequestTimeoutPolicy
+                    {
                         Timeout = TimeSpan.FromSeconds(10), // as an example.
                         TimeoutStatusCode = StatusCodes.Status504GatewayTimeout,
                         WriteTimeoutResponse = async (HttpContext context) =>
@@ -48,7 +48,7 @@ namespace OrderService
                             await context.Response.WriteAsJsonAsync(new { error = "Medium request time (10s) out." });
                         }
                     });
-                    options.AddPolicy("LongTimeRequestPolicy", new RequestTimeoutPolicy
+                    options.AddPolicy("Long", new RequestTimeoutPolicy
                     {
                         Timeout = TimeSpan.FromSeconds(15), // as an example.
                         TimeoutStatusCode = StatusCodes.Status504GatewayTimeout,
@@ -58,6 +58,7 @@ namespace OrderService
                             await context.Response.WriteAsJsonAsync(new { error = "Long request time (15s) out." });
                         }
                     });
+                });
                
                 var app = builder.Build();
                 // TODO: tg client or http factory client impl here.

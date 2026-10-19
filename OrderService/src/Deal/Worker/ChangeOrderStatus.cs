@@ -16,6 +16,7 @@ namespace OrderService.src.Deal.Worker
             Patch("api/worker/order/{orderId}");
             AllowAnonymous();
             Validator<ChangeOrderStatusValidator>();
+            Options(x => x.WithRequestTimeout("Medium"));
         }
 
 

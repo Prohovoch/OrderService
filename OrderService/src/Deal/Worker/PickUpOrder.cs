@@ -17,7 +17,7 @@ namespace OrderService.src.Deal.Worker
             Patch("api/worker/order/{orderId}/pickup");
             AllowAnonymous();
             Validator<PickUpOrderValidator>();
-
+            Options(x => x.WithRequestTimeout("Long"));
         }
 
 
