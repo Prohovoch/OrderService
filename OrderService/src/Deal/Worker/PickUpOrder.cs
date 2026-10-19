@@ -1,6 +1,7 @@
 ﻿using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using OrderService.Infrastructure.Entities.Deal;
 using OrderService.Infrastructure.Persistence;
 
@@ -44,28 +45,34 @@ namespace OrderService.src.Deal.Worker
                     await Send.NotFoundAsync();
                     return;
                 }
-                var specOrder = await dbContext.Orders.FromSqlInterpolated($@"SELECT * FROM ""order"" WHERE ""id"" = {req.OrderId} FOR UPDATE NO WAIT").FirstOrDefaultAsync(ct);
+                var specOrder = await dbContext.Orders.FromSqlInterpolated($@"SELECT * FROM ""order"" WHERE ""id"" = {req.OrderId} FOR UPDATE NOWAIT").FirstOrDefaultAsync(ct);
                     
                     // Where(x => x.Id == req.OrderId).FirstOrDefaultAsync(ct);  status, worker_name, worker_surname order
 
                 if (specOrder is null)
                 {
+                    Logger.LogWarning("No order were found for OrderId: {OrderId}", req.OrderId);
                     await Send.ForbiddenAsync();
                     return;
                 }
+                
 
+                if (specOrder.Status is OrderStatus.Closed)
+                {   
+                    Logger.LogWarning("Trying to pick up a closed order with Id: {OrderId}", req.OrderId);
+                    await Send.ForbiddenAsync();
+                    return;
+                }
+                
                 int activeOrdersCount = await dbContext.Orders.Where(x => x.WorkerId == entityId.Value && x.Status == OrderStatus.Processing).CountAsync(ct);
                 if (activeOrdersCount >= 3)
                 {
+                    Logger.LogWarning("Worker with Id: {WorkerId} has reached the maximum number of active orders (3).", entityId.Value);
                     AddError("You have reached the maximum number of active orders (3). Please complete or close existing orders before picking up the new ones.");
                     await Send.ErrorsAsync();
                     return;
                 }
-                if (specOrder.WorkerId is not null)
-                {
-                    await Send.ForbiddenAsync();
-                    return;
-                }
+                
 
                 specOrder.WorkerId = entityId.Value;
                 specOrder.Status = OrderStatus.Processing;
@@ -75,9 +82,10 @@ namespace OrderService.src.Deal.Worker
                 await transaction.CommitAsync(ct);
                 await Send.NoContentAsync();
             }
-            catch (Npgsql.PostgresException ex) when (ex.SqlState == "55P03")
+            catch (PostgresException ex) when (ex.SqlState == PostgresErrorCodes.LockNotAvailable)
             {
                 Logger.LogWarning("Order is already locked by another process.");
+                await transaction.RollbackAsync(ct);
                 await Send.StatusCodeAsync(StatusCodes.Status409Conflict);
             }
             catch (Exception ex)

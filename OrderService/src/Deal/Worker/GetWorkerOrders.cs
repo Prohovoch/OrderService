@@ -32,7 +32,7 @@ namespace OrderService.src.Deal.Worker
             }
 
             var workerOrders = await dbContext.Orders
-                .Where(o => o.Status == OrderStatus.Processing && o.WorkerId == entityId.Value).AsNoTracking().Select(x => new WorkerOrdersResponse
+                .Where(o => o.WorkerId == entityId.Value).AsNoTracking().Select(x => new WorkerOrdersResponse
                 {
                     OrderId = x.Id,
                     OrderNumber = x.DisplayOrderNumber,
@@ -41,7 +41,7 @@ namespace OrderService.src.Deal.Worker
                     WorkerName = x.WorkerName ?? "No Data", // fact: workerName! - because he is in system. if not. he couldnt do that. In this case, i just fighting with null vals. help me :___(
                     WorkerSurname = x.WorkerSurname ?? "No Data",
                     ClientPhNumber = x.CustomerPhoneNumber ?? "Unknown",
-               
+                    Status = x.Status,
                     Items = x.Items.Select(oi => new GetOrderResponseItems
                     {
 
