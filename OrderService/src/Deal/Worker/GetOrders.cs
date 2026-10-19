@@ -31,18 +31,15 @@ namespace OrderService.src.Deal.Worker
                 return;
             }
 
-            var createdOrders = await dbContext.Orders.Where(x => x.Status == OrderStatus.Created)
-                .AsNoTracking().Select(x => new LookOrdersResponse
+            var createdOrders = (await dbContext.Orders
+                .Where(o => o.Status == OrderStatus.Created).AsNoTracking().Select(x => new
                 {
-                    OrderId = x.Id,
-                    OrderNumber = x.DisplayOrderNumber,
-                    ClientName = x.ClientName,
-                    ClientSurname = x.ClientSurname,
-                    WorkerName = x.WorkerName ?? "No Data", // fact: workerName! - because he is in system. if not. he couldnt do that. In this case, i just fighting with null vals. help me :___(
-                    WorkerSurname = x.WorkerSurname ?? "No Data",
-                    ClientPhNumber = x.CustomerPhoneNumber ?? "Unknown",
-                    CreatedAt = x.CreatedAt,
-
+                    x.Id,
+                    x.DisplayOrderNumber,
+                    x.ClientName,
+                    x.ClientSurname,
+                    x.CustomerPhoneNumber,
+                    x.CreatedAt,
                     Items = x.Items.Select(oi => new GetOrderItems
                     {
 
@@ -51,8 +48,20 @@ namespace OrderService.src.Deal.Worker
                         TotalPrice = oi.Details.TotalPrice,
                         Price = oi.Details.Price
                     }).ToList()
-                })
-                .ToListAsync(ct);
+                }).ToListAsync(ct))
+                .Select(x => new LookOrdersResponse
+                {
+                    OrderId = x.Id,
+                    OrderNumber = x.DisplayOrderNumber,
+                    ClientName = x.ClientName,
+                    ClientSurname = x.ClientSurname,
+                    ClientPhNumber = x.CustomerPhoneNumber ?? "No data",
+                   
+                    CreatedAt = x.CreatedAt, // TODO: Replace with actual creation time if available
+                    Items = x.Items
+                }).ToList();
+            
+            
             Logger.LogInformation("Retrieved {Count} created orders for TelegramId {TelegramId}.", createdOrders.Count, req.TelegramId);
             await Send.OkAsync(new GetOrdersResponse { OrdersDto = createdOrders });
 
@@ -91,15 +100,13 @@ namespace OrderService.src.Deal.Worker
     public sealed record LookOrdersResponse
     {
         public Guid OrderId { get; init; }
-        public string WorkerName { get; init; } = null!;
-        public string WorkerSurname { get; init; } = null!;
         public required string OrderNumber { get; init; }
         public required string ClientName { get; init; }
         public required string ClientSurname { get; init; }
         public DateTimeOffset CreatedAt { get; init; }
         public string ClientPhNumber { get; init; } = null!;
         public List<GetOrderItems> Items { get; init; } = [];
-        public OrderStatus Status { get; init; }
+        
     }
 
 
