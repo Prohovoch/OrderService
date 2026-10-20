@@ -27,7 +27,8 @@ services:
       - "8081:8081"
     environment:
     - TGADMIN_ID=${TGADMIN_ID}
-    
+    - TGBOT_API=${TGBOT_API}
+    - BOTAPIHEADER=${BOTAPIHEADER}
     - ASPNETCORE_ENVIRONMENT=Development  
     - ConnectionStrings__Default=Host=postgresdb;Port=5432;Database=${PGDB_NAME};Username=${PGDB_USER};Password=${PGDB_PASSWORD}
     depends_on:                      # Исправлен отступ секции depends_on

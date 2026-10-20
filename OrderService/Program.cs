@@ -84,7 +84,7 @@ namespace OrderService
                
                 var app = builder.Build();
                 // TODO: tg client or http factory client impl here.
-
+                app.UseMiddleware<OrderService.src.Security.Middleware.BotApiKeyMiddleware>();
                 app.UseRouting();
                 app.UseRequestTimeouts();
          

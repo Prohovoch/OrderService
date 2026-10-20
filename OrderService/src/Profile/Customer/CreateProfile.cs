@@ -90,7 +90,7 @@ namespace OrderService.src.Profile.Customer
         public required string Surname { get; init; } 
         public required string PhoneNumber { get; init; }
         public int Age { get; set; }
-        public CreateRequestGender? Gender { get; init; }
+        public CreateRequestGender Gender { get; init; }
     }
 
 }

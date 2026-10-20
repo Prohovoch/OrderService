@@ -90,6 +90,6 @@ namespace OrderService.src.Profile.Worker
         public required string Surname { get; init; } 
         public required string PhoneNumber { get; init; }
         public int Age { get; init; }
-        public CreateReqGender? Gender { get; init; }
+        public CreateReqGender Gender { get; init; }
     }
 

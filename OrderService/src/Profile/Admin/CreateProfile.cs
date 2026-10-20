@@ -63,8 +63,10 @@ namespace OrderService.src.Profile.Admin
 // Usually validator is located in validator.cs file, but for KISS, it going to be here.
     public class CreateProfileValidator : Validator<CreateProfileRequest>
     {
+
     public CreateProfileValidator()
     {
+
         RuleFor(x => x.TelegramId).NotEmpty().WithMessage("TelegramId is required");
         RuleFor(x => x.Name).MinimumLength(3).WithMessage("Name must be at least 3 characters long.")
             .NotEmpty().WithMessage("Name is required.");
@@ -89,7 +91,7 @@ namespace OrderService.src.Profile.Admin
          public required string Surname { get; init; } 
          public required string PhoneNumber { get; init; } 
          public int Age { get; init; }
-         public CreateReqGender? Gender { get; init; }
+         public CreateReqGender Gender { get; init; }
     }
 
 }

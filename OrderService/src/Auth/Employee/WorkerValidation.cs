@@ -75,7 +75,7 @@ namespace OrderService.src.Auth.Employee
 
     public sealed record WorkerOtpValidationRequest
     {
-        [FromHeader("Customer-Telegram-Id")]
+        [FromHeader("Worker-Telegram-Id")]
         public long TelegramId { get; init; }
         public required string OtpCode
         {

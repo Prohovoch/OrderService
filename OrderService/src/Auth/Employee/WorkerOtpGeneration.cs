@@ -65,7 +65,7 @@ namespace OrderService.src.Auth.Employee
 
     public sealed record WorkerOtpGenerationRequest
     {
-        [FromHeader("Customer-Telegram-Id")]
+        [FromHeader("Worker-Telegram-Id")]
         public long TelegramId { get; init; }
 
     }
