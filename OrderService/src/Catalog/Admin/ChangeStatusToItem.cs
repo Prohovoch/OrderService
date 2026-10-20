@@ -37,8 +37,7 @@ namespace OrderService.src.Catalog.Admin
             {
                 Logger.LogWarning("No entity were found");
 
-                AddError("ProductID:", "Product not found.");
-                await Send.ErrorsAsync();
+                await Send.NotFoundAsync();
                 return;
             }
 
@@ -49,7 +48,7 @@ namespace OrderService.src.Catalog.Admin
                 await Send.ForbiddenAsync();
                 return;
             }
-            product.AdminId = entityId.Value;
+            product.AdminId = entityId.Value; // potential race condition. for mvp and for 1 admin can be forgived?
             product.ProductName = req.ProductName ?? product.ProductName;
             product.Price = req.Price ?? product.Price;
 

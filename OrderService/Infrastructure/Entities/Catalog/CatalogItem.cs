@@ -26,7 +26,6 @@ namespace OrderService.Infrastructure.Entities.Catalog
         public decimal Price { get; set; }
         public ProductType Type { get; set; }
         public ProductAvailabilityStatus AvailabilityStatus { get; set; }
-        public int Quantity { get; set; } // not for dishes
         public string Description { get; set; } = string.Empty;
         public List<BucketItem> BucketItems { get; } = [];
         public ProductDetails Details { get; set; } = new ();

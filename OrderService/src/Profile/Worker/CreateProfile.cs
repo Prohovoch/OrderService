@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using OrderService.Infrastructure.Entities.Buyer;
 using OrderService.Infrastructure.Entities.Employee;
 using OrderService.Infrastructure.Persistence;
-using OrderService.src.Customer.Profile;
+
 
 
 namespace OrderService.src.Profile.Worker
@@ -20,7 +20,7 @@ namespace OrderService.src.Profile.Worker
             Post("api/employee/profile");
             AllowAnonymous();
             Validator<CreateProfileValidator>();
-
+            // post mvp stage -> docs.
         }
 
 

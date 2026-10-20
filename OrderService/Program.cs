@@ -4,6 +4,7 @@ using Telegram.Bot;
 using Serilog;
 using DotNetEnv;
 using Microsoft.AspNetCore.Http.Timeouts;
+using FastEndpoints.OpenApi;
 namespace OrderService
 {
     public class Program
@@ -26,6 +27,7 @@ namespace OrderService
                 var builder = WebApplication.CreateBuilder(args);
                 builder.Services.AddMemoryCache();
                 builder.Services.AddFastEndpoints();
+                builder.Services.OpenApiDocument();
                 builder.Services.AddRequestTimeouts(options =>
                 {
                     options.DefaultPolicy = new RequestTimeoutPolicy
@@ -66,9 +68,12 @@ namespace OrderService
 
                 app.UseRouting();
                 app.UseRequestTimeouts();
-
+                app.MapOpenApi();
                 app.UseDefaultExceptionHandler(useProblemDetails: true)
                     .UseFastEndpoints(c => c.Serializer.Options.Converters.Add(new JsonStringEnumConverter()));
+                    
+                    
+                    
                 // Configure the HTTP request pipeline.
                  
                 app.UseHttpsRedirection();
