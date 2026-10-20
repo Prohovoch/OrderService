@@ -81,20 +81,22 @@ namespace OrderService
                         }
                     });
                 });
-               
+
                 var app = builder.Build();
-                // TODO: tg client or http factory client impl here.
-                app.UseMiddleware<OrderService.src.Security.Middleware.BotApiKeyMiddleware>();
-                app.UseRouting();
-                app.UseRequestTimeouts();
-         
-                app.UseDefaultExceptionHandler(useProblemDetails: true)
-                    .UseFastEndpoints(c => c.Serializer.Options.Converters.Add(new JsonStringEnumConverter()));
-             
-                    
-                // Configure the HTTP request pipeline.
-                 
+                app.UseDefaultExceptionHandler(useProblemDetails: true);
+                app.UseRequestTimeouts(); 
                 app.UseHttpsRedirection();
+                // TODO: tg client or http factory client impl here.
+                app.UseRouting();
+                app.UseMiddleware<OrderService.src.Security.Middleware.BotApiKeyMiddleware>();
+                app.UseFastEndpoints(c => c.Serializer.Options.Converters.Add(new JsonStringEnumConverter()));
+
+
+
+
+                // Configure the HTTP request pipeline.
+
+
                 using (var scope = app.Services.CreateScope())
                 {
                     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
