@@ -31,6 +31,9 @@ namespace OrderService
                 builder.Services.AddMemoryCache();
                 builder.Services.AddDbContext<ApplicationDbContext>(opt =>
                 opt.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
+                builder.Services.AddTransient<OrderService.src.Security.Helpers.OtpGenerate>();
+
+
                 builder.Services.AddFastEndpoints();
                 builder.Services.OpenApiDocument(o => 
                 {

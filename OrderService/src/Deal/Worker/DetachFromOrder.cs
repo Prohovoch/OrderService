@@ -12,7 +12,7 @@ namespace OrderService.src.Deal.Worker
     {
         public override void Configure()
         {
-            Patch("api/worker/order/{orderId}");
+            Patch("api/worker/order/{orderId}/detach");
             AllowAnonymous();
             Validator<DetachFromOrderValidator>();
 
