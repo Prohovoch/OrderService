@@ -1,16 +1,16 @@
 services:
   postgresdb:
-    image: postgres:18  # См. примечание ниже про версию 18
+    image: postgres:18  
     container_name: postgres_db
     restart: always
     environment:
-      POSTGRES_USER: ${PGDB_USER}       # Исправлена опечатка PGDB_USEК -> PGDB_USER
+      POSTGRES_USER: ${PGDB_USER}       
       POSTGRES_PASSWORD: ${PGDB_PASSWORD}
       POSTGRES_DB: ${PGDB_NAME}
     ports:
       - "${PGDB_PORT:-5432}:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/  # Исправлен путь к данным внутри контейнера
+      - pgdata:/var/lib/postgresql/  
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${PGDB_USER:-postgres} -d ${PGDB_NAME}"]
       interval: 5s
@@ -31,7 +31,7 @@ services:
     - BOTAPIHEADER=${BOTAPIHEADER}
     - ASPNETCORE_ENVIRONMENT=Development  
     - ConnectionStrings__Default=Host=postgresdb;Port=5432;Database=${PGDB_NAME};Username=${PGDB_USER};Password=${PGDB_PASSWORD}
-    depends_on:                      # Исправлен отступ секции depends_on
+    depends_on:                      
       postgresdb:
         condition: service_healthy
 
