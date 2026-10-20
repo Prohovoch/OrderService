@@ -1,10 +1,13 @@
-using FastEndpoints;
-using System.Text.Json.Serialization;
-using Telegram.Bot;
-using Serilog;
 using DotNetEnv;
-using Microsoft.AspNetCore.Http.Timeouts;
+using FastEndpoints;
 using FastEndpoints.OpenApi;
+using Microsoft.AspNetCore.Http.Timeouts;
+using Microsoft.EntityFrameworkCore;
+using OrderService.Infrastructure.Persistence;
+using Scalar.AspNetCore;
+using Serilog;
+using System.Text.Json.Serialization;
+
 namespace OrderService
 {
     public class Program
@@ -17,7 +20,7 @@ namespace OrderService
             // Add services to the container.
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console()
-                .WriteTo.File("logs/my-logs.txt", rollingInterval: RollingInterval.Day)
+                // .WriteTo.File("logs/my-logs.txt", rollingInterval: RollingInterval.Day)
                 .Enrich.FromLogContext()
                 .CreateLogger();
 
@@ -26,8 +29,23 @@ namespace OrderService
                 Log.Information("Starting web app");
                 var builder = WebApplication.CreateBuilder(args);
                 builder.Services.AddMemoryCache();
+                builder.Services.AddDbContext<ApplicationDbContext>(opt =>
+                opt.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
                 builder.Services.AddFastEndpoints();
-                builder.Services.OpenApiDocument();
+                builder.Services.OpenApiDocument(o => 
+                {
+                    o.AddAuth("ApiKey", new()
+                    {
+                        Name = Env.GetString("BOTAPIHEADER"),
+                        In =  Microsoft.OpenApi.ParameterLocation.Header,
+                        Type = Microsoft.OpenApi.SecuritySchemeType.ApiKey
+                        
+                    });
+                    o.DocumentName = "service";
+                    o.Version = "v1";
+                    o.Title = "Order Service API";
+                });
+                
                 builder.Services.AddRequestTimeouts(options =>
                 {
                     options.DefaultPolicy = new RequestTimeoutPolicy
@@ -65,10 +83,9 @@ namespace OrderService
                 var app = builder.Build();
                 // TODO: tg client or http factory client impl here.
 
-
                 app.UseRouting();
                 app.UseRequestTimeouts();
-                app.MapOpenApi();
+         
                 app.UseDefaultExceptionHandler(useProblemDetails: true)
                     .UseFastEndpoints(c => c.Serializer.Options.Converters.Add(new JsonStringEnumConverter()));
                     
@@ -77,9 +94,22 @@ namespace OrderService
                 // Configure the HTTP request pipeline.
                  
                 app.UseHttpsRedirection();
-                
-              
 
+
+                if (app.Environment.IsDevelopment())
+                {
+                    app.MapOpenApi();
+                    app.MapScalarApiReference(options => options
+                    .AddPreferredSecuritySchemes("ApiKey")
+                    .AddApiKeyAuthentication("ApiKey", apiKey =>
+                    {
+                        apiKey.Value = Env.GetString("TGBOT_API");
+                    })
+
+                    .WithTitle("Order Service API"));
+                    
+
+                }
               
 
                 app.Run();

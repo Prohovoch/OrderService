@@ -27,7 +27,7 @@ namespace OrderService.Infrastructure.Configuration.Catalog
             builder.Property(c => c.CreatorName).HasMaxLength(50).HasColumnName("creator_name");
             builder.Property(c => c.CreatorSurname).HasMaxLength(50).HasColumnName("creator_surname");
 
-            builder.HasData()
+           
             
         }
     }

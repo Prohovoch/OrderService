@@ -1,10 +1,30 @@
 {
   "profiles": {
+
+    "http": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "scalar",
+      "applicationUrl": "http://localhost:8080",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIROMENT": "Development"
+      },
+      "https": {
+        "commandName": "Project",
+        "launchBrowser": true,
+        "launchUrl": "scalar",
+        "applicationUrl": "http://localhost:8080",
+        "environmentVariables": {
+          "ASPNETCORE_ENVIROMENT": "Development"
+        }
+      }
+    },
     "Docker Compose": {
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "serviceActions": {
         "orderservice": "StartDebugging"
+        
       }
     }
   }
