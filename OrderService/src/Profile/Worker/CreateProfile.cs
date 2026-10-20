@@ -75,7 +75,7 @@ namespace OrderService.src.Profile.Worker
                 .NotEmpty().WithMessage("Surname is required.");
             RuleFor(x => x.Age).InclusiveBetween(18, 120).WithMessage("Age must be between 18 and 120.");
             RuleFor(x => x.Gender).IsInEnum();
-            RuleFor(x => x.PhoneNumber).NotEmpty().WithMessage("Phone must not be empty!");
+            RuleFor(x => x.PhoneNumber).Matches(@"^(\+?7|8)\d{10}$").NotEmpty().WithMessage("Phone must not be empty!");
         }
     }
    

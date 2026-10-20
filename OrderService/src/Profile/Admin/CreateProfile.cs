@@ -72,7 +72,7 @@ namespace OrderService.src.Profile.Admin
             .NotEmpty().WithMessage("Surname is required.");
         RuleFor(x => x.Age).InclusiveBetween(18, 120).WithMessage("Age must be between 18 and 120.");
         
-        RuleFor(x => x.PhoneNumber).NotEmpty().WithMessage("Phone number must not be null!");
+        RuleFor(x => x.PhoneNumber).Matches(@"^(\+?7|8)\d{10}$").NotEmpty().WithMessage("Phone number must not be null!");
         
         }
 }
