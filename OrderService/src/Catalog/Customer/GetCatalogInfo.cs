@@ -11,7 +11,7 @@ namespace OrderService.src.Catalog.Customer
         public override void Configure()
         {
             Get("api/customer/catalog");
-            Roles("customer");
+            AllowAnonymous();
             Validator<GetCatalogCustomerInfoValidator>();
 
         }

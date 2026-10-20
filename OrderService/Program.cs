@@ -4,7 +4,6 @@ using FastEndpoints.OpenApi;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.EntityFrameworkCore;
 using OrderService.Infrastructure.Persistence;
-using Scalar.AspNetCore;
 using Serilog;
 using System.Text.Json.Serialization;
 
@@ -12,7 +11,7 @@ namespace OrderService
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             Env.Load();
             // var teletgamBotToken = Env.GetString("TELEGRAM_BOT_TOKEN");
@@ -91,26 +90,24 @@ namespace OrderService
          
                 app.UseDefaultExceptionHandler(useProblemDetails: true)
                     .UseFastEndpoints(c => c.Serializer.Options.Converters.Add(new JsonStringEnumConverter()));
-                    
-                    
+             
                     
                 // Configure the HTTP request pipeline.
                  
                 app.UseHttpsRedirection();
-
+                using (var scope = app.Services.CreateScope())
+                {
+                    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                    await db.Database.MigrateAsync();
+                }
+                
 
                 if (app.Environment.IsDevelopment())
                 {
                     app.MapOpenApi();
-                    app.MapScalarApiReference(options => options
-                    .AddPreferredSecuritySchemes("ApiKey")
-                    .AddApiKeyAuthentication("ApiKey", apiKey =>
-                    {
-                        apiKey.Value = Env.GetString("TGBOT_API");
-                    })
-
-                    .WithTitle("Order Service API"));
-                    
+                    app.UseSwaggerUI(options => {
+                        options.SwaggerEndpoint("/openapi/service.json", "OrderService Api V1");
+                    });
 
                 }
               
