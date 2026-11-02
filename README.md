@@ -10,13 +10,13 @@
 
 В отличие от классической многослойной архитектуры (Clean/Onion), где код разделен по техническим слоям (Controllers, Services, Repositories), этот проект построен вокруг **бизнес-фич**:
 
-1. **Vertical Slice Architecture:** Каждая папка внутри проекта инкапсулирует в себе всю логику конкретной бизнес-фичи (от валидации и работы с БД до эндпоинта). Это минимизирует связность кода (coupling) и упрощает изменения.
+1. **Vertical Slice Architecture:** Каждая папка внутри проекта инкапсулирует в себе всю логику конкретной бизнес-фичи (от валидации и работы с БД до эндпоинта). Это минимизирует связанность кода (coupling) и упрощает изменения.
 2. **REPR Pattern:** Архитектурный паттерн, утверждающий, что веб-эндпоинт должен принимать строго один тип запроса (`Request`) и возвращать строго один тип ответа (`Response`). Реализовано с помощью легковесных эндпоинтов.
 
 ### Полезные материалы по подходам:
-* [Vertical Slice Architecture — Jimmy Bogard](https://jimmybogard.com) — детальный разбор концепции от автора подхода.
+* [Vertical Slice Architecture — Jimmy Bogard](https://www.jimmybogard.com/vertical-slice-architecture/) — детальный разбор концепции от автора подхода.
 * [REPR Pattern & FastEndpoints](https://fast-endpoints.com) — современная альтернатива классическим контроллерам, оптимизированная под REPR.
-* [Embrace Api Endpoints](https://ardalis.com/mvc-controllers-are-dinosaurs-embrace-api-endpoints/)
+* [Embrace Api Endpoints](https://ardalis.com/mvc-controllers-are-dinosaurs-embrace-api-endpoints/) -  REPR pattern
 ---
 
 ## 🚀 Как запустить проект локально
@@ -53,7 +53,7 @@ docker compose up -d --build
 
 ### 4. Проверка работы (Интерактивная документация)
 После успешного старта документация API доступна в вашем браузере по адресу:
-👉 **[http://localhost:8080/swagger](http://localhost:/swagger)**.
+👉 **[http://localhost:8080/swagger]**.
 
 На данный момент используется устаревший swagger. Дополнительно выявлены проблемы. См.  *Планы*. 
 
