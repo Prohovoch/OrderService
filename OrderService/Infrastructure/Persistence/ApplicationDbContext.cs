@@ -8,7 +8,10 @@ using OrderService.Infrastructure.Entities.Cart;
 using OrderService.Infrastructure.Entities.Employee;
 
 namespace OrderService.Infrastructure.Persistence;
-
+/// <summary>
+/// Using this class we can access the database and perform CRUD operations on the entities defined in the application.
+/// </summary>
+/// <param name="options">DbContextParam for configs.</param>
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
 {
 
@@ -30,7 +33,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<DomainOrder> Orders => Set<DomainOrder>();
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
 
-
+    /// <summary>
+    /// Creating our models and applying configurations from the assembly where ApplicationDbContext is defined.
+    /// </summary>
+    /// <param name="modelBuilder">The model builder.</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
