@@ -13,8 +13,6 @@ namespace OrderService.src.Profile.Worker
     public class CreateProfile(ApplicationDbContext dbContext) : Endpoint<CreateWorkerProfileRequest>
     {
 
-       
-
         public override void Configure()
         {
             Post("api/employee/profile");
