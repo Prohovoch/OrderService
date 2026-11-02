@@ -11,9 +11,15 @@ namespace OrderService
 {
     public class Program
     {
+        /// <summary>
+        /// Main function which starts the programm and an application by itself.
+        /// </summary>
+        /// <param name="args"> Standard args</param>
+        /// <returns></returns>
+        ///
         public static async Task Main(string[] args)
         {
-            Env.Load();
+            Env.Load(); 
             // var teletgamBotToken = Env.GetString("TELEGRAM_BOT_TOKEN");
             // when i implement env vars.
             // Add services to the container.
@@ -89,6 +95,7 @@ namespace OrderService
                 // TODO: tg client or http factory client impl here.
                 app.UseRouting();
                 app.UseMiddleware<OrderService.src.Security.Middleware.BotApiKeyMiddleware>();
+            
                 app.UseFastEndpoints(c => c.Serializer.Options.Converters.Add(new JsonStringEnumConverter()));
 
 
