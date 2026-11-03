@@ -21,7 +21,7 @@ namespace OrderService.src.Auth.Buyer
 
         public override async Task HandleAsync(RegisterCustomerRequest req, CancellationToken ct)
         {
-            // checks if the product exists in the database on a CATALOG page
+            
             var isCustomerExists = await dbContext.Customers.AnyAsync(x => x.TgId == req.TelegramId, ct);
            
             if (isCustomerExists is true)

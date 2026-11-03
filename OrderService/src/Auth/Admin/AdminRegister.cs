@@ -29,7 +29,7 @@ namespace OrderService.src.Auth.Admin
                 return;
             }
             var adminTgId = DotNetEnv.Env.GetString("TGADMIN_ID");
-            if (!long.TryParse(adminTgId, out long tgAdminId) || tgAdminId <= 0)
+            if (!long.TryParse(adminTgId, out long tgAdminId) || tgAdminId <= 0) // checking  if not working.
             {
                 AddError("Invalid TGADMIN_ID in environment variables.");
                 await Send.ErrorsAsync();

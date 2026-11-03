@@ -11,8 +11,6 @@ namespace OrderService.src.Profile.Worker
     // REPR endpoint
     public class ReadProfile(ApplicationDbContext dbContext) : Endpoint<ReadProfileRequest, ReadProfileResponse>
     {
-
-
         public override void Configure()
         {
             Get("api/employee/profile/me");
