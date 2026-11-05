@@ -11,8 +11,6 @@ namespace OrderService.src.Auth.Employee
 {
     public class WorkerOtpGeneration(ApplicationDbContext dbContext, OtpGenerate otpService) : Endpoint<WorkerOtpGenerationRequest, WorkerOtpGenerationResponse>
     {
-        private readonly OtpGenerate _otpService = otpService;
-
         public override void Configure()
         {
             Post("api/worker/otp/generate");
@@ -28,13 +26,13 @@ namespace OrderService.src.Auth.Employee
             var isWorkerExists = await dbContext.Customers.AnyAsync(x => x.TgId == req.TelegramId, ct);
             if (isWorkerExists)
             {
-                Logger.LogWarning("Canceled. User is already registered in a system");
+                Logger.LogWarning("Canceled. Worker is already registered in a system");
                 await Send.ErrorsAsync();
                 return;
             }
 
 
-            var code = _otpService.GenerateOtp(req.TelegramId);
+            var code = otpService.GenerateOtp(req.TelegramId);
             var response = new WorkerOtpGenerationResponse
             {
                 GeneratedCode = code
@@ -56,7 +54,7 @@ namespace OrderService.src.Auth.Employee
     {
         public WorkerOtpGenerationValidator()
         {
-            RuleFor(x => x.TelegramId).NotEmpty().WithMessage("UserId is required.");
+            RuleFor(x => x.TelegramId).NotEmpty().WithMessage("TelegramId is required.");
 
         }
     }

@@ -8,8 +8,6 @@ namespace OrderService.src.Auth.Employee
 {
     public class WorkerValidation(ApplicationDbContext dbContext, OtpGenerate otpService) : Endpoint<WorkerOtpValidationRequest>
     {
-        private readonly OtpGenerate _otpService = otpService;
-
         public override void Configure()
         {
             Post("api/worker/otp/validate");
@@ -31,7 +29,7 @@ namespace OrderService.src.Auth.Employee
                 await Send.ErrorsAsync();
                 return;
             }
-            var isValid = _otpService.ValidateOtp(req.TelegramId, req.OtpCode);
+            var isValid = otpService.ValidateOtp(req.TelegramId, req.OtpCode);
             
             if (!isValid)
             {
@@ -66,7 +64,7 @@ namespace OrderService.src.Auth.Employee
     {
         public WorkerOtpValidationValidator()
         {
-            RuleFor(x => x.TelegramId).NotEmpty().WithMessage("UserId is required.");
+            RuleFor(x => x.TelegramId).NotEmpty().WithMessage("TelegramId is required.");
             RuleFor(x => x.OtpCode).NotEmpty().WithMessage("OtpCode is required.");
         }
     }
